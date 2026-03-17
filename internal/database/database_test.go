@@ -64,6 +64,7 @@ func mustStartPostgresContainer() (func(context.Context, ...testcontainers.Termi
 
 func setupEnv() *env.Env {
 	env := env.Env{
+		LogLevel: env.LogLevelEnum.None,
 		Database: env.DatabaseEnv{
 			DbName:   database,
 			Host:     host,

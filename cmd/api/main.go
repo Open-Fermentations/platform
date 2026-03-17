@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"open-fermentations/internal/env"
+	"open-fermentations/internal/logger"
 	"open-fermentations/internal/server"
 )
 
@@ -40,9 +41,11 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 	env := env.GetEnv()
+	logger := logger.New(env)
+
 	server := server.NewServer(env)
 
-	log.Println("Server started")
+	logger.Info("Server started")
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)

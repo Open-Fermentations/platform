@@ -17,6 +17,22 @@ var AppEnvEnum = &struct {
 	Prod: "prod",
 }
 
+type LogLevel string
+
+var LogLevelEnum = &struct {
+	Debug   LogLevel
+	Info    LogLevel
+	Warning LogLevel
+	Error   LogLevel
+	None    LogLevel
+}{
+	Debug:   "debug",
+	Info:    "info",
+	Warning: "warn",
+	Error:   "error",
+	None:    "none",
+}
+
 type DatabaseEnv struct {
 	Host     string
 	Port     string
@@ -29,6 +45,7 @@ type DatabaseEnv struct {
 type Env struct {
 	Port     int
 	AppEnv   AppEnv
+	LogLevel LogLevel
 	Database DatabaseEnv
 }
 
@@ -36,6 +53,7 @@ var env *Env
 
 func GetEnv() *Env {
 	if env == nil {
+		env = &Env{}
 		RefreshEnvironmentVariables()
 	}
 
@@ -43,18 +61,15 @@ func GetEnv() *Env {
 }
 
 func RefreshEnvironmentVariables() {
-	env = &Env{
-		Port:   getIntValue("PORT"),
-		AppEnv: handleAppEnv("APP_ENV"),
-		Database: DatabaseEnv{
-			Host:     getStringValue("DB_HOST"),
-			Port:     getStringValue("DB_PORT"),
-			User:     getStringValue("DB_USERNAME"),
-			Password: getStringValue("DB_PASSWORD"),
-			DbName:   getStringValue("DB_DATABASE"),
-			Schema:   getStringValue("DB_SCHEMA"),
-		},
-	}
+	env.Port = getIntValue("PORT")
+	env.AppEnv = handleAppEnv("APP_ENV")
+	env.LogLevel = handleLogLevel("LOG_LEVEL")
+	env.Database.Host = getStringValue("DB_HOST")
+	env.Database.Port = getStringValue("DB_PORT")
+	env.Database.User = getStringValue("DB_USERNAME")
+	env.Database.Password = getStringValue("DB_PASSWORD")
+	env.Database.DbName = getStringValue("DB_DATABASE")
+	env.Database.Schema = getStringValue("DB_SCHEMA")
 }
 
 func getStringValue(key string) string {
@@ -77,7 +92,8 @@ func getIntValue(key string) int {
 }
 
 func handleAppEnv(key string) AppEnv {
-	switch key {
+	value := os.Getenv(key)
+	switch value {
 	case string(AppEnvEnum.Dev):
 		return AppEnvEnum.Dev
 	case string(AppEnvEnum.Prod):
@@ -86,4 +102,21 @@ func handleAppEnv(key string) AppEnv {
 
 	log.Printf("No environment variable was set in %v defaulting to %v", key, AppEnvEnum.Dev)
 	return AppEnvEnum.Dev
+}
+
+func handleLogLevel(key string) LogLevel {
+	value := os.Getenv(key)
+	switch value {
+	case string(LogLevelEnum.Debug):
+		return LogLevelEnum.Debug
+	case string(LogLevelEnum.Info):
+		return LogLevelEnum.Info
+	case string(LogLevelEnum.Warning):
+		return LogLevelEnum.Warning
+	case string(LogLevelEnum.Error):
+		return LogLevelEnum.Error
+	default:
+		log.Printf("Log level defaulted to 'info'. Value provided is not recognized by system: '%s'", value)
+		return LogLevelEnum.Info
+	}
 }
