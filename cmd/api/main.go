@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"open-fermentations/internal/env"
 	"open-fermentations/internal/server"
 )
 
@@ -38,7 +39,8 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 }
 
 func main() {
-	server := server.NewServer()
+	env := env.GetEnv()
+	server := server.NewServer(env)
 
 	log.Println("Server started")
 

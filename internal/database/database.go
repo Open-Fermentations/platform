@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
+	"open-fermentations/internal/env"
 	"strconv"
 	"time"
 
@@ -25,31 +25,33 @@ type Service interface {
 }
 
 type service struct {
-	db *sql.DB
+	env *env.Env
+	db  *sql.DB
 }
 
-var (
-	database   = os.Getenv("DB_DATABASE")
-	password   = os.Getenv("DB_PASSWORD")
-	username   = os.Getenv("DB_USERNAME")
-	port       = os.Getenv("DB_PORT")
-	host       = os.Getenv("DB_HOST")
-	schema     = os.Getenv("DB_SCHEMA")
-	dbInstance *service
-)
+var dbInstance *service
 
-func New() Service {
+func New(env *env.Env) Service {
 	// Reuse Connection
 	if dbInstance != nil {
 		return dbInstance
 	}
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&search_path=%s", username, password, host, port, database, schema)
+	connStr := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable&search_path=%s",
+		env.Database.User,
+		env.Database.Password,
+		env.Database.Host,
+		env.Database.Port,
+		env.Database.DbName,
+		env.Database.Schema,
+	)
 	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
 	dbInstance = &service{
-		db: db,
+		db:  db,
+		env: env,
 	}
 	return dbInstance
 }
@@ -110,6 +112,6 @@ func (s *service) Health() map[string]string {
 // If the connection is successfully closed, it returns nil.
 // If an error occurs while closing the connection, it returns the error.
 func (s *service) Close() error {
-	log.Printf("Disconnected from database: %s", database)
+	log.Printf("Disconnected from database: %s", s.env.Database.DbName)
 	return s.db.Close()
 }
