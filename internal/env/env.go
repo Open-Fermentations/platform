@@ -53,6 +53,7 @@ var env *Env
 
 func GetEnv() *Env {
 	if env == nil {
+		env = &Env{}
 		RefreshEnvironmentVariables()
 	}
 
@@ -60,19 +61,15 @@ func GetEnv() *Env {
 }
 
 func RefreshEnvironmentVariables() {
-	env = &Env{
-		Port:     getIntValue("PORT"),
-		AppEnv:   handleAppEnv("APP_ENV"),
-		LogLevel: handleLogLevel("LOG_LEVEL"),
-		Database: DatabaseEnv{
-			Host:     getStringValue("DB_HOST"),
-			Port:     getStringValue("DB_PORT"),
-			User:     getStringValue("DB_USERNAME"),
-			Password: getStringValue("DB_PASSWORD"),
-			DbName:   getStringValue("DB_DATABASE"),
-			Schema:   getStringValue("DB_SCHEMA"),
-		},
-	}
+	env.Port = getIntValue("PORT")
+	env.AppEnv = handleAppEnv("APP_ENV")
+	env.LogLevel = handleLogLevel("LOG_LEVEL")
+	env.Database.Host = getStringValue("DB_HOST")
+	env.Database.Port = getStringValue("DB_PORT")
+	env.Database.User = getStringValue("DB_USERNAME")
+	env.Database.Password = getStringValue("DB_PASSWORD")
+	env.Database.DbName = getStringValue("DB_DATABASE")
+	env.Database.Schema = getStringValue("DB_SCHEMA")
 }
 
 func getStringValue(key string) string {

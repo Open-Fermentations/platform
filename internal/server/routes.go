@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"fmt"
@@ -53,7 +52,7 @@ func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if _, err := w.Write(jsonResp); err != nil {
-		log.Printf("Failed to write response: %v", err)
+		s.logger.Errorf("Failed to write response: %v", err)
 	}
 }
 
@@ -65,7 +64,7 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if _, err := w.Write(resp); err != nil {
-		log.Printf("Failed to write response: %v", err)
+		s.logger.Errorf("Failed to write response: %v", err)
 	}
 }
 
@@ -83,7 +82,7 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		payload := fmt.Sprintf("server timestamp: %d", time.Now().UnixNano())
 		if err := socket.Write(socketCtx, websocket.MessageText, []byte(payload)); err != nil {
-			log.Printf("Failed to write to socket: %v", err)
+			s.logger.Errorf("Failed to write to socket: %v", err)
 			break
 		}
 		time.Sleep(2 * time.Second)
