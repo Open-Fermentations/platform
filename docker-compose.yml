@@ -41,7 +41,22 @@ services:
     networks:
       - open_fermentations
 
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+    ports:
+      - ${PGADMIN_PORT}:80
+    depends_on:
+      - psql
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - open_fermentations
+
 volumes:
   psql_volume:
+  pgadmin_data:
 networks:
   open_fermentations:
