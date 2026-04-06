@@ -51,3 +51,19 @@ Clean up binary from the last build:
 ```bash
 make clean
 ```
+
+## Database migrations
+
+This project makes use of [golang migrate](https://github.com/golang-migrate/migrate).
+
+In order to run the scripts below you will have to install the CLI of the migration tool.
+
+These migrations will also run at app startup to ensure that the database is up to date with the latest schema.
+
+### Create
+
+```bash
+./scripts/create-migration.sh <migration-name>
+```
+
+Will create an `up` and `down` migration file in the [migrations](/migrations) folder
