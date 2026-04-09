@@ -6,7 +6,8 @@ begin;
   (
     id uuid primary key default uuid_generate_v4(),
     username varchar not null,
-    password varchar not null,
+    -- TODO: if a password is always hashed then it should be the same length all the time?
+    password varchar not null, 
     active boolean default true not null,
     created timestamp default current_timestamp not null,
     modified timestamp default current_timestamp not null
