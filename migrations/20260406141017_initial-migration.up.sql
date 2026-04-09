@@ -9,8 +9,8 @@ begin;
     -- TODO: if a password is always hashed then it should be the same length all the time?
     password varchar not null, 
     active boolean default true not null,
-    created timestamptz default current_timestamptz not null,
-    modified timestamptz default current_timestamptz not null
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null
   );
 
   create unique index unique_username_constraint on "user"(username);
@@ -51,8 +51,8 @@ begin;
     id uuid primary key default uuid_generate_v4(),
     "name" varchar not null,
     user_id uuid not null,
-    created timestamptz default current_timestamptz not null,
-    modified timestamptz default current_timestamptz not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_batch_user
       foreign key(user_id)
       references "user"(id)
@@ -67,8 +67,8 @@ begin;
     "name" varchar not null,
     mac_address bytea not null,
     user_id uuid not null,
-    created timestamptz default current_timestamptz not null,
-    modified timestamptz default current_timestamptz not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_device_user
       foreign key(user_id)
       references "user"(id)
@@ -81,8 +81,8 @@ begin;
     id uuid primary key default uuid_generate_v4(),
     device_id uuid not null,
     capability reading_type_enum not null,
-    created timestamptz default current_timestamptz not null,
-    modified timestamptz default current_timestamptz not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_device_capability_device
       foreign key(device_id)
       references "device"(id)
@@ -95,8 +95,8 @@ begin;
     "value" real not null,
     device_id uuid not null,
     user_id uuid not null,
-    created timestamptz default current_timestamptz not null,
-    modified timestamptz default current_timestamptz not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_reading_user
       foreign key(user_id)
       references "user"(id),
@@ -110,8 +110,8 @@ begin;
     id uuid primary key default uuid_generate_v4(),
     batch_id uuid not null,
     user_id uuid not null,
-    created timestamptz default current_timestamptz not null,
-    modified timestamptz default current_timestamptz not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_batch_reading_user
       foreign key(user_id)
       references "user"(id)
