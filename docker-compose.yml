@@ -1,3 +1,4 @@
+name: ${NAME}
 services:
   app:
     build:
@@ -19,17 +20,19 @@ services:
     depends_on:
       psql:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - open_fermentations
+
   psql:
     image: postgres:latest
     restart: unless-stopped
     environment:
+      # TODO: add port to environment variables to set the port according to the .env
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "${DB_PORT}:5432"
     volumes:
       - psql_volume:/var/lib/postgresql
     healthcheck:
@@ -40,6 +43,24 @@ services:
       start_period: 15s
     networks:
       - open_fermentations
+      - migration_net
+
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      psql:
+        condition: service_healthy
+    networks:
+      - migration_net
+    volumes:
+      - ./migrations:/migrations
+    command: [
+      "-path",
+      "/migrations/", 
+      "-database",
+      "${DB_CONNECTION_STRING}",
+      "up"
+    ]
 
   pgadmin:
     image: dpage/pgadmin4
@@ -60,3 +81,4 @@ volumes:
   pgadmin_data:
 networks:
   open_fermentations:
+  migration_net:
