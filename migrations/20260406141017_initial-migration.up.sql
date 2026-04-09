@@ -43,14 +43,14 @@ begin;
       references "permission"(id)
   );
 
-  create table "brew"
+  create table "batch"
   (
     id uuid primary key default gen_random_uuid(),
     "name" varchar not null,
     user_id uuid not null,
     created timestamp default current_timestamp not null,
     modified timestamp default current_timestamp not null,
-    constraint fk_brew_user
+    constraint fk_batch_user
       foreign key(user_id)
       references "user"(id)
   );
@@ -102,14 +102,14 @@ begin;
       references "device"(id)
   );
 
-  create table "brew_reading"
+  create table "batch_reading"
   (
     id uuid primary key default gen_random_uuid(),
-    brew_id uuid not null,
+    batch_id uuid not null,
     user_id uuid not null,
     created timestamp default current_timestamp not null,
     modified timestamp default current_timestamp not null,
-    constraint fk_brew_reading_user
+    constraint fk_batch_reading_user
       foreign key(user_id)
       references "user"(id)
   );
