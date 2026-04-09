@@ -1,3 +1,4 @@
+name: ${NAME}
 services:
   app:
     build:
