@@ -56,9 +56,10 @@ make clean
 
 This project makes use of [golang migrate](https://github.com/golang-migrate/migrate).
 
-In order to run the scripts below you will have to install the CLI of the migration tool.
+In order to run the some scripts below you will have to install the CLI of the migration tool.
 
-These migrations will also run at app startup to ensure that the database is up to date with the latest schema.
+There is a service in the docker compose file that will run the migrations at start of the system to ensure that the database is up to date.
+Once the migrations have run successfully the application will be able to start.
 
 ### Create
 
@@ -67,3 +68,11 @@ These migrations will also run at app startup to ensure that the database is up 
 ```
 
 Will create an `up` and `down` migration file in the [migrations](/migrations) folder
+
+### Rolling back
+
+```bash
+./scripts/rollback-migration.sh
+```
+
+Rolls back the latest migration. This script can be ran until no more migrations are present
