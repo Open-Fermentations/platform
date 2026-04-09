@@ -30,4 +30,6 @@ drop table if exists "role";
 drop index unique_username_constraint;
 drop table if exists "user";
 
+drop extension if exists "uuid-ossp";
+
 commit;

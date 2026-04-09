@@ -52,6 +52,11 @@ Clean up binary from the last build:
 make clean
 ```
 
+Generate queries for repository
+```bash
+make sqlc
+```
+
 ## Database migrations
 
 This project makes use of [golang migrate](https://github.com/golang-migrate/migrate).

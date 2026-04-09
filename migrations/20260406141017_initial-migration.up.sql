@@ -1,13 +1,16 @@
 begin;
 
+  create extension if not exists "uuid-ossp";
+
   create table "user"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     username varchar not null,
-    password varchar not null,
+    -- TODO: if a password is always hashed then it should be the same length all the time?
+    password varchar not null, 
     active boolean default true not null,
-    created timestamp default current_timestamp not null,
-    modified timestamp default current_timestamp not null
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null
   );
 
   create unique index unique_username_constraint on "user"(username);
@@ -20,19 +23,19 @@ begin;
 
   create table "role"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     "name" varchar(15) not null
   );
 
   create table "permission"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     "name" varchar(15) not null
   );
 
   create table "role_permission"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     role_id uuid not null,
     permission_id uuid not null,
     constraint fk_role_permission_role
@@ -45,11 +48,11 @@ begin;
 
   create table "batch"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     "name" varchar not null,
     user_id uuid not null,
-    created timestamp default current_timestamp not null,
-    modified timestamp default current_timestamp not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_batch_user
       foreign key(user_id)
       references "user"(id)
@@ -60,12 +63,12 @@ begin;
 
   create table "device"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     "name" varchar not null,
     mac_address bytea not null,
     user_id uuid not null,
-    created timestamp default current_timestamp not null,
-    modified timestamp default current_timestamp not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_device_user
       foreign key(user_id)
       references "user"(id)
@@ -75,11 +78,11 @@ begin;
 
   create table "device_capability"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     device_id uuid not null,
     capability reading_type_enum not null,
-    created timestamp default current_timestamp not null,
-    modified timestamp default current_timestamp not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_device_capability_device
       foreign key(device_id)
       references "device"(id)
@@ -87,13 +90,13 @@ begin;
 
   create table "reading"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     reading_type reading_type_enum not null,
     "value" real not null,
     device_id uuid not null,
     user_id uuid not null,
-    created timestamp default current_timestamp not null,
-    modified timestamp default current_timestamp not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_reading_user
       foreign key(user_id)
       references "user"(id),
@@ -104,11 +107,11 @@ begin;
 
   create table "batch_reading"
   (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuid_generate_v4(),
     batch_id uuid not null,
     user_id uuid not null,
-    created timestamp default current_timestamp not null,
-    modified timestamp default current_timestamp not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
     constraint fk_batch_reading_user
       foreign key(user_id)
       references "user"(id)
