@@ -24,6 +24,18 @@ services:
         condition: service_completed_successfully
     networks:
       - open_fermentations
+      - devices
+
+  mqtt:
+    image: eclipse-mosquitto:alpine
+    volumes:
+      - mqtt_volume:/mosquitto
+      - ./.config/mqtt:/mosquitto/config
+    networks:
+      - devices
+    ports:
+      - ${MQTT_PORT}:${MQTT_PORT}
+
 
   psql:
     image: postgres:latest
@@ -72,13 +84,15 @@ services:
     depends_on:
       - psql
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - pgadmin_volume:/var/lib/pgadmin
     networks:
       - open_fermentations
 
 volumes:
   psql_volume:
-  pgadmin_data:
+  pgadmin_volume:
+  mqtt_volume:
 networks:
   open_fermentations:
   migration_net:
+  devices:
