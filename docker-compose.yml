@@ -29,12 +29,15 @@ services:
   mqtt:
     image: eclipse-mosquitto:alpine
     volumes:
-      - mqtt_volume:/mosquitto
-      - ./.config/mqtt:/mosquitto/config
+      - ./.mqtt/config:/mosquitto/config
+      - ./.mqtt/data:/mosquitto/data
+      - ./.mqtt/log:/mosquitto/log
     networks:
       - devices
     ports:
       - ${MQTT_PORT}:${MQTT_PORT}
+    stdin_open: true
+    tty: true
 
 
   psql:

@@ -42,11 +42,20 @@ type DatabaseEnv struct {
 	Schema   string
 }
 
+type MqttEnv struct {
+	Host     string
+	Port     string
+	WsPort   string
+	User     string
+	Password string
+}
+
 type Env struct {
 	Port     int
 	AppEnv   AppEnv
 	LogLevel LogLevel
 	Database DatabaseEnv
+	Mqtt     MqttEnv
 }
 
 var env *Env
@@ -64,12 +73,19 @@ func RefreshEnvironmentVariables() {
 	env.Port = getIntValue("PORT")
 	env.AppEnv = handleAppEnv("APP_ENV")
 	env.LogLevel = handleLogLevel("LOG_LEVEL")
+
 	env.Database.Host = getStringValue("DB_HOST")
 	env.Database.Port = getStringValue("DB_PORT")
 	env.Database.User = getStringValue("DB_USERNAME")
 	env.Database.Password = getStringValue("DB_PASSWORD")
 	env.Database.DbName = getStringValue("DB_DATABASE")
 	env.Database.Schema = getStringValue("DB_SCHEMA")
+
+	env.Mqtt.Port = getStringValue("MQTT_PORT")
+	env.Mqtt.WsPort = getStringValue("MQTT_WS_PORT")
+	env.Mqtt.Host = getStringValue("MQTT_HOST")
+	env.Mqtt.User = getStringValue("MQTT_USER")
+	env.Mqtt.Password = getStringValue("MQTT_PASSWORD")
 }
 
 func getStringValue(key string) string {

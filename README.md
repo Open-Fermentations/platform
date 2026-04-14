@@ -81,3 +81,14 @@ Will create an `up` and `down` migration file in the [migrations](/migrations) f
 ```
 
 Rolls back the latest migration. This script can be ran until no more migrations are present
+
+## MQTT
+
+### Setup
+
+```bash
+docker compose up mqtt -d
+docker compose exec mqtt sh
+mosquitto_passwd -c /mosquitto/config/pwfile platform
+# enter the desired password here and in your .env file
+```
