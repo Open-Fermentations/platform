@@ -93,15 +93,20 @@ It seems like there are some plugins that could help with this like dynamic auth
 
 ### Setup
 
-#### Create pwfile
-
-Add or change the `MQTT_PASSWORD` in [.env](.env)
+#### Create config
 
 ```bash
 cp .mqtt/config/mosquitto.conf.example .mqtt/config/mosquitto.conf
+```
+
+#### Create pwfile
+
+Add or change the `MQTT_PASSWORD` and `MQTT_USER` in [.env](.env)
+
+```bash
 docker compose up mqtt -d
 docker compose exec mqtt sh # opens the terminal in the docker container
-mosquitto_passwd -c /mosquitto/config/pwfile platform
+mosquitto_passwd -c /mosquitto/config/pwfile <replace with MQTT_USER>
 # use the password that you set in the .env
 chmod 700 /mosquitto/config/pwfile # sets read write and execute for the owner
 chown mosquitto:mosquitto /mosquitto/config/pwfile # sets the mosquitto user and group as the owner of the file
