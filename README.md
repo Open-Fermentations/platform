@@ -84,11 +84,46 @@ Rolls back the latest migration. This script can be ran until no more migrations
 
 ## MQTT
 
+MVP setup could be as simple as having a pwfile that is already set up with 2 users in it. One for the platform to be able to interact with the server and then one for the devices.
+
+Ideally every user on the system should have their own devices user but that would require us to generate the user and then restart the mqtt server for that to take effect.
+This is not ideal.
+
+It seems like there are some plugins that could help with this like dynamic authentication or something.
+
 ### Setup
 
+#### Create pwfile
+
+Add or change the `MQTT_PASSWORD` in [.env](.env)
+
 ```bash
+cp .mqtt/config/mosquitto.conf.example .mqtt/config/mosquitto.conf
 docker compose up mqtt -d
-docker compose exec mqtt sh
+docker compose exec mqtt sh # opens the terminal in the docker container
 mosquitto_passwd -c /mosquitto/config/pwfile platform
-# enter the desired password here and in your .env file
+# use the password that you set in the .env
+chmod 700 /mosquitto/config/pwfile # sets read write and execute for the owner
+chown mosquitto:mosquitto /mosquitto/config/pwfile # sets the mosquitto user and group as the owner of the file
+exit # exits the terminal in the docker container
+```
+
+#### Enable pwfile
+
+In [pwfile](./.mqtt/config/mosquitto.conf)
+
+- Disable anonymous authentication
+- Uncomment line to point to the password file
+
+```bash
+...
+allow_anonymous false
+password_file /mosquitto/config/pwfile
+...
+```
+
+After changing the config restart the container for the changes to take effect
+
+```bash
+docker compose restart mqtt
 ```
