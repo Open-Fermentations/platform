@@ -112,8 +112,6 @@ func main() {
 			choke <- [2]string{msg.Topic(), string(msg.Payload())}
 		})
 
-		fmt.Println(opts.Username)
-		fmt.Println(opts.Password)
 		client := MQTT.NewClient(opts)
 		if token := client.Connect(); token.Wait() && token.Error() != nil {
 			panic(token.Error())
