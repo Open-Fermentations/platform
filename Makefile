@@ -3,6 +3,9 @@
 # Build the application
 all: build test
 
+mocks: 
+	mockery
+
 build:
 	@echo "Building..."
 	

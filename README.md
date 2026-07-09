@@ -47,6 +47,11 @@ Run the test suite:
 make test
 ```
 
+Run mock generation
+```bash
+make mocks
+```
+
 Clean up binary from the last build:
 ```bash
 make clean
@@ -132,3 +137,9 @@ After changing the config restart the container for the changes to take effect
 ```bash
 docker compose restart mqtt
 ```
+
+## Testing
+
+### Mocks
+
+- Install [mockery](https://github.com/vektra/mockery)
