@@ -40,7 +40,6 @@ services:
     stdin_open: true
     tty: true
 
-
   psql:
     image: postgres:latest
     restart: unless-stopped
@@ -52,7 +51,7 @@ services:
     volumes:
       - psql_volume:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}'"]
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}'" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -69,13 +68,7 @@ services:
       - database
     volumes:
       - ./migrations:/migrations
-    command: [
-      "-path",
-      "/migrations/", 
-      "-database",
-      "${DB_CONNECTION_STRING}",
-      "up"
-    ]
+    command: [ "-path", "/migrations/", "-database", "${DB_CONNECTION_STRING}", "up" ]
 
   pgadmin:
     image: dpage/pgadmin4
@@ -99,3 +92,4 @@ networks:
   open_fermentations:
   database:
   devices:
+

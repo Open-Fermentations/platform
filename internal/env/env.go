@@ -48,6 +48,7 @@ type MqttEnv struct {
 	WsPort   string
 	User     string
 	Password string
+	ClientID string
 }
 
 type Env struct {
@@ -86,6 +87,7 @@ func RefreshEnvironmentVariables() {
 	env.Mqtt.Host = getStringValue("MQTT_HOST")
 	env.Mqtt.User = getStringValue("MQTT_USER")
 	env.Mqtt.Password = getStringValue("MQTT_PASSWORD")
+	env.Mqtt.ClientID = getStringValue("MQTT_CLIENT_ID")
 }
 
 func getStringValue(key string) string {
