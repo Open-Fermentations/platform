@@ -24,6 +24,21 @@ services:
         condition: service_completed_successfully
     networks:
       - open_fermentations
+      - devices
+      - database
+
+  mqtt:
+    image: eclipse-mosquitto:alpine
+    volumes:
+      - ./.mqtt/config:/mosquitto/config
+      - ./.mqtt/data:/mosquitto/data
+      - ./.mqtt/log:/mosquitto/log
+    networks:
+      - devices
+    ports:
+      - ${MQTT_PORT}:${MQTT_PORT}
+    stdin_open: true
+    tty: true
 
   psql:
     image: postgres:latest
@@ -36,14 +51,13 @@ services:
     volumes:
       - psql_volume:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}'"]
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}'" ]
       interval: 5s
       timeout: 5s
       retries: 3
       start_period: 15s
     networks:
-      - open_fermentations
-      - migration_net
+      - database
 
   migrate:
     image: migrate/migrate
@@ -51,16 +65,10 @@ services:
       psql:
         condition: service_healthy
     networks:
-      - migration_net
+      - database
     volumes:
       - ./migrations:/migrations
-    command: [
-      "-path",
-      "/migrations/", 
-      "-database",
-      "${DB_CONNECTION_STRING}",
-      "up"
-    ]
+    command: [ "-path", "/migrations/", "-database", "${DB_CONNECTION_STRING}", "up" ]
 
   pgadmin:
     image: dpage/pgadmin4
@@ -72,13 +80,16 @@ services:
     depends_on:
       - psql
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - pgadmin_volume:/var/lib/pgadmin
     networks:
-      - open_fermentations
+      - database
 
 volumes:
   psql_volume:
-  pgadmin_data:
+  pgadmin_volume:
+  mqtt_volume:
 networks:
   open_fermentations:
-  migration_net:
+  database:
+  devices:
+

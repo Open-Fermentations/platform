@@ -33,3 +33,9 @@ main
 .DS_Store
 
 .env
+
+# MQTT
+.mqtt/config/mosquitto.conf
+.mqtt/config/pwfile
+.mqtt/data
+.mqtt/log
