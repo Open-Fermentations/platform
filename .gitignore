@@ -23,7 +23,12 @@ tmp/
 .idea
 
 # .env file
-.env
+.env*
+!.env.example
+
+# docker-compose files
+docker-compose.*
+!docker-compose.example.yml
 
 # Project build
 main
@@ -31,8 +36,6 @@ main
 
 # OS X generated file
 .DS_Store
-
-.env
 
 # MQTT
 .mqtt/config/mosquitto.conf
