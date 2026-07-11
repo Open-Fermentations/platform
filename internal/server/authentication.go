@@ -37,14 +37,19 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		jsonResp, err := json.Marshal(new(dto.UserDTO).FromModel(user))
+		userDto := new(dto.UserDTO).FromModel(user)
+		slog.Info("UserDTO", userDto.Slog())
+		jsonResp, err := json.Marshal(userDto)
 		if err != nil {
-			panic(err)
+			slog.Error("unmarshalling user dto", slog.String("error", err.Error()), userDto.Slog())
+			http.Error(w, "Failed to marshal user dto", http.StatusInternalServerError)
+			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		if _, err := w.Write(jsonResp); err != nil {
-			panic(err)
+			slog.Error("writing response", slog.String("error", err.Error()))
+			return
 		}
 	}
 }

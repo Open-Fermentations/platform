@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"log/slog"
 	"open-fermentations/internal/model"
 	"time"
 
@@ -21,4 +22,14 @@ func (u *UserDTO) FromModel(m *model.User) *UserDTO {
 	u.Modified = m.Modified
 
 	return u
+}
+
+func (u *UserDTO) Slog() slog.Attr {
+	return slog.Group(
+		"user",
+		slog.String("id", u.ID.String()),
+		slog.String("username", u.Username),
+		slog.Time("created", u.Created),
+		slog.Time("modified", u.Modified),
+	)
 }
