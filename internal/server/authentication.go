@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -31,23 +30,14 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Fetch user by the username provided in the body
-		user, err := s.db.Queries().GetUserByUsernameWithPassword(context.Background(), b.Username)
+		user, err := s.svc.Login(b.Username, b.Password)
 		if err != nil {
-			slog.Error("failed to find user", slog.String("error", err.Error()))
-			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			slog.Error("authenticating user", slog.String("error", err.Error()))
+			http.Error(w, "Failed to authenticate user", http.StatusUnauthorized)
 			return
 		}
 
-		// NOTE: You must compare the password here with a hashed version stored in the database.
-		// For now, we just check if the retrieved user model has a dummy password match for demonstration.
-		if user.Password != b.Password { // Replace with actual password comparison logic!
-			slog.Info("login failed: incorrect password", slog.String("user", b.Username))
-			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-			return
-		}
-
-		jsonResp, err := json.Marshal(new(dto.UserDTO).FromModel(&user))
+		jsonResp, err := json.Marshal(new(dto.UserDTO).FromModel(user))
 		if err != nil {
 			panic(err)
 		}
