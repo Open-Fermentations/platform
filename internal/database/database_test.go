@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"open-fermentations/internal/env"
+	"strconv" // Import strconv for the suggested changes
 	"testing"
 	"time"
 
@@ -92,7 +93,10 @@ func TestMain(m *testing.M) {
 
 func TestNew(t *testing.T) {
 	env := setupEnv()
-	srv := New(env)
+	srv, err := New(env)
+	if err != nil {
+		t.Fatalf("Error creating database service: %v", err.Error())
+	}
 	if srv == nil {
 		t.Fatal("New() returned nil")
 	}
@@ -100,28 +104,36 @@ func TestNew(t *testing.T) {
 
 func TestHealth(t *testing.T) {
 	env := setupEnv()
-	srv := New(env)
+	srv, err := New(env)
+	if err != nil {
+		t.Fatalf("Error creating database service: %v", err.Error())
+	}
 
 	stats := srv.Health()
 
-	if stats["status"] != "up" {
-		t.Fatalf("expected status to be up, got %s", stats["status"])
+	// The Health function now returns connection statistics, not fixed status strings.
+	expectedKeys := []string{"connections", "idle_connections", "max_connections", "total_connections", "new_connections"}
+	if len(stats) != len(expectedKeys) {
+		t.Fatalf("Expected %d stats keys, got %d.", len(expectedKeys), len(stats))
 	}
 
-	if _, ok := stats["error"]; ok {
-		t.Fatalf("expected error not to be present")
-	}
-
-	if stats["message"] != "It's healthy" {
-		t.Fatalf("expected message to be 'It's healthy', got %s", stats["message"])
+	for _, key := range expectedKeys {
+		if _, ok := stats[key]; !ok {
+			t.Fatalf("Missing expected health stat key: %s", key)
+		}
+		// Basic check that the value is a non-negative integer string
+		if _, err := strconv.Atoi(stats[key]); err != nil {
+			t.Errorf("Stat key %s has invalid integer value: %s", key, stats[key])
+		}
 	}
 }
 
 func TestClose(t *testing.T) {
 	env := setupEnv()
-	srv := New(env)
-
-	if srv.Close() != nil {
-		t.Fatalf("expected Close() to return nil")
+	srv, err := New(env)
+	if err != nil {
+		t.Fatalf("Error creating database service: %v", err.Error())
 	}
+
+	srv.Close()
 }

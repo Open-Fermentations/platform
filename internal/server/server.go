@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -18,11 +19,16 @@ type Server struct {
 	db     database.Service
 }
 
-func NewServer(env *env.Env) *http.Server {
+func NewServer(env *env.Env) (*http.Server, error) {
+	db, err := database.New(env)
+	if err != nil {
+		slog.Error("failed setting up database service", slog.String("error", err.Error()))
+		return nil, err
+	}
 	NewServer := &Server{
 		env:    env,
 		logger: logger.New(env),
-		db:     database.New(env),
+		db:     db,
 	}
 
 	// Declare Server config
@@ -34,5 +40,5 @@ func NewServer(env *env.Env) *http.Server {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	return server
+	return server, nil
 }

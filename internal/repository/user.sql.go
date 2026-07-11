@@ -27,10 +27,35 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
-const getUserByUsername = `-- name: GetUserByUsername :one
+const getUserById = `-- name: GetUserById :one
 select id, username, created, modified
 from "user"
 where id = $1
+`
+
+type GetUserByIdRow struct {
+	ID       uuid.UUID `json:"id"`
+	Username string    `json:"username"`
+	Created  time.Time `json:"created"`
+	Modified time.Time `json:"modified"`
+}
+
+func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error) {
+	row := q.db.QueryRow(ctx, getUserById, id)
+	var i GetUserByIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Created,
+		&i.Modified,
+	)
+	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+select id, username, created, modified
+from "user"
+where username = $1
 `
 
 type GetUserByUsernameRow struct {
@@ -40,8 +65,8 @@ type GetUserByUsernameRow struct {
 	Modified time.Time `json:"modified"`
 }
 
-func (q *Queries) GetUserByUsername(ctx context.Context, id uuid.UUID) (GetUserByUsernameRow, error) {
-	row := q.db.QueryRow(ctx, getUserByUsername, id)
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
 	var i GetUserByUsernameRow
 	err := row.Scan(
 		&i.ID,
