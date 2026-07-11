@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"open-fermentations/internal/env"
-	"open-fermentations/internal/logger"
 	"open-fermentations/internal/repository"
 	"strconv"
 
@@ -28,7 +28,6 @@ type Service interface {
 
 type service struct {
 	env     *env.Env
-	logger  logger.Logger
 	queries *repository.Queries
 	dbpool  *pgxpool.Pool
 }
@@ -41,8 +40,6 @@ func (s service) Queries() *repository.Queries {
 var dbInstance *service
 
 func New(env *env.Env) (Service, error) {
-	logger := logger.New(env)
-	// Reuse Connection
 	if dbInstance != nil {
 		return dbInstance, nil
 	}
@@ -55,7 +52,6 @@ func New(env *env.Env) (Service, error) {
 		env.Database.DbName,
 		env.Database.Schema,
 	)
-	fmt.Println(connStr)
 
 	pool, err := pgxpool.New(context.Background(), connStr)
 	if err != nil {
@@ -63,8 +59,6 @@ func New(env *env.Env) (Service, error) {
 	}
 
 	dbInstance = &service{
-
-		logger:  logger,
 		env:     env,
 		dbpool:  pool,
 		queries: repository.New(pool),
@@ -87,6 +81,6 @@ func (s *service) Health() map[string]string {
 }
 
 func (s *service) Close() {
-	s.logger.Infof("Disconnected from database: %s", s.env.Database.DbName)
+	slog.Info("disconnected from database", slog.String("database", s.env.Database.DbName))
 	s.dbpool.Close()
 }

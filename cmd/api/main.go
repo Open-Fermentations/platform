@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"log/slog"
 	"net/http"
 	"os/signal"
@@ -21,7 +20,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	// Listen for the interrupt signal.
 	<-ctx.Done()
 
-	log.Println("shutting down gracefully, press Ctrl+C again to force")
+	slog.Info("shutting down gracefully, press Ctrl+C again to force")
 	stop() // Allow Ctrl+C to force shutdown
 
 	// The context is used to inform the server it has 5 seconds to finish
@@ -29,10 +28,10 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := apiServer.Shutdown(ctx); err != nil {
-		slog.Error("Server forced to shutdown", slog.String("error", err.Error()))
+		slog.Error("server forced to shutdown", slog.String("error", err.Error()))
 	}
 
-	log.Println("Server exiting")
+	slog.Info("server exiting")
 
 	// Notify the main goroutine that the shutdown is complete
 	done <- true
@@ -47,7 +46,7 @@ func main() {
 		panic(err)
 	}
 
-	slog.Info("Server started")
+	slog.Info("server started", slog.Int("port", env.Port))
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
@@ -63,5 +62,5 @@ func main() {
 
 	// Wait for the graceful shutdown to complete
 	<-done
-	slog.Info("Graceful shutdown complete")
+	slog.Info("graceful shutdown complete")
 }

@@ -10,13 +10,11 @@ import (
 
 	"open-fermentations/internal/database"
 	"open-fermentations/internal/env"
-	"open-fermentations/internal/logger"
 )
 
 type Server struct {
-	env    *env.Env
-	logger logger.Logger
-	db     database.Service
+	env *env.Env
+	db  database.Service
 }
 
 func NewServer(env *env.Env) (*http.Server, error) {
@@ -26,9 +24,8 @@ func NewServer(env *env.Env) (*http.Server, error) {
 		return nil, err
 	}
 	NewServer := &Server{
-		env:    env,
-		logger: logger.New(env),
-		db:     db,
+		env: env,
+		db:  db,
 	}
 
 	// Declare Server config

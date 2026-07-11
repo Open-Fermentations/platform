@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"fmt"
@@ -15,6 +16,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	// Register routes
 	mux.HandleFunc("/", s.HelloWorldHandler)
+	mux.HandleFunc("/login", s.LoginHandler)
 
 	mux.HandleFunc("/health", s.healthHandler)
 
@@ -52,7 +54,7 @@ func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if _, err := w.Write(jsonResp); err != nil {
-		s.logger.Errorf("Failed to write response: %v", err)
+		slog.Error("failed to write response", slog.String("error", err.Error()))
 	}
 }
 
@@ -64,7 +66,7 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if _, err := w.Write(resp); err != nil {
-		s.logger.Errorf("Failed to write response: %v", err)
+		slog.Error("failed to write response", slog.String("error", err.Error()))
 	}
 }
 
@@ -82,7 +84,7 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		payload := fmt.Sprintf("server timestamp: %d", time.Now().UnixNano())
 		if err := socket.Write(socketCtx, websocket.MessageText, []byte(payload)); err != nil {
-			s.logger.Errorf("Failed to write to socket: %v", err)
+			slog.Error("failed to write to socket", slog.String("error", err.Error()))
 			break
 		}
 		time.Sleep(2 * time.Second)
