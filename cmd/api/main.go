@@ -40,7 +40,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 func main() {
 	env := env.GetEnv()
 
-	server, err := server.NewServer(env)
+	server, err := server.NewServer(context.Background(), env)
 	if err != nil {
 		slog.Error("setting up new server", slog.String("error", err.Error()))
 		panic(err)

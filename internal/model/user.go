@@ -1,4 +1,4 @@
-package dto
+package model
 
 import (
 	"open-fermentations/internal/repository"
@@ -7,16 +7,18 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserDTO struct {
+type User struct {
 	ID       uuid.UUID `json:"id"`
 	Username string    `json:"username"`
+	Password string    `json:"password"`
 	Created  time.Time `json:"created"`
 	Modified time.Time `json:"modified"`
 }
 
-func (u *UserDTO) FromModel(m *repository.GetUserByUsernameWithPasswordRow) *UserDTO {
+func (u *User) FromUsernameWithPasswordRow(m *repository.GetUserByUsernameWithPasswordRow) *User {
 	u.ID = m.ID
 	u.Username = m.Username
+	u.Password = m.Password
 	u.Created = m.Created
 	u.Modified = m.Modified
 
