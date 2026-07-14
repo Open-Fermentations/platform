@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/env"
-	"open-fermentations/internal/repository"
 	"strconv"
 
 	// Added import for pgx.Row usage in suggested edit logic
@@ -16,7 +16,7 @@ import (
 
 // Service represents a service that interacts with a database.
 type Service interface {
-	Queries() *repository.Queries
+	Queries() *sqlc.Queries
 	// Health returns a map of health status information.
 	// The keys and values in the map are service-specific.
 	Health() map[string]string
@@ -28,12 +28,12 @@ type Service interface {
 
 type service struct {
 	env     *env.Env
-	queries *repository.Queries
+	queries *sqlc.Queries
 	dbpool  *pgxpool.Pool
 }
 
 // Queries implements [Service].
-func (s service) Queries() *repository.Queries {
+func (s service) Queries() *sqlc.Queries {
 	return s.queries
 }
 
@@ -61,7 +61,7 @@ func New(env *env.Env) (Service, error) {
 	dbInstance = &service{
 		env:     env,
 		dbpool:  pool,
-		queries: repository.New(pool),
+		queries: sqlc.New(pool),
 	}
 	return dbInstance, nil
 }

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"open-fermentations/internal/repository"
+	"open-fermentations/internal/database/sqlc"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,7 +15,7 @@ type User struct {
 	Modified time.Time `json:"modified"`
 }
 
-func (u *User) FromUsernameWithPasswordRow(m *repository.GetUserByUsernameWithPasswordRow) *User {
+func (u *User) FromUsernameWithPasswordRow(m *sqlc.GetUserByUsernameWithPasswordRow) *User {
 	u.ID = m.ID
 	u.Username = m.Username
 	u.Password = m.Password
