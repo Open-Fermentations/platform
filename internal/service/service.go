@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log/slog"
 	"open-fermentations/internal/database"
 	"open-fermentations/internal/env"
 	"open-fermentations/internal/model"
@@ -28,6 +29,7 @@ func New(ctx context.Context, env *env.Env, dbService database.Service) *service
 			db:  dbService,
 			ctx: ctx,
 		}
+		slog.Info("Service instance instantiated")
 	}
 
 	return serviceInstance

@@ -11,6 +11,7 @@ import (
 
 	"open-fermentations/internal/database"
 	"open-fermentations/internal/env"
+	"open-fermentations/internal/logging"
 	"open-fermentations/internal/service"
 )
 
@@ -24,7 +25,7 @@ type Server struct {
 func NewServer(ctx context.Context, env *env.Env) (*http.Server, error) {
 	db, err := database.New(env)
 	if err != nil {
-		slog.Error("failed setting up database service", slog.String("error", err.Error()))
+		slog.Error("failed setting up database service", logging.Err(err))
 		return nil, err
 	}
 	newServer := &Server{
@@ -40,6 +41,8 @@ func NewServer(ctx context.Context, env *env.Env) (*http.Server, error) {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
+
+	slog.Info("Server instantiated")
 
 	return server, nil
 }
