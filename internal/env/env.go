@@ -1,8 +1,8 @@
 package env
 
 import (
-	"fmt"
-	"log"
+	"log/slog"
+	"open-fermentations/internal/logging"
 	"os"
 	"strconv"
 )
@@ -51,12 +51,19 @@ type MqttEnv struct {
 	ClientID string
 }
 
+type JwtEnv struct {
+	Key    string
+	Issuer string
+}
+
 type Env struct {
-	Port     int
-	AppEnv   AppEnv
-	LogLevel LogLevel
-	Database DatabaseEnv
-	Mqtt     MqttEnv
+	Port         int
+	AppEnv       AppEnv
+	LogLevel     LogLevel
+	Database     DatabaseEnv
+	Mqtt         MqttEnv
+	Jwt          JwtEnv
+	CookieSecure bool
 }
 
 var env *Env
@@ -71,45 +78,88 @@ func GetEnv() *Env {
 }
 
 func RefreshEnvironmentVariables() {
-	env.Port = getIntValue("PORT")
+	env.Port = getIntValue("PORT", 8080)
 	env.AppEnv = handleAppEnv("APP_ENV")
 	env.LogLevel = handleLogLevel("LOG_LEVEL")
 
-	env.Database.Host = getStringValue("DB_HOST")
-	env.Database.Port = getStringValue("DB_PORT")
-	env.Database.User = getStringValue("DB_USERNAME")
-	env.Database.Password = getStringValue("DB_PASSWORD")
-	env.Database.DbName = getStringValue("DB_DATABASE")
-	env.Database.Schema = getStringValue("DB_SCHEMA")
+	env.Jwt.Key = getStringValue("JWT_KEY", "")
+	env.Jwt.Issuer = getStringValue("JWT_ISSUER", "open-fermentations")
 
-	env.Mqtt.Port = getStringValue("MQTT_PORT")
-	env.Mqtt.WsPort = getStringValue("MQTT_WS_PORT")
-	env.Mqtt.Host = getStringValue("MQTT_HOST")
-	env.Mqtt.User = getStringValue("MQTT_USER")
-	env.Mqtt.Password = getStringValue("MQTT_PASSWORD")
-	env.Mqtt.ClientID = getStringValue("MQTT_CLIENT_ID")
+	env.CookieSecure = getBoolValue("COOKIE_SECURE", true)
+
+	env.Database.Host = getStringValue("DB_HOST", "localhost")
+	env.Database.Port = getStringValue("DB_PORT", "5432")
+	env.Database.User = getStringValue("DB_USERNAME", "ferment")
+	env.Database.Password = getStringValue("DB_PASSWORD", "password1234")
+	env.Database.DbName = getStringValue("DB_DATABASE", "open-fermentations")
+	env.Database.Schema = getStringValue("DB_SCHEMA", "public")
+
+	env.Mqtt.Port = getStringValue("MQTT_PORT", "todo")
+	env.Mqtt.WsPort = getStringValue("MQTT_WS_PORT", "todo")
+	env.Mqtt.Host = getStringValue("MQTT_HOST", "mqtt")
+	env.Mqtt.User = getStringValue("MQTT_USER", "platform")
+	env.Mqtt.Password = getStringValue("MQTT_PASSWORD", "password1234")
+	env.Mqtt.ClientID = getStringValue("MQTT_CLIENT_ID", "open-fermentations")
 }
 
-func getStringValue(key string) string {
-	e := os.Getenv(key)
-	if e == "" {
-		panic(fmt.Sprintf("%v was not defined in environment variables", key))
+func getStringValue(key string, def string) string {
+	e, ok := os.LookupEnv(key)
+	if !ok {
+		slog.Warn("environment variable default",
+			slog.String("key", key),
+			slog.String("default", def))
+		return def
 	}
 
 	return e
 }
 
-func getIntValue(key string) int {
-	e := os.Getenv(key)
+func getIntValue(key string, def int) int {
+	e, ok := os.LookupEnv(key)
+	if !ok {
+		slog.Warn("environment variable default",
+			slog.String("key", key),
+			slog.Int("default", def))
+		return def
+	}
+
 	value, err := strconv.Atoi(e)
 	if err != nil {
-		panic(err)
+		slog.Warn("environment variable: parse int",
+			slog.String("key", key),
+			slog.String("value", e),
+			slog.Int("default", def),
+			logging.Err(err))
+		return def
 	}
 
 	return value
 }
 
+func getBoolValue(key string, def bool) bool {
+	e, ok := os.LookupEnv(key)
+	if !ok {
+		slog.Warn("environment variable default",
+			slog.String("key", key),
+			slog.Bool("default", def))
+		return def
+	}
+
+	val, err := strconv.ParseBool(e)
+	if err != nil {
+		slog.Warn("environment variable: parse bool",
+			slog.String("key", key),
+			slog.String("value", e),
+			slog.Bool("default", def),
+			logging.Err(err))
+		return def
+	}
+
+	return val
+}
+
 func handleAppEnv(key string) AppEnv {
+	def := AppEnvEnum.Dev
 	value := os.Getenv(key)
 	switch value {
 	case string(AppEnvEnum.Dev):
@@ -118,8 +168,10 @@ func handleAppEnv(key string) AppEnv {
 		return AppEnvEnum.Prod
 	}
 
-	log.Printf("No environment variable was set in %v defaulting to %v", key, AppEnvEnum.Dev)
-	return AppEnvEnum.Dev
+	slog.Info("Defaulting",
+		slog.String("key", key),
+		slog.String("default", string(def)))
+	return def
 }
 
 func handleLogLevel(key string) LogLevel {
@@ -134,7 +186,9 @@ func handleLogLevel(key string) LogLevel {
 	case string(LogLevelEnum.Error):
 		return LogLevelEnum.Error
 	default:
-		log.Printf("Log level defaulted to 'info'. Value provided is not recognized by system: '%s'", value)
+		slog.Info("Defaulting",
+			slog.String("key", key),
+			slog.String("default", string(LogLevelEnum.Info)))
 		return LogLevelEnum.Info
 	}
 }
