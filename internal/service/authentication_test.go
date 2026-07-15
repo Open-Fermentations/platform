@@ -22,7 +22,7 @@ type testContext struct {
 	mockSqlc *mocksqlc.MockQuerier
 }
 
-func setupContext(t *testing.T) (*testContext, func()) {
+func setupContext(t *testing.T) *testContext {
 	m := mockdatabase.NewMockService(t)
 	mSqlc := mocksqlc.NewMockQuerier(t)
 
@@ -34,9 +34,20 @@ func setupContext(t *testing.T) (*testContext, func()) {
 		svc:      New(t.Context(), &env.Env{}, m),
 	}
 
-	return &c, func() {
-		// Set the service instance to nil in order to recreate it
-		serviceInstance = nil
+	return &c
+}
+
+func (c *testContext) afterEach(t *testing.T) {
+	// Set the service instance to nil in order to recreate it
+	serviceInstance = nil
+}
+
+func testCase(test func(t *testing.T, c *testContext)) func(*testing.T) {
+	return func(t *testing.T) {
+		c := setupContext(t)
+		// before each goes here
+		defer c.afterEach(t)
+		test(t, c)
 	}
 }
 
@@ -48,10 +59,8 @@ func Test_Login(t *testing.T) {
 	}
 
 	t.Run("with db.GetUserByUsernameWithPassword returning an error",
-		func(t *testing.T) {
+		testCase(func(t *testing.T, c *testContext) {
 			u := "non-existent-username"
-			c, teardown := setupContext(t)
-			defer teardown()
 			c.mockSqlc.EXPECT().
 				GetUserByUsernameWithPassword(mock.Anything, u).
 				Once().
@@ -60,12 +69,10 @@ func Test_Login(t *testing.T) {
 			usr, err := c.svc.Login(u, "")
 			assert.Nil(t, usr)
 			assert.ErrorIs(t, err, ErrMock)
-		})
+		}))
 
 	t.Run("with an incorrect password, should return ErrInvalidCredentialsErr",
-		func(t *testing.T) {
-			c, teardown := setupContext(t)
-			defer teardown()
+		testCase(func(t *testing.T, c *testContext) {
 			c.mockSqlc.EXPECT().
 				GetUserByUsernameWithPassword(mock.Anything, mockUser.Username).
 				Once().
@@ -76,12 +83,10 @@ func Test_Login(t *testing.T) {
 			var invalidCredentialsErr ErrInvalidCredentials
 			assert.ErrorAs(t, err, &invalidCredentialsErr)
 			assert.EqualValues(t, invalidCredentialsErr.Username, mockUser.Username)
-		})
+		}))
 
 	t.Run("with correct password, should return model.User",
-		func(t *testing.T) {
-			c, teardown := setupContext(t)
-			defer teardown()
+		testCase(func(t *testing.T, c *testContext) {
 			c.mockSqlc.EXPECT().
 				GetUserByUsernameWithPassword(mock.Anything, mockUser.Username).
 				Once().
@@ -90,5 +95,5 @@ func Test_Login(t *testing.T) {
 			usr, err := c.svc.Login(mockUser.Username, "admin")
 			assert.Nil(t, err)
 			assert.EqualValues(t, mockUser.Username, usr.Username)
-		})
+		}))
 }
