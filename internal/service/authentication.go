@@ -9,7 +9,7 @@ import (
 
 // Login implements [Service].
 func (s service) Login(username string, password string) (*model.User, error) {
-	u, err := s.db.Queries().GetUserByUsernameWithPassword(s.ctx, username)
+	u, err := s.db.Querier().GetUserByUsernameWithPassword(s.ctx, username)
 	if err != nil {
 		return nil, err
 	}

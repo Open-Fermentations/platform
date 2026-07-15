@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	// Added import for pgx.Row usage in suggested edit logic
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/joho/godotenv/autoload"
@@ -16,7 +17,6 @@ import (
 
 // Service represents a service that interacts with a database.
 type Service interface {
-	Queries() *sqlc.Queries
 	// Health returns a map of health status information.
 	// The keys and values in the map are service-specific.
 	Health() map[string]string
@@ -24,18 +24,22 @@ type Service interface {
 	// Close terminates the database connection.
 	// It returns an error if the connection cannot be closed.
 	Close()
+
+	Querier() sqlc.Querier
 }
 
 type service struct {
 	env     *env.Env
-	queries *sqlc.Queries
+	queries sqlc.Querier
 	dbpool  *pgxpool.Pool
 }
 
-// Queries implements [Service].
-func (s service) Queries() *sqlc.Queries {
+// Querier implements [Service].
+func (s service) Querier() sqlc.Querier {
 	return s.queries
 }
+
+var _ Service = service{}
 
 var dbInstance *service
 
@@ -68,7 +72,7 @@ func New(env *env.Env) (Service, error) {
 
 // Health checks the health of the database connection by pinging the database.
 // It returns a map with keys indicating various health statistics.
-func (s *service) Health() map[string]string {
+func (s service) Health() map[string]string {
 	stats := s.dbpool.Stat()
 
 	return map[string]string{
@@ -80,7 +84,7 @@ func (s *service) Health() map[string]string {
 	}
 }
 
-func (s *service) Close() {
+func (s service) Close() {
 	slog.Info("disconnected from database", slog.String("database", s.env.Database.DbName))
 	s.dbpool.Close()
 }
