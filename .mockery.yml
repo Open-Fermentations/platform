@@ -37,5 +37,10 @@ packages:
       dir: "internal/testing/mocks/{{.SrcPackageName}}"
       all: true
       filename: "{{.InterfaceName}}_mock.go"
+  open-fermentations/internal/service:
+    config:
+      dir: "internal/testing/mocks/{{.SrcPackageName}}"
+      all: true
+      filename: "{{.InterfaceName}}_mock.go"
   
 
