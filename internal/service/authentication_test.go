@@ -5,6 +5,7 @@ import (
 	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/env"
 	mockdatabase "open-fermentations/internal/testing/mocks/database"
+	mocksqlc "open-fermentations/internal/testing/mocks/database/sqlc"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,18 +17,27 @@ var (
 )
 
 type testContext struct {
-	svc    Service
-	mockDb *mockdatabase.MockService
+	svc      Service
+	mockDb   *mockdatabase.MockService
+	mockSqlc *mocksqlc.MockQuerier
 }
 
-func setupContext(t *testing.T) *testContext {
+func setupContext(t *testing.T) (*testContext, func()) {
 	m := mockdatabase.NewMockService(t)
+	mSqlc := mocksqlc.NewMockQuerier(t)
+
+	m.EXPECT().Querier().Return(mSqlc)
+
 	c := testContext{
-		mockDb: m,
-		svc:    New(t.Context(), &env.Env{}, m),
+		mockDb:   m,
+		mockSqlc: mSqlc,
+		svc:      New(t.Context(), &env.Env{}, m),
 	}
 
-	return &c
+	return &c, func() {
+		// Set the service instance to nil in order to recreate it
+		serviceInstance = nil
+	}
 }
 
 func Test_Login(t *testing.T) {
@@ -40,8 +50,9 @@ func Test_Login(t *testing.T) {
 	t.Run("with db.GetUserByUsernameWithPassword returning an error",
 		func(t *testing.T) {
 			u := "non-existent-username"
-			c := setupContext(t)
-			c.mockDb.EXPECT().
+			c, teardown := setupContext(t)
+			defer teardown()
+			c.mockSqlc.EXPECT().
 				GetUserByUsernameWithPassword(mock.Anything, u).
 				Once().
 				Return(sqlc.GetUserByUsernameWithPasswordRow{}, ErrMock)
@@ -53,8 +64,9 @@ func Test_Login(t *testing.T) {
 
 	t.Run("with an incorrect password, should return ErrInvalidCredentialsErr",
 		func(t *testing.T) {
-			c := setupContext(t)
-			c.mockDb.EXPECT().
+			c, teardown := setupContext(t)
+			defer teardown()
+			c.mockSqlc.EXPECT().
 				GetUserByUsernameWithPassword(mock.Anything, mockUser.Username).
 				Once().
 				Return(mockUser, nil)
@@ -68,8 +80,9 @@ func Test_Login(t *testing.T) {
 
 	t.Run("with correct password, should return model.User",
 		func(t *testing.T) {
-			c := setupContext(t)
-			c.mockDb.EXPECT().
+			c, teardown := setupContext(t)
+			defer teardown()
+			c.mockSqlc.EXPECT().
 				GetUserByUsernameWithPassword(mock.Anything, mockUser.Username).
 				Once().
 				Return(mockUser, nil)
