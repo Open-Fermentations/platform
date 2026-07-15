@@ -15,11 +15,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type LoginBody struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		rawBody, err := io.ReadAll(r.Body)
@@ -29,7 +24,7 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var b LoginBody
+		var b dto.LoginBody
 
 		if err := json.Unmarshal(rawBody, &b); err != nil {
 			slog.Error("unmarshalling login body", logging.Err(err))
@@ -79,7 +74,7 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		http.SetCookie(w, cookie)
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", ContentTypeJSON)
 		w.WriteHeader(http.StatusOK)
 		if _, err := w.Write(jsonResp); err != nil {
 			slog.Error("writing response", slog.String("error", err.Error()))

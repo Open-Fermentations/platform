@@ -1,11 +1,13 @@
 package server
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"open-fermentations/internal/dto"
 	"open-fermentations/internal/env"
 	"open-fermentations/internal/model"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,9 +23,13 @@ func TestLoginHandler(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(c.s.LoginHandler))
 			defer server.Close()
 
-			json := `{"username":"admin","password":"admin"}`
+			usr := dto.LoginBody{
+				Username: "admin",
+				Password: "admin",
+			}
+			json, _ := json.Marshal(usr)
 
-			resp, err := http.Post(server.URL, "application/json", strings.NewReader(json))
+			resp, err := http.Post(server.URL, ContentTypeJSON, bytes.NewReader(json))
 			if err != nil {
 				t.Fatalf("error making reuqest to server. Err: %v", err.Error())
 			}

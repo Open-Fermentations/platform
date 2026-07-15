@@ -11,6 +11,10 @@ import (
 	"github.com/coder/websocket"
 )
 
+const (
+	ContentTypeJSON = "application/json"
+)
+
 func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 
