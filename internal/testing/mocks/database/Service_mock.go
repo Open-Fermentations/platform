@@ -116,48 +116,48 @@ func (_c *MockService_Health_Call) RunAndReturn(run func() map[string]string) *M
 	return _c
 }
 
-// Queries provides a mock function for the type MockService
-func (_mock *MockService) Queries() *sqlc.Queries {
+// Querier provides a mock function for the type MockService
+func (_mock *MockService) Querier() sqlc.Querier {
 	ret := _mock.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for Queries")
+		panic("no return value specified for Querier")
 	}
 
-	var r0 *sqlc.Queries
-	if returnFunc, ok := ret.Get(0).(func() *sqlc.Queries); ok {
+	var r0 sqlc.Querier
+	if returnFunc, ok := ret.Get(0).(func() sqlc.Querier); ok {
 		r0 = returnFunc()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*sqlc.Queries)
+			r0 = ret.Get(0).(sqlc.Querier)
 		}
 	}
 	return r0
 }
 
-// MockService_Queries_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Queries'
-type MockService_Queries_Call struct {
+// MockService_Querier_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Querier'
+type MockService_Querier_Call struct {
 	*mock.Call
 }
 
-// Queries is a helper method to define mock.On call
-func (_e *MockService_Expecter) Queries() *MockService_Queries_Call {
-	return &MockService_Queries_Call{Call: _e.mock.On("Queries")}
+// Querier is a helper method to define mock.On call
+func (_e *MockService_Expecter) Querier() *MockService_Querier_Call {
+	return &MockService_Querier_Call{Call: _e.mock.On("Querier")}
 }
 
-func (_c *MockService_Queries_Call) Run(run func()) *MockService_Queries_Call {
+func (_c *MockService_Querier_Call) Run(run func()) *MockService_Querier_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run()
 	})
 	return _c
 }
 
-func (_c *MockService_Queries_Call) Return(queries *sqlc.Queries) *MockService_Queries_Call {
-	_c.Call.Return(queries)
+func (_c *MockService_Querier_Call) Return(querier sqlc.Querier) *MockService_Querier_Call {
+	_c.Call.Return(querier)
 	return _c
 }
 
-func (_c *MockService_Queries_Call) RunAndReturn(run func() *sqlc.Queries) *MockService_Queries_Call {
+func (_c *MockService_Querier_Call) RunAndReturn(run func() sqlc.Querier) *MockService_Querier_Call {
 	_c.Call.Return(run)
 	return _c
 }
