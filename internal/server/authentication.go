@@ -42,6 +42,17 @@ func parseCookie(cookie string) map[string]string {
 	return parsedCookie
 }
 
+func generateCookie(key, token string, dur time.Duration, secure bool) *http.Cookie {
+	return &http.Cookie{
+		Name:     key,
+		Value:    token,
+		Path:     "/",
+		Expires:  time.Now().Add(dur),
+		HttpOnly: true,
+		Secure:   secure,
+	}
+}
+
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	rawBody, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -88,14 +99,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	cookie := &http.Cookie{
-		Name:     s.env.Cookie.Key,
-		Value:    token,
-		Path:     "/",
-		Expires:  time.Now().Add(s.env.Cookie.Duration),
-		HttpOnly: true,
-		Secure:   s.env.Cookie.Secure,
-	}
+	cookie := generateCookie(s.env.Cookie.Key, token, s.env.Cookie.Duration, s.env.Cookie.Secure)
 	http.SetCookie(w, cookie)
 
 	w.Header().Set("Content-Type", ContentTypeJSON)
