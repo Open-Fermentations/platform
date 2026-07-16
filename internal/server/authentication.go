@@ -16,71 +16,86 @@ import (
 )
 
 func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		rawBody, err := io.ReadAll(r.Body)
-		if err != nil {
-			slog.Error("failed to read request body", slog.String("error", err.Error()))
-			http.Error(w, "Failed to read request body", http.StatusBadRequest)
-			return
+	rawBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		slog.Error("failed to read request body", slog.String("error", err.Error()))
+		http.Error(w, "Failed to read request body", http.StatusBadRequest)
+		return
+	}
+
+	var b dto.LoginBody
+
+	if err := json.Unmarshal(rawBody, &b); err != nil {
+		slog.Error("unmarshalling login body", logging.Err(err))
+		http.Error(w, "Failed to unmarshal login body", http.StatusBadRequest)
+		return
+	}
+
+	user, err := s.svc.Login(b.Username, b.Password)
+	if err != nil {
+
+		if errors.Is(err, service.ErrInvalidCredentials{}) {
+			slog.Error("We got our error we were looking for")
 		}
 
-		var b dto.LoginBody
-
-		if err := json.Unmarshal(rawBody, &b); err != nil {
-			slog.Error("unmarshalling login body", logging.Err(err))
-			http.Error(w, "Failed to unmarshal login body", http.StatusBadRequest)
-			return
+		var invalidCredentialError service.ErrInvalidCredentials
+		if errors.As(err, &invalidCredentialError) {
+			slog.Error("login", invalidCredentialError.SlogErr(err)...)
+		} else {
+			slog.Error("authenticating user", logging.Err(err))
 		}
+		http.Error(w, "Failed to authenticate user", http.StatusUnauthorized)
+		return
+	}
 
-		user, err := s.svc.Login(b.Username, b.Password)
-		if err != nil {
+	userDto := new(dto.UserDTO).FromModel(user)
+	jsonResp, err := json.Marshal(userDto)
+	if err != nil {
+		slog.Error("unmarshalling user dto", []any{logging.Err(err), userDto.Slog()}...)
+		http.Error(w, "Failed to marshal user dto", http.StatusInternalServerError)
+		return
+	}
 
-			if errors.Is(err, service.ErrInvalidCredentials{}) {
-				slog.Error("We got our error we were looking for")
-			}
+	token, err := generateJwt([]byte(s.env.Jwt.Key), user)
+	if err != nil {
+		panic(err)
+	}
 
-			var invalidCredentialError service.ErrInvalidCredentials
-			if errors.As(err, &invalidCredentialError) {
-				slog.Error("login", invalidCredentialError.SlogErr(err)...)
-			} else {
-				slog.Error("authenticating user", logging.Err(err))
-			}
-			http.Error(w, "Failed to authenticate user", http.StatusUnauthorized)
-			return
-		}
+	expiry := time.Now().Add(30 * time.Minute)
 
-		userDto := new(dto.UserDTO).FromModel(user)
-		jsonResp, err := json.Marshal(userDto)
-		if err != nil {
-			slog.Error("unmarshalling user dto", []any{logging.Err(err), userDto.Slog()}...)
-			http.Error(w, "Failed to marshal user dto", http.StatusInternalServerError)
-			return
-		}
+	cookie := &http.Cookie{
+		Name:     "auth_token",
+		Value:    token,
+		Path:     "/",
+		Expires:  expiry,
+		HttpOnly: true,
+		Secure:   s.env.CookieSecure,
+	}
+	http.SetCookie(w, cookie)
 
-		token, err := generateJwt([]byte(s.env.Jwt.Key), user)
-		if err != nil {
-			panic(err)
-		}
+	w.Header().Set("Content-Type", ContentTypeJSON)
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(jsonResp); err != nil {
+		slog.Error("writing response", slog.String("error", err.Error()))
+		return
+	}
+}
 
-		expiry := time.Now().Add(30 * time.Minute)
+func (s *Server) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:     "auth_token",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+		Secure:   s.env.CookieSecure,
+	}
+	http.SetCookie(w, cookie)
 
-		cookie := &http.Cookie{
-			Name:     "auth_token",
-			Value:    token,
-			Path:     "/",
-			Expires:  expiry,
-			HttpOnly: true,
-			Secure:   s.env.CookieSecure,
-		}
-		http.SetCookie(w, cookie)
-
-		w.Header().Set("Content-Type", ContentTypeJSON)
-		w.WriteHeader(http.StatusOK)
-		if _, err := w.Write(jsonResp); err != nil {
-			slog.Error("writing response", slog.String("error", err.Error()))
-			return
-		}
-
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write([]byte("")); err != nil {
+		slog.Error("writing response", slog.String("error", err.Error()))
+		return
 	}
 }
 

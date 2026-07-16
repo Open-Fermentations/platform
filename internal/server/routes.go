@@ -15,14 +15,27 @@ const (
 	ContentTypeJSON = "application/json"
 )
 
+const ServerPrefix = "/api"
+
+func registerServerPrefixedRoute(mux *http.ServeMux, method, route string, handler http.HandlerFunc) {
+	registerRoute(mux, method, fmt.Sprintf("%v%v", ServerPrefix, route), handler)
+}
+
+func registerRoute(mux *http.ServeMux, method, route string, handler http.HandlerFunc) {
+	slog.Info("Registering route", slog.String("method", method), slog.String("route", route))
+	mux.HandleFunc(fmt.Sprintf("%v %v", method, route), handler)
+}
+
 func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 
 	// Register routes
-	mux.HandleFunc("/login", s.LoginHandler)
+	registerServerPrefixedRoute(mux, http.MethodPost, "/login", s.LoginHandler)
+	registerServerPrefixedRoute(mux, http.MethodGet, "/logout", s.LogoutHandler)
 
-	mux.HandleFunc("/health", s.healthHandler)
+	registerRoute(mux, http.MethodGet, "/health", s.healthHandler)
 
+	slog.Info("Registering route", slog.String("route", "/websocket"))
 	mux.HandleFunc("/websocket", s.websocketHandler)
 
 	// Wrap the mux with CORS middleware
