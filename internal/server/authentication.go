@@ -17,6 +17,7 @@ import (
 )
 
 func generateJwt(key []byte, u *model.User) (string, error) {
+	// TODO: add expiry time in token as well
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss": "open-fermentations", // TODO get this from env
 		"sub": u.Username,
@@ -32,7 +33,7 @@ func parseCookie(cookie string) map[string]string {
 	for _, part := range cookieParts {
 		keyVal := strings.Split(part, "=")
 		if len(keyVal) == 2 {
-			parsedCookie[keyVal[0]] = keyVal[1]
+			parsedCookie[strings.Trim(keyVal[0], " ")] = keyVal[1]
 		} else {
 			parsedCookie[part] = ""
 		}
@@ -90,7 +91,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	expiry := time.Now().Add(30 * time.Minute)
 
 	cookie := &http.Cookie{
-		Name:     "auth_token",
+		Name:     "auth_token", // TODO: add this value to env
 		Value:    token,
 		Path:     "/",
 		Expires:  expiry,
@@ -123,4 +124,31 @@ func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Error("writing response", slog.String("error", err.Error()))
 		return
 	}
+}
+
+func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cookie := r.Header.Get("cookie")
+
+		parsedCookie := parseCookie(cookie)
+
+		tokenString := parsedCookie["auth_token"] // TODO: add key to env
+
+		token, err := jwt.Parse(tokenString, func(*jwt.Token) (any, error) {
+			return []byte(s.env.Jwt.Key), nil
+		}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
+		if err != nil {
+			slog.Error("parsing jwt token from cookie",
+				logging.Err(err),
+			)
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// TODO: validate expiry time of token
+
+		_ = token
+
+		next.ServeHTTP(w, r)
+	})
 }

@@ -17,26 +17,26 @@ const (
 
 const ServerPrefix = "/api"
 
-func registerServerPrefixedRoute(mux *http.ServeMux, method, route string, handler http.HandlerFunc) {
+func registerServerPrefixedRoute(mux *http.ServeMux, method, route string, handler http.Handler) {
 	registerRoute(mux, method, fmt.Sprintf("%v%v", ServerPrefix, route), handler)
 }
 
-func registerRoute(mux *http.ServeMux, method, route string, handler http.HandlerFunc) {
+func registerRoute(mux *http.ServeMux, method, route string, handler http.Handler) {
 	slog.Info("Registering route", slog.String("method", method), slog.String("route", route))
-	mux.HandleFunc(fmt.Sprintf("%v %v", method, route), handler)
+	mux.Handle(fmt.Sprintf("%v %v", method, route), handler)
 }
 
 func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 
 	// Register routes
-	registerServerPrefixedRoute(mux, http.MethodPost, "/login", s.loginHandler)
-	registerServerPrefixedRoute(mux, http.MethodGet, "/logout", s.logoutHandler)
+	registerServerPrefixedRoute(mux, http.MethodPost, "/login", http.HandlerFunc(s.loginHandler))
+	registerServerPrefixedRoute(mux, http.MethodGet, "/logout", s.authenticationMiddleware(http.HandlerFunc(s.logoutHandler)))
 
-	registerRoute(mux, http.MethodGet, "/health", s.healthHandler)
+	registerRoute(mux, http.MethodGet, "/health", http.HandlerFunc(s.healthHandler))
 
 	slog.Info("Registering route", slog.String("route", "/websocket"))
-	mux.HandleFunc("/websocket", s.websocketHandler)
+	mux.Handle("/websocket", http.HandlerFunc(s.websocketHandler))
 
 	// Wrap the mux with CORS middleware
 	return s.corsMiddleware(mux)
