@@ -30,8 +30,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 
 	// Register routes
-	registerServerPrefixedRoute(mux, http.MethodPost, "/login", s.LoginHandler)
-	registerServerPrefixedRoute(mux, http.MethodGet, "/logout", s.LogoutHandler)
+	registerServerPrefixedRoute(mux, http.MethodPost, "/login", s.loginHandler)
+	registerServerPrefixedRoute(mux, http.MethodGet, "/logout", s.logoutHandler)
 
 	registerRoute(mux, http.MethodGet, "/health", s.healthHandler)
 

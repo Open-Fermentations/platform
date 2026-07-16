@@ -20,7 +20,7 @@ func TestLoginHandler(t *testing.T) {
 			c.s.env = &env.Env{Jwt: env.JwtEnv{Key: "something"}}
 			c.mSvc.EXPECT().Login(mock.Anything, mock.Anything).
 				Return(&model.User{Username: "admin"}, nil)
-			server := httptest.NewServer(http.HandlerFunc(c.s.LoginHandler))
+			server := httptest.NewServer(http.HandlerFunc(c.s.loginHandler))
 			defer server.Close()
 
 			usr := dto.LoginBody{
@@ -39,4 +39,24 @@ func TestLoginHandler(t *testing.T) {
 			cookie := resp.Header.Get("Set-Cookie")
 			assert.NotEmpty(t, cookie)
 		}))
+}
+
+func TestLogoutHandler(t *testing.T) {
+	t.Run("sets cookie with blank value", testCase(func(t *testing.T, c *testContext) {
+		c.s.env = &env.Env{CookieSecure: false}
+		server := httptest.NewServer(http.HandlerFunc(c.s.logoutHandler))
+		defer server.Close()
+
+		resp, err := http.Get(server.URL)
+		if err != nil {
+			t.Fatalf("error making request to server. Err: %v", err.Error())
+		}
+
+		assert.EqualValues(t, http.StatusOK, resp.StatusCode)
+		cookie := resp.Header.Get("Set-Cookie")
+		assert.NotEmpty(t, cookie)
+
+		parsedCookie := parseCookie(cookie)
+		assert.EqualValues(t, "", parsedCookie["auth_token"])
+	}))
 }

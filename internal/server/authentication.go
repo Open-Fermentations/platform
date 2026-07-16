@@ -10,12 +10,38 @@ import (
 	"open-fermentations/internal/logging"
 	"open-fermentations/internal/model"
 	"open-fermentations/internal/service"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func generateJwt(key []byte, u *model.User) (string, error) {
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"iss": "open-fermentations", // TODO get this from env
+		"sub": u.Username,
+		"id":  u.ID.String(),
+	})
+
+	return t.SignedString(key)
+}
+
+func parseCookie(cookie string) map[string]string {
+	cookieParts := strings.Split(cookie, ";")
+	parsedCookie := map[string]string{}
+	for _, part := range cookieParts {
+		keyVal := strings.Split(part, "=")
+		if len(keyVal) == 2 {
+			parsedCookie[keyVal[0]] = keyVal[1]
+		} else {
+			parsedCookie[part] = ""
+		}
+	}
+
+	return parsedCookie
+}
+
+func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	rawBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		slog.Error("failed to read request body", slog.String("error", err.Error()))
@@ -81,7 +107,7 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := &http.Cookie{
 		Name:     "auth_token",
 		Value:    "",
@@ -97,14 +123,4 @@ func (s *Server) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Error("writing response", slog.String("error", err.Error()))
 		return
 	}
-}
-
-func generateJwt(key []byte, u *model.User) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss": "open-fermentations", // TODO get this from env
-		"sub": u.Username,
-		"id":  u.ID.String(),
-	})
-
-	return t.SignedString(key)
 }
