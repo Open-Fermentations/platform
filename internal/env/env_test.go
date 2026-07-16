@@ -92,3 +92,37 @@ func Test_getBoolValue(t *testing.T) {
 		assert.EqualValues(t, val, getBoolValue(key, val))
 	})
 }
+
+func Test_getDurationValue(t *testing.T) {
+	t.Run("existing duration env var", func(t *testing.T) {
+		key := uniqueKey("duration_existing_env")
+		randInt := rand.IntN(1000)
+		val := time.Duration(randInt) * time.Second
+		def := time.Duration(randInt+1) * time.Second
+
+		os.Setenv(key, val.String())
+		defer os.Unsetenv(key)
+
+		assert.EqualValues(t, val, getDurationValue(key, def))
+	})
+
+	t.Run("non-existent duration env var", func(t *testing.T) {
+		key := uniqueKey("duration_existing_env")
+		randInt := rand.IntN(1000)
+
+		def := time.Duration(randInt) * time.Second
+
+		assert.EqualValues(t, def, getDurationValue(key, def))
+	})
+
+	t.Run("non-parseble duration env var", func(t *testing.T) {
+		key := uniqueKey("duration_existing_env")
+		randInt := rand.IntN(1000)
+
+		def := time.Duration(randInt) * time.Second
+
+		os.Setenv(key, "un parseble duration")
+
+		assert.EqualValues(t, def, getDurationValue(key, def))
+	})
+}

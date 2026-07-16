@@ -9,6 +9,7 @@ import (
 	"open-fermentations/internal/env"
 	"open-fermentations/internal/model"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -17,7 +18,11 @@ import (
 func TestLoginHandler(t *testing.T) {
 	t.Run("with service login responding with a user",
 		testCase(func(t *testing.T, c *testContext) {
-			c.s.env = &env.Env{Jwt: env.JwtEnv{Key: "something"}}
+			c.s.env = &env.Env{Jwt: env.JwtEnv{Key: "something"}, Cookie: env.CookieEnv{
+				Secure:   false,
+				Key:      "some-key",
+				Duration: time.Second,
+			}}
 			c.mSvc.EXPECT().Login(mock.Anything, mock.Anything).
 				Return(&model.User{Username: "admin"}, nil)
 			server := httptest.NewServer(http.HandlerFunc(c.s.loginHandler))
@@ -43,7 +48,7 @@ func TestLoginHandler(t *testing.T) {
 
 func TestLogoutHandler(t *testing.T) {
 	t.Run("sets cookie with blank value", testCase(func(t *testing.T, c *testContext) {
-		c.s.env = &env.Env{CookieSecure: false}
+		c.s.env = &env.Env{Cookie: env.CookieEnv{Secure: false}}
 		server := httptest.NewServer(http.HandlerFunc(c.s.logoutHandler))
 		defer server.Close()
 

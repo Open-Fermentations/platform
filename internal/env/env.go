@@ -5,6 +5,7 @@ import (
 	"open-fermentations/internal/logging"
 	"os"
 	"strconv"
+	"time"
 )
 
 type AppEnv string
@@ -56,14 +57,20 @@ type JwtEnv struct {
 	Issuer string
 }
 
+type CookieEnv struct {
+	Secure   bool
+	Key      string
+	Duration time.Duration
+}
+
 type Env struct {
-	Port         int
-	AppEnv       AppEnv
-	LogLevel     LogLevel
-	Database     DatabaseEnv
-	Mqtt         MqttEnv
-	Jwt          JwtEnv
-	CookieSecure bool
+	Port     int
+	AppEnv   AppEnv
+	LogLevel LogLevel
+	Database DatabaseEnv
+	Mqtt     MqttEnv
+	Jwt      JwtEnv
+	Cookie   CookieEnv
 }
 
 var env *Env
@@ -85,7 +92,9 @@ func RefreshEnvironmentVariables() {
 	env.Jwt.Key = getStringValue("JWT_KEY", "")
 	env.Jwt.Issuer = getStringValue("JWT_ISSUER", "open-fermentations")
 
-	env.CookieSecure = getBoolValue("COOKIE_SECURE", true)
+	env.Cookie.Secure = getBoolValue("COOKIE_SECURE", true)
+	env.Cookie.Key = getStringValue("COOKIE_KEY", "open-fermentations")
+	env.Cookie.Duration = getDurationValue("COOKIE_DURATION", 30*time.Minute)
 
 	env.Database.Host = getStringValue("DB_HOST", "localhost")
 	env.Database.Port = getStringValue("DB_PORT", "5432")
@@ -156,6 +165,24 @@ func getBoolValue(key string, def bool) bool {
 	}
 
 	return val
+}
+
+func getDurationValue(key string, def time.Duration) time.Duration {
+	e, ok := os.LookupEnv(key)
+	if !ok {
+		return def
+	}
+
+	dur, err := time.ParseDuration(e)
+	if err != nil {
+		slog.Warn("environment variable: parse duration",
+			slog.String("key", key),
+			slog.String("value", e),
+			slog.Duration("default", def))
+		return def
+	}
+
+	return dur
 }
 
 func handleAppEnv(key string) AppEnv {

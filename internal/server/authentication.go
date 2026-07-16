@@ -88,15 +88,13 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	expiry := time.Now().Add(30 * time.Minute)
-
 	cookie := &http.Cookie{
-		Name:     "auth_token", // TODO: add this value to env
+		Name:     s.env.Cookie.Key,
 		Value:    token,
 		Path:     "/",
-		Expires:  expiry,
+		Expires:  time.Now().Add(s.env.Cookie.Duration),
 		HttpOnly: true,
-		Secure:   s.env.CookieSecure,
+		Secure:   s.env.Cookie.Secure,
 	}
 	http.SetCookie(w, cookie)
 
@@ -115,7 +113,7 @@ func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
-		Secure:   s.env.CookieSecure,
+		Secure:   s.env.Cookie.Secure,
 	}
 	http.SetCookie(w, cookie)
 
@@ -132,7 +130,7 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 
 		parsedCookie := parseCookie(cookie)
 
-		tokenString := parsedCookie["auth_token"] // TODO: add key to env
+		tokenString := parsedCookie[s.env.Cookie.Key]
 
 		token, err := jwt.Parse(tokenString, func(*jwt.Token) (any, error) {
 			return []byte(s.env.Jwt.Key), nil
