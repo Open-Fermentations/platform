@@ -12,12 +12,6 @@ import (
 	"github.com/coder/websocket"
 )
 
-const (
-	ContentTypeJSON = "application/json"
-)
-
-const ServerPrefix = "/api"
-
 func registerRoute(mux *http.ServeMux, h *route.Route) {
 	slog.Info("Registering route", slog.String("method", h.Method), slog.String("route", h.Route))
 	mux.Handle(fmt.Sprintf("%v %v", h.Method, h.Route), h.Handler)

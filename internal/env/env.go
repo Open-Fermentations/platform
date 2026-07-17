@@ -55,6 +55,7 @@ type MqttEnv struct {
 type JwtEnv struct {
 	Key    string
 	Issuer string
+	Expiry time.Duration
 }
 
 type CookieEnv struct {
@@ -91,6 +92,7 @@ func RefreshEnvironmentVariables() {
 
 	env.Jwt.Key = getStringValue("JWT_KEY", "")
 	env.Jwt.Issuer = getStringValue("JWT_ISSUER", "open-fermentations")
+	env.Jwt.Expiry = getDurationValue("JWT_EXPIRY_DURATION", 30*time.Minute)
 
 	env.Cookie.Secure = getBoolValue("COOKIE_SECURE", true)
 	env.Cookie.Key = getStringValue("COOKIE_KEY", "open-fermentations")

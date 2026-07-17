@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -16,12 +17,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func generateJwt(key []byte, u *model.User) (string, error) {
-	// TODO: add expiry time in token as well
+func generateJwt(key []byte, exp time.Duration, u *model.User) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss": "open-fermentations", // TODO get this from env
 		"sub": u.Username,
 		"id":  u.ID.String(),
+		"exp": time.Now().Add(exp).Unix(),
 	})
 
 	return t.SignedString(key)
@@ -94,7 +95,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJwt([]byte(s.env.Jwt.Key), user)
+	token, err := generateJwt([]byte(s.env.Jwt.Key), s.env.Jwt.Expiry, user)
 	if err != nil {
 		panic(err)
 	}
@@ -130,6 +131,7 @@ func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		cookie := r.Header.Get("cookie")
 
 		parsedCookie := parseCookie(cookie)
@@ -147,10 +149,46 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// TODO: validate expiry time of token
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			err := validateClaims(claims)
+			if err != nil {
+				var jwtExpiredErr ErrJWTExpired
+				if errors.As(err, &jwtExpiredErr) {
+					slog.Error("jwt expired", jwtExpiredErr.Slog()...)
+				} else {
+					slog.Error("validating claims", logging.Err(err))
+				}
 
-		_ = token
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+			if id, ok := claims["id"].(string); ok {
+				ctx = context.WithValue(ctx, ContextUserIdKey, id)
+			} else {
+				slog.Error("could not get 'id' claim from token")
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+		} else {
+			slog.Error("could not get claims from token")
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func validateClaims(claims jwt.Claims) error {
+	exp, err := claims.GetExpirationTime()
+	if err != nil {
+		return err
+	}
+
+	n := time.Now()
+	if exp.Compare(n) <= 0 {
+		return ErrJWTExpired{Exp: exp.Time, Now: n}
+	}
+
+	return nil
 }

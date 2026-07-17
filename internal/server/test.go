@@ -19,8 +19,6 @@ func setupContext(t *testing.T) *testContext {
 	mockDb := mockdatabase.NewMockService(t)
 	mockSvc := mockservice.NewMockService(t)
 
-	//mockDb.EXPECT().Querier().Return(mockSqlc)
-
 	return &testContext{
 		s:     &Server{db: mockDb, svc: mockSvc},
 		mDb:   mockDb,
