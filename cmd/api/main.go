@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"open-fermentations/internal/env"
+	"open-fermentations/internal/logging"
 	"open-fermentations/internal/server"
 )
 
@@ -28,7 +29,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := apiServer.Shutdown(ctx); err != nil {
-		slog.Error("server forced to shutdown", slog.String("error", err.Error()))
+		slog.Error("server forced to shutdown", logging.Err(err))
 	}
 
 	slog.Info("server exiting")
@@ -42,7 +43,7 @@ func main() {
 
 	server, err := server.NewServer(context.Background(), env)
 	if err != nil {
-		slog.Error("setting up new server", slog.String("error", err.Error()))
+		slog.Error("setting up new server", logging.Err(err))
 		panic(err)
 	}
 
@@ -56,7 +57,7 @@ func main() {
 
 	err = server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
-		slog.Error("http server error", slog.String("error", err.Error()))
+		slog.Error("http server error", logging.Err(err))
 		panic(err)
 	}
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 	"open-fermentations/internal/env"
-	"strconv" // Import strconv for the suggested changes
+	"strconv"
 	"testing"
 	"time"
 
@@ -111,7 +111,6 @@ func TestHealth(t *testing.T) {
 
 	stats := srv.Health()
 
-	// The Health function now returns connection statistics, not fixed status strings.
 	expectedKeys := []string{"connections", "idle_connections", "max_connections", "total_connections", "new_connections"}
 	if len(stats) != len(expectedKeys) {
 		t.Fatalf("Expected %d stats keys, got %d.", len(expectedKeys), len(stats))
@@ -121,7 +120,7 @@ func TestHealth(t *testing.T) {
 		if _, ok := stats[key]; !ok {
 			t.Fatalf("Missing expected health stat key: %s", key)
 		}
-		// Basic check that the value is a non-negative integer string
+
 		if _, err := strconv.Atoi(stats[key]); err != nil {
 			t.Errorf("Stat key %s has invalid integer value: %s", key, stats[key])
 		}
