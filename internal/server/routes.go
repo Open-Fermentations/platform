@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"open-fermentations/internal/route"
 
 	"fmt"
 	"time"
@@ -17,29 +18,46 @@ const (
 
 const ServerPrefix = "/api"
 
-func registerServerPrefixedRoute(mux *http.ServeMux, method, route string, handler http.Handler) {
-	registerRoute(mux, method, fmt.Sprintf("%v%v", ServerPrefix, route), handler)
-}
-
-func registerRoute(mux *http.ServeMux, method, route string, handler http.Handler) {
-	slog.Info("Registering route", slog.String("method", method), slog.String("route", route))
-	mux.Handle(fmt.Sprintf("%v %v", method, route), handler)
+func registerRoute(mux *http.ServeMux, h *route.Route) {
+	slog.Info("Registering route", slog.String("method", h.Method), slog.String("route", h.Route))
+	mux.Handle(fmt.Sprintf("%v %v", h.Method, h.Route), h.Handler)
 }
 
 func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 
-	// Register routes
-	registerServerPrefixedRoute(mux, http.MethodPost, "/login", http.HandlerFunc(s.loginHandler))
-	registerServerPrefixedRoute(mux, http.MethodGet, "/logout", s.authenticationMiddleware(http.HandlerFunc(s.logoutHandler)))
+	defaultMiddleware := []route.Middleware{
+		s.corsMiddleware,
+	}
 
-	registerRoute(mux, http.MethodGet, "/health", http.HandlerFunc(s.healthHandler))
+	// Register routes
+	authenticatedRoutesWithPrefix := []*route.Route{
+		route.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
+	}
+
+	routeHandlers := []*route.Route{
+		route.New(http.MethodPost, "/login", http.HandlerFunc(s.loginHandler)).
+			WithPrefix(ServerPrefix),
+		route.New(http.MethodGet, "/health", http.HandlerFunc(s.healthHandler)),
+	}
+
+	for _, r := range authenticatedRoutesWithPrefix {
+		routeHandlers = append(routeHandlers, r.WithMiddleware(s.authenticationMiddleware).
+			WithPrefix(ServerPrefix))
+	}
+
+	for _, r := range routeHandlers {
+		registerRoute(mux, r)
+	}
 
 	slog.Info("Registering route", slog.String("route", "/websocket"))
 	mux.Handle("/websocket", http.HandlerFunc(s.websocketHandler))
 
-	// Wrap the mux with CORS middleware
-	return s.corsMiddleware(mux)
+	var handler http.Handler = mux
+	for _, m := range defaultMiddleware {
+		handler = m(handler)
+	}
+	return handler
 }
 
 func (s *Server) corsMiddleware(next http.Handler) http.Handler {
