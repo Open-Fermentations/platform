@@ -2,7 +2,10 @@ package server
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
+	"open-fermentations/internal/logging"
+	"open-fermentations/internal/route"
 
 	"fmt"
 	"time"
@@ -10,18 +13,46 @@ import (
 	"github.com/coder/websocket"
 )
 
+func registerRoute(mux *http.ServeMux, h *route.Route) {
+	slog.Info("Registering route", slog.String("method", h.Method), slog.String("route", h.Route))
+	mux.Handle(fmt.Sprintf("%v %v", h.Method, h.Route), h.Handler)
+}
+
 func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 
+	defaultMiddleware := []route.Middleware{
+		s.corsMiddleware,
+	}
+
 	// Register routes
-	mux.HandleFunc("/", s.HelloWorldHandler)
+	authenticatedRoutesWithPrefix := []*route.Route{
+		route.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
+	}
 
-	mux.HandleFunc("/health", s.healthHandler)
+	routeHandlers := []*route.Route{
+		route.New(http.MethodPost, "/login", http.HandlerFunc(s.loginHandler)).
+			WithPrefix(ServerPrefix),
+		route.New(http.MethodGet, "/health", http.HandlerFunc(s.healthHandler)),
+	}
 
-	mux.HandleFunc("/websocket", s.websocketHandler)
+	for _, r := range authenticatedRoutesWithPrefix {
+		routeHandlers = append(routeHandlers, r.WithMiddleware(s.authenticationMiddleware).
+			WithPrefix(ServerPrefix))
+	}
 
-	// Wrap the mux with CORS middleware
-	return s.corsMiddleware(mux)
+	for _, r := range routeHandlers {
+		registerRoute(mux, r)
+	}
+
+	slog.Info("Registering route", slog.String("route", "/websocket"))
+	mux.Handle("/websocket", http.HandlerFunc(s.websocketHandler))
+
+	var handler http.Handler = mux
+	for _, m := range defaultMiddleware {
+		handler = m(handler)
+	}
+	return handler
 }
 
 func (s *Server) corsMiddleware(next http.Handler) http.Handler {
@@ -43,19 +74,6 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
-	resp := map[string]string{"message": "Hello World"}
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	if _, err := w.Write(jsonResp); err != nil {
-		s.logger.Errorf("Failed to write response: %v", err)
-	}
-}
-
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(s.db.Health())
 	if err != nil {
@@ -64,7 +82,7 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if _, err := w.Write(resp); err != nil {
-		s.logger.Errorf("Failed to write response: %v", err)
+		slog.Error("failed to write response", logging.Err(err))
 	}
 }
 
@@ -82,7 +100,7 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		payload := fmt.Sprintf("server timestamp: %d", time.Now().UnixNano())
 		if err := socket.Write(socketCtx, websocket.MessageText, []byte(payload)); err != nil {
-			s.logger.Errorf("Failed to write to socket: %v", err)
+			slog.Error("failed to write to socket", logging.Err(err))
 			break
 		}
 		time.Sleep(2 * time.Second)

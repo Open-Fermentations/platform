@@ -13,7 +13,7 @@ formatter-options:
     tab-indent: true
     tab-width: 4
 generate: true
-include-auto-generated: false
+include-auto-generated: true
 log-level: info
 structname: '{{.Mock}}{{.InterfaceName}}'
 pkgname: 'mock{{.SrcPackageName}}'
@@ -27,3 +27,20 @@ packages:
       dir: "internal/testing/mocks/{{.SrcPackageName}}"
       all: true
       filename: "{{.InterfaceName}}_mock.go"
+  open-fermentations/internal/database/sqlc:
+    config:
+      dir: "internal/testing/mocks/database/{{.SrcPackageName}}"
+      all: true
+      filename: "{{.InterfaceName}}_mock.go"
+  open-fermentations/internal/database:
+    config:
+      dir: "internal/testing/mocks/{{.SrcPackageName}}"
+      all: true
+      filename: "{{.InterfaceName}}_mock.go"
+  open-fermentations/internal/service:
+    config:
+      dir: "internal/testing/mocks/{{.SrcPackageName}}"
+      all: true
+      filename: "{{.InterfaceName}}_mock.go"
+  
+

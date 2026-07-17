@@ -64,7 +64,7 @@ watch:
             fi; \
         fi
 
-.PHONY: all build run test clean watch docker-run docker-down itest
+.PHONY: all build run test clean watch docker-run docker-down itest sqlc mocks
 
 sqlc:
 	sqlc generate

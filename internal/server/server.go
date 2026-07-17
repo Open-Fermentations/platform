@@ -1,7 +1,9 @@
 package server
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -9,30 +11,38 @@ import (
 
 	"open-fermentations/internal/database"
 	"open-fermentations/internal/env"
-	"open-fermentations/internal/logger"
+	"open-fermentations/internal/logging"
+	"open-fermentations/internal/service"
 )
 
 type Server struct {
-	env    *env.Env
-	logger logger.Logger
-	db     database.Service
+	ctx context.Context
+	env *env.Env
+	db  database.Service
+	svc service.Service
 }
 
-func NewServer(env *env.Env) *http.Server {
-	NewServer := &Server{
-		env:    env,
-		logger: logger.New(env),
-		db:     database.New(env),
+func NewServer(ctx context.Context, env *env.Env) (*http.Server, error) {
+	db, err := database.New(env)
+	if err != nil {
+		slog.Error("failed setting up database service", logging.Err(err))
+		return nil, err
+	}
+	newServer := &Server{
+		env: env,
+		db:  db,
+		svc: service.New(ctx, env, db),
 	}
 
-	// Declare Server config
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", env.Port),
-		Handler:      NewServer.RegisterRoutes(),
+		Handler:      newServer.RegisterRoutes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
 
-	return server
+	slog.Info("Server instantiated")
+
+	return server, nil
 }

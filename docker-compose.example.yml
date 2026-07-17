@@ -8,15 +8,8 @@ services:
     restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
-    environment:
-      APP_ENV: ${APP_ENV}
-      PORT: ${PORT}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_SCHEMA: ${DB_SCHEMA}
+    env_file:
+      - ./.env.docker
     depends_on:
       psql:
         condition: service_healthy
@@ -56,6 +49,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
+    # this is not necessary in production
+    ports:
+      - ${DB_PORT}:${DB_PORT}
     networks:
       - database
 
