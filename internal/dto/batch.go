@@ -2,6 +2,7 @@ package dto
 
 import (
 	"log/slog"
+	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/logging"
 	"open-fermentations/internal/model"
 	"time"
@@ -11,6 +12,13 @@ import (
 
 type CreateBatchDTO struct {
 	Name string `json:"name"`
+}
+
+func (c *CreateBatchDTO) ToCreateBatchParams(id uuid.UUID) *sqlc.CreateBatchParams {
+	return &sqlc.CreateBatchParams{
+		Name:   c.Name,
+		UserID: id,
+	}
 }
 
 // Slog implements [logging.Slog].
