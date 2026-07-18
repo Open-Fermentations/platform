@@ -57,8 +57,10 @@ func generateCookie(key, token string, dur time.Duration, secure bool) *http.Coo
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	rawBody, err := io.ReadAll(r.Body)
 	if err != nil {
-		slog.Error("failed to read request body", slog.String("error", err.Error()))
-		http.Error(w, "Failed to read request body", http.StatusBadRequest)
+		slog.Error("failed to read request body in loginHandler",
+			logging.Err(err),
+		)
+		http.Error(w, BadBodyRead, http.StatusBadRequest)
 		return
 	}
 
@@ -66,7 +68,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.Unmarshal(rawBody, &b); err != nil {
 		slog.Error("unmarshalling login body", logging.Err(err))
-		http.Error(w, "Failed to unmarshal login body", http.StatusBadRequest)
+		http.Error(w, FailedToMarshall, http.StatusBadRequest)
 		return
 	}
 
@@ -90,7 +92,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	userDto := new(dto.UserDTO).FromModel(user)
 	jsonResp, err := json.Marshal(userDto)
 	if err != nil {
-		slog.Error("unmarshalling user dto", []any{logging.Err(err), userDto.Slog()}...)
+		slog.Error("marshalling user dto", logging.Err(err))
 		http.Error(w, "Failed to marshal user dto", http.StatusInternalServerError)
 		return
 	}
@@ -106,7 +108,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(jsonResp); err != nil {
-		slog.Error("writing response", slog.String("error", err.Error()))
+		slog.Error("writing response", logging.Err(err))
 		return
 	}
 }
