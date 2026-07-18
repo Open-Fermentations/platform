@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -40,6 +41,10 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 	env := env.GetEnv()
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+
+	slog.SetDefault(logger)
 
 	server, err := server.NewServer(context.Background(), env)
 	if err != nil {
