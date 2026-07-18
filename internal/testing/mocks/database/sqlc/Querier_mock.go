@@ -39,6 +39,72 @@ func (_m *MockQuerier) EXPECT() *MockQuerier_Expecter {
 	return &MockQuerier_Expecter{mock: &_m.Mock}
 }
 
+// CreateBatch provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateBatch(ctx context.Context, arg sqlc.CreateBatchParams) (sqlc.Batch, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateBatch")
+	}
+
+	var r0 sqlc.Batch
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.CreateBatchParams) (sqlc.Batch, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.CreateBatchParams) sqlc.Batch); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(sqlc.Batch)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, sqlc.CreateBatchParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CreateBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateBatch'
+type MockQuerier_CreateBatch_Call struct {
+	*mock.Call
+}
+
+// CreateBatch is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg sqlc.CreateBatchParams
+func (_e *MockQuerier_Expecter) CreateBatch(ctx any, arg any) *MockQuerier_CreateBatch_Call {
+	return &MockQuerier_CreateBatch_Call{Call: _e.mock.On("CreateBatch", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateBatch_Call) Run(run func(ctx context.Context, arg sqlc.CreateBatchParams)) *MockQuerier_CreateBatch_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 sqlc.CreateBatchParams
+		if args[1] != nil {
+			arg1 = args[1].(sqlc.CreateBatchParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateBatch_Call) Return(batch sqlc.Batch, err error) *MockQuerier_CreateBatch_Call {
+	_c.Call.Return(batch, err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateBatch_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.CreateBatchParams) (sqlc.Batch, error)) *MockQuerier_CreateBatch_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateUser provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) CreateUser(ctx context.Context, arg sqlc.CreateUserParams) error {
 	ret := _mock.Called(ctx, arg)
