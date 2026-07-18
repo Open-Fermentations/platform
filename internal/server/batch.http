@@ -1,0 +1,7 @@
+### Create batch
+POST http://localhost:8088/api/batch
+Content-Type: application/json
+
+[{
+  "name": "first batch"
+}]
