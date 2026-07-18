@@ -28,6 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// Register routes
 	authenticatedRoutesWithPrefix := []*route.Route{
 		route.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
+		route.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)),
 	}
 
 	routeHandlers := []*route.Route{

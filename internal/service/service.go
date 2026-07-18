@@ -4,12 +4,17 @@ import (
 	"context"
 	"log/slog"
 	"open-fermentations/internal/database"
+	"open-fermentations/internal/dto"
 	"open-fermentations/internal/env"
 	"open-fermentations/internal/model"
+
+	"github.com/google/uuid"
 )
 
 type Service interface {
 	Login(username string, password string) (*model.User, error)
+
+	CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)
 }
 
 type service struct {

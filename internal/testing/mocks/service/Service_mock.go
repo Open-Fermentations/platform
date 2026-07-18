@@ -5,8 +5,10 @@
 package mockservice
 
 import (
+	"open-fermentations/internal/dto"
 	"open-fermentations/internal/model"
 
+	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -35,6 +37,74 @@ type MockService_Expecter struct {
 
 func (_m *MockService) EXPECT() *MockService_Expecter {
 	return &MockService_Expecter{mock: &_m.Mock}
+}
+
+// CreateBatch provides a mock function for the type MockService
+func (_mock *MockService) CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
+	ret := _mock.Called(id, d)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateBatch")
+	}
+
+	var r0 []model.Batch
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateBatchDTO) ([]model.Batch, error)); ok {
+		return returnFunc(id, d)
+	}
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateBatchDTO) []model.Batch); ok {
+		r0 = returnFunc(id, d)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Batch)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, []dto.CreateBatchDTO) error); ok {
+		r1 = returnFunc(id, d)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_CreateBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateBatch'
+type MockService_CreateBatch_Call struct {
+	*mock.Call
+}
+
+// CreateBatch is a helper method to define mock.On call
+//   - id uuid.UUID
+//   - d []dto.CreateBatchDTO
+func (_e *MockService_Expecter) CreateBatch(id any, d any) *MockService_CreateBatch_Call {
+	return &MockService_CreateBatch_Call{Call: _e.mock.On("CreateBatch", id, d)}
+}
+
+func (_c *MockService_CreateBatch_Call) Run(run func(id uuid.UUID, d []dto.CreateBatchDTO)) *MockService_CreateBatch_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		var arg1 []dto.CreateBatchDTO
+		if args[1] != nil {
+			arg1 = args[1].([]dto.CreateBatchDTO)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_CreateBatch_Call) Return(batchs []model.Batch, err error) *MockService_CreateBatch_Call {
+	_c.Call.Return(batchs, err)
+	return _c
+}
+
+func (_c *MockService_CreateBatch_Call) RunAndReturn(run func(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)) *MockService_CreateBatch_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // Login provides a mock function for the type MockService
