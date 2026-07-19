@@ -105,6 +105,72 @@ func (_c *MockQuerier_CreateBatch_Call) RunAndReturn(run func(ctx context.Contex
 	return _c
 }
 
+// CreateDevice provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateDevice(ctx context.Context, arg sqlc.CreateDeviceParams) (sqlc.Device, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateDevice")
+	}
+
+	var r0 sqlc.Device
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.CreateDeviceParams) (sqlc.Device, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.CreateDeviceParams) sqlc.Device); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(sqlc.Device)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, sqlc.CreateDeviceParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CreateDevice_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateDevice'
+type MockQuerier_CreateDevice_Call struct {
+	*mock.Call
+}
+
+// CreateDevice is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg sqlc.CreateDeviceParams
+func (_e *MockQuerier_Expecter) CreateDevice(ctx any, arg any) *MockQuerier_CreateDevice_Call {
+	return &MockQuerier_CreateDevice_Call{Call: _e.mock.On("CreateDevice", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateDevice_Call) Run(run func(ctx context.Context, arg sqlc.CreateDeviceParams)) *MockQuerier_CreateDevice_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 sqlc.CreateDeviceParams
+		if args[1] != nil {
+			arg1 = args[1].(sqlc.CreateDeviceParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateDevice_Call) Return(device sqlc.Device, err error) *MockQuerier_CreateDevice_Call {
+	_c.Call.Return(device, err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateDevice_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.CreateDeviceParams) (sqlc.Device, error)) *MockQuerier_CreateDevice_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateUser provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) CreateUser(ctx context.Context, arg sqlc.CreateUserParams) error {
 	ret := _mock.Called(ctx, arg)

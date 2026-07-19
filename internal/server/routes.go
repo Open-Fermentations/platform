@@ -29,6 +29,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// Register routes
 	authenticatedRoutesWithPrefix := []*route.Route{
 		route.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
+
 		route.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)).
 			WithJsonBody(),
 		route.New(http.MethodGet, "/batch", http.HandlerFunc(s.getBatches)),
@@ -36,6 +37,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		route.New(http.MethodPut, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.putBatchById)).
 			WithJsonBody(),
 		route.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
+
+		route.New(http.MethodPost, "/device", http.HandlerFunc(s.postDevices)).WithJsonBody(),
 	}
 
 	routeHandlers := []*route.Route{

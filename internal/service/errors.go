@@ -29,3 +29,23 @@ func (e ErrInvalidCredentials) SlogErr(err error) []any {
 
 var _ error = ErrInvalidCredentials{}
 var _ logging.SlogErr = ErrInvalidCredentials{}
+
+type ErrUserDoesNotExist struct {
+	ID uuid.UUID
+}
+
+// SlogErr implements [logging.SlogErr].
+func (e ErrUserDoesNotExist) SlogErr(err error) []any {
+	return []any{slog.Group("error",
+		slog.String("id", e.ID.String()),
+		slog.String("message", err.Error()),
+	)}
+}
+
+// Error implements [error].
+func (e ErrUserDoesNotExist) Error() string {
+	return fmt.Sprintf("user does not exist: %v", e.ID.String())
+}
+
+var _ error = ErrUserDoesNotExist{}
+var _ logging.SlogErr = ErrUserDoesNotExist{}

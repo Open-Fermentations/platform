@@ -17,6 +17,12 @@ type Querier interface {
 	//  values ($1, $2)
 	//  returning id, "name", user_id, created, modified
 	CreateBatch(ctx context.Context, arg CreateBatchParams) (Batch, error)
+	//CreateDevice
+	//
+	//  insert into "device" ("name", mac_address, user_id)
+	//  values ($1, $2, $3)
+	//  returning id, "name", mac_address, user_id, created, modified
+	CreateDevice(ctx context.Context, arg CreateDeviceParams) (Device, error)
 	//CreateUser
 	//
 	//  insert into "user" (username, password)

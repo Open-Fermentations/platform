@@ -10,20 +10,20 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// CreateBatch implements [Service].
-func (s service) CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
-	u, err := s.db.Querier().GetUserById(s.ctx, id)
+// CreateBatches implements [Service].
+func (s service) CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
+	u, err := s.db.Querier().GetUserById(s.ctx, userId)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, nil
+			return nil, ErrUserDoesNotExist{ID: userId}
 		}
 		return nil, err
 	}
 
 	batches := []model.Batch{}
 	errs := []error{}
-	for _, dto := range d {
-		b, err := s.db.Querier().CreateBatch(s.ctx, *dto.ToCreateBatchParams(u.ID))
+	for _, dt := range d {
+		b, err := s.db.Querier().CreateBatch(s.ctx, *dt.ToCreateBatchParams(u.ID))
 		if err != nil {
 			errs = append(errs, err)
 			continue
