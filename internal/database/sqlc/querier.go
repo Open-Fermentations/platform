@@ -26,6 +26,14 @@ type Querier interface {
 	//
 	//  delete from "batch" where id = $1
 	DeleteBatch(ctx context.Context, id uuid.UUID) error
+	//GetBatches
+	//
+	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
+	//  where "name" like $1::text
+	//  order by created
+	//  limit $2
+	//  offset $3
+	GetBatches(ctx context.Context, arg GetBatchesParams) ([]GetBatchesRow, error)
 	//GetUserById
 	//
 	//  select id, username, created, modified

@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -77,4 +78,44 @@ func (s *Server) deleteBatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	limit := getIntQueryParam(r, "limit", 50)
+	offset := getIntQueryParam(r, "offset", 0)
+
+	batches, total, err := s.svc.GetBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
+	if err != nil {
+		slog.Error("getting batches from service", logging.Err(err), slog.Group("query",
+			slog.Int("limit", limit),
+			slog.Int("offset", offset),
+			slog.String("name", name)))
+		http.Error(w, "Failed to get batches", http.StatusInternalServerError)
+	}
+
+	batchDtos := make([]dto.BatchDTO, len(batches))
+	for i, b := range batches {
+		batchDtos[i] = *new(dto.BatchDTO).FromModel(b)
+	}
+
+	page := dto.PageDTO[dto.BatchDTO]{
+		Limit:  limit,
+		Offset: offset,
+		Total:  total,
+		Data:   batchDtos,
+	}
+
+	pageJson, err := json.Marshal(page)
+	if err != nil {
+		slog.Error("marshalling batch page to json", logging.Err(err))
+		http.Error(w, FailedToMarshall, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", route.ContentTypeJSON)
+	if _, err := w.Write(pageJson); err != nil {
+		slog.Error("writing batch page", logging.Err(err))
+		return
+	}
 }

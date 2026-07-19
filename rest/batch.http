@@ -7,5 +7,8 @@ Content-Type: application/json
   "name": "first batch"
 }]
 
-### Delet batch
+### Delete batch
 DELETE {{url}}/api/batch/{{id}}
+
+### Get batches
+GET {{url}}/api/batch

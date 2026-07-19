@@ -9,6 +9,8 @@ const (
 	FailedToMarshall    = "Failed to marshall json body"
 	FailedToParseUserId = "Failed to parse user id"
 	FailedToParsePathId = "Failed to parse path id"
+	FailedParsingLimit  = "Failed to parse limit"
+	FailedParsingOffset = "Failed to parse offset"
 )
 
 const (
