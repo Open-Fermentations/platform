@@ -2,7 +2,6 @@ package route
 
 import (
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strings"
 )
@@ -26,22 +25,8 @@ func (r *Route) WithPrefix(prefix string) *Route {
 	return r
 }
 
-func jsonBodyMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		contentType := r.Header.Get("Content-Type")
-		if contentType != ContentTypeJSON {
-			slog.Error("content type was not set to application/json", slog.String("Content-Type", contentType))
-			http.Error(w, "content type is not application/json", http.StatusBadRequest)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
 func (r *Route) WithJsonBody() *Route {
-	r.Handler = jsonBodyMiddleware(r.Handler)
-	return r
+	return r.WithMiddleware(jsonBodyMiddleware)
 }
 
 func New(method, route string, handler http.Handler) *Route {
