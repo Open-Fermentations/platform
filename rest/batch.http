@@ -1,0 +1,14 @@
+@id=1d48244c-9d22-4da4-90f3-50c28898bf87
+### Create batch
+POST {{url}}/api/batch
+Content-Type: application/json
+
+[{
+  "name": "first batch"
+}]
+
+### Delete batch
+DELETE {{url}}/api/batch/{{id}}
+
+### Get batches
+GET {{url}}/api/batch

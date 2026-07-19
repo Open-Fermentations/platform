@@ -24,3 +24,13 @@ func (b *Batch) FromModel(m sqlc.Batch) *Batch {
 
 	return b
 }
+
+func (b *Batch) FromGetBatchesRow(m sqlc.GetBatchesRow) *Batch {
+	b.ID = m.ID
+	b.Name = m.Name
+	b.UserID = m.UserID
+	b.Created = m.Created
+	b.Modified = m.Modified
+
+	return b
+}

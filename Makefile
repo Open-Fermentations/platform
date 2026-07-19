@@ -68,3 +68,4 @@ watch:
 
 sqlc:
 	sqlc generate
+	mockery

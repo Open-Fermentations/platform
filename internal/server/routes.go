@@ -23,6 +23,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	defaultMiddleware := []route.Middleware{
 		s.corsMiddleware,
+		route.LoggingMiddleware,
 	}
 
 	// Register routes
@@ -30,6 +31,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		route.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
 		route.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)).
 			WithJsonBody(),
+		route.New(http.MethodGet, "/batch", http.HandlerFunc(s.getBatches)),
+		route.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
 	}
 
 	routeHandlers := []*route.Route{

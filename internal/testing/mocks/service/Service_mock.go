@@ -107,6 +107,137 @@ func (_c *MockService_CreateBatch_Call) RunAndReturn(run func(id uuid.UUID, d []
 	return _c
 }
 
+// DeleteBatch provides a mock function for the type MockService
+func (_mock *MockService) DeleteBatch(id uuid.UUID) error {
+	ret := _mock.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteBatch")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) error); ok {
+		r0 = returnFunc(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockService_DeleteBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteBatch'
+type MockService_DeleteBatch_Call struct {
+	*mock.Call
+}
+
+// DeleteBatch is a helper method to define mock.On call
+//   - id uuid.UUID
+func (_e *MockService_Expecter) DeleteBatch(id any) *MockService_DeleteBatch_Call {
+	return &MockService_DeleteBatch_Call{Call: _e.mock.On("DeleteBatch", id)}
+}
+
+func (_c *MockService_DeleteBatch_Call) Run(run func(id uuid.UUID)) *MockService_DeleteBatch_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_DeleteBatch_Call) Return(err error) *MockService_DeleteBatch_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockService_DeleteBatch_Call) RunAndReturn(run func(id uuid.UUID) error) *MockService_DeleteBatch_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetBatches provides a mock function for the type MockService
+func (_mock *MockService) GetBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
+	ret := _mock.Called(name, limit, offset)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBatches")
+	}
+
+	var r0 []model.Batch
+	var r1 int
+	var r2 error
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) ([]model.Batch, int, error)); ok {
+		return returnFunc(name, limit, offset)
+	}
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) []model.Batch); ok {
+		r0 = returnFunc(name, limit, offset)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Batch)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(string, int, int) int); ok {
+		r1 = returnFunc(name, limit, offset)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+	if returnFunc, ok := ret.Get(2).(func(string, int, int) error); ok {
+		r2 = returnFunc(name, limit, offset)
+	} else {
+		r2 = ret.Error(2)
+	}
+	return r0, r1, r2
+}
+
+// MockService_GetBatches_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBatches'
+type MockService_GetBatches_Call struct {
+	*mock.Call
+}
+
+// GetBatches is a helper method to define mock.On call
+//   - name string
+//   - limit int
+//   - offset int
+func (_e *MockService_Expecter) GetBatches(name any, limit any, offset any) *MockService_GetBatches_Call {
+	return &MockService_GetBatches_Call{Call: _e.mock.On("GetBatches", name, limit, offset)}
+}
+
+func (_c *MockService_GetBatches_Call) Run(run func(name string, limit int, offset int)) *MockService_GetBatches_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_GetBatches_Call) Return(batchs []model.Batch, n int, err error) *MockService_GetBatches_Call {
+	_c.Call.Return(batchs, n, err)
+	return _c
+}
+
+func (_c *MockService_GetBatches_Call) RunAndReturn(run func(name string, limit int, offset int) ([]model.Batch, int, error)) *MockService_GetBatches_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Login provides a mock function for the type MockService
 func (_mock *MockService) Login(username string, password string) (*model.User, error) {
 	ret := _mock.Called(username, password)

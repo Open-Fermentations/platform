@@ -1,0 +1,11 @@
+### login
+POST {{url}}/api/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### logout
+GET {{url}}/api/logout

@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -38,4 +39,73 @@ func (q *Queries) CreateBatch(ctx context.Context, arg CreateBatchParams) (Batch
 		&i.Modified,
 	)
 	return i, err
+}
+
+const deleteBatch = `-- name: DeleteBatch :exec
+delete from "batch" where id = $1
+`
+
+// DeleteBatch
+//
+//	delete from "batch" where id = $1
+func (q *Queries) DeleteBatch(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteBatch, id)
+	return err
+}
+
+const getBatches = `-- name: GetBatches :many
+select id, name, user_id, created, modified, count(id) over() as total from "batch"
+where "name" like $1::text
+order by created
+limit $2
+offset $3
+`
+
+type GetBatchesParams struct {
+	Column1 string
+	Limit   int32
+	Offset  int32
+}
+
+type GetBatchesRow struct {
+	ID       uuid.UUID
+	Name     string
+	UserID   uuid.UUID
+	Created  time.Time
+	Modified time.Time
+	Total    int64
+}
+
+// GetBatches
+//
+//	select id, name, user_id, created, modified, count(id) over() as total from "batch"
+//	where "name" like $1::text
+//	order by created
+//	limit $2
+//	offset $3
+func (q *Queries) GetBatches(ctx context.Context, arg GetBatchesParams) ([]GetBatchesRow, error) {
+	rows, err := q.db.Query(ctx, getBatches, arg.Column1, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetBatchesRow
+	for rows.Next() {
+		var i GetBatchesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.UserID,
+			&i.Created,
+			&i.Modified,
+			&i.Total,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
