@@ -145,13 +145,13 @@ func (s *Server) getBatchById(w http.ResponseWriter, r *http.Request) {
 
 	batchJson, err := json.Marshal(batchDto)
 	if err != nil {
-		slog.Error("marshalling batch to json", logging.Err(err), batchDto.Slog())
+		slog.Error("marshalling batch to json", []any{logging.Err(err), batchDto.Slog()}...)
 		http.Error(w, FailedToMarshall, http.StatusInternalServerError)
 		return
 	}
 
 	if _, err := w.Write(batchJson); err != nil {
-		slog.Error("failed to write batch", logging.Err(err), batchDto.Slog())
+		slog.Error("failed to write batch", []any{logging.Err(err), batchDto.Slog()}...)
 		return
 	}
 }
