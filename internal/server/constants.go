@@ -6,6 +6,7 @@ const ServerPrefix = "/api"
 
 const (
 	BadBodyRead         = "Failed to read request body"
+	FailedToUnmarshall  = "Failed to unmarhsall json body"
 	FailedToMarshall    = "Failed to marshall json body"
 	FailedToParseUserId = "Failed to parse user id"
 	FailedToParsePathId = "Failed to parse path id"

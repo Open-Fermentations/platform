@@ -155,3 +155,41 @@ func (s *Server) getBatchById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) putBatchById(w http.ResponseWriter, r *http.Request) {
+	rawBatchId := r.PathValue(IDKey)
+	batchId, err := uuid.Parse(rawBatchId)
+	if err != nil {
+		slog.Error("parsing batch id from path", logging.Err(err), slog.String("id", rawBatchId))
+		http.Error(w, FailedToParsePathId, http.StatusBadRequest)
+		return
+	}
+
+	var d dto.UpdateBatchDTO
+	if err := readBody(r, &d); err != nil {
+		slog.Error("reading body", logging.Err(err))
+		http.Error(w, BadBodyRead, http.StatusBadRequest)
+		return
+	}
+
+	batch, err := s.svc.UpdateBatch(batchId, d.Name)
+	if err != nil {
+		slog.Error("updating batch", []any{logging.Err(err), d.Slog()}...)
+		http.Error(w, "failed to successfully update batch", http.StatusInternalServerError)
+		return
+	}
+
+	batchDto := new(dto.BatchDTO).FromModel(*batch)
+
+	jsonResp, err := json.Marshal(batchDto)
+	if err != nil {
+		slog.Error("marshalling batch dto", []any{logging.Err(err), batchDto.Slog()}...)
+		http.Error(w, FailedToMarshall, http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonResp); err != nil {
+		slog.Error("writing response", logging.Err(err))
+		return
+	}
+}
