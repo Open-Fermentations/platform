@@ -9,6 +9,7 @@ import (
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/env"
 	"open-fermentations/internal/model"
+	"open-fermentations/internal/route"
 	"strconv"
 	"strings"
 	"testing"
@@ -46,7 +47,7 @@ func TestLoginHandler(t *testing.T) {
 			}
 			json, _ := json.Marshal(usr)
 
-			resp, err := http.Post(server.URL, ContentTypeJSON, bytes.NewReader(json))
+			resp, err := http.Post(server.URL, route.ContentTypeJSON, bytes.NewReader(json))
 			if err != nil {
 				t.Fatalf("error making reuqest to server. Err: %v", err.Error())
 			}

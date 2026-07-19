@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
+	"open-fermentations/internal/route"
 
 	"github.com/google/uuid"
 )
@@ -52,7 +53,7 @@ func (s *Server) postBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", ContentTypeJSON)
+	w.Header().Set("Content-Type", route.ContentTypeJSON)
 	w.WriteHeader(http.StatusCreated)
 	if _, err := w.Write(jsonResp); err != nil {
 		slog.Error("writing response", logging.Err(err))

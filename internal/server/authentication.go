@@ -10,6 +10,7 @@ import (
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
 	"open-fermentations/internal/model"
+	"open-fermentations/internal/route"
 	"open-fermentations/internal/service"
 	"strings"
 	"time"
@@ -105,7 +106,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := generateCookie(s.env.Cookie.Key, token, s.env.Cookie.Duration, s.env.Cookie.Secure)
 	http.SetCookie(w, cookie)
 
-	w.Header().Set("Content-Type", ContentTypeJSON)
+	w.Header().Set("Content-Type", route.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(jsonResp); err != nil {
 		slog.Error("writing response", logging.Err(err))
@@ -115,7 +116,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := &http.Cookie{
-		Name:     "auth_token",
+		Name:     s.env.Cookie.Key,
 		Value:    "",
 		Path:     "/",
 		Expires:  time.Unix(0, 0),
