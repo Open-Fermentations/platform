@@ -7,12 +7,16 @@ import (
 	"open-fermentations/internal/model"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 // CreateBatch implements [Service].
 func (s service) CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
 	u, err := s.db.Querier().GetUserById(s.ctx, id)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -48,6 +52,9 @@ func (s service) GetBatches(name string, limit int, offset int) ([]model.Batch, 
 		Offset:  int32(offset),
 	})
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []model.Batch{}, 0, nil
+		}
 		return nil, 0, err
 	}
 
@@ -62,4 +69,17 @@ func (s service) GetBatches(name string, limit int, offset int) ([]model.Batch, 
 	}
 
 	return batchModels, total, nil
+}
+
+// GetBatchById implements [Service].
+func (s service) GetBatchById(id uuid.UUID) (*model.Batch, error) {
+	batch, err := s.db.Querier().GetBatchById(s.ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return new(model.Batch).FromModel(batch), nil
 }

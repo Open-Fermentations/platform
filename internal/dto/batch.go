@@ -36,6 +36,18 @@ type BatchDTO struct {
 	Modified time.Time `json:"modified"`
 }
 
+// Slog implements [logging.Slog].
+func (d BatchDTO) Slog() []any {
+	return []any{
+		slog.Group("batch",
+			slog.String("id", d.ID.String()),
+			slog.String("name", d.Name),
+			slog.String("userId", d.UserID.String()),
+			slog.Time("created", d.Created),
+			slog.Time("modified", d.Modified),
+		)}
+}
+
 func (d *BatchDTO) FromModel(m model.Batch) *BatchDTO {
 	d.ID = m.ID
 	d.Name = m.Name
@@ -45,3 +57,5 @@ func (d *BatchDTO) FromModel(m model.Batch) *BatchDTO {
 
 	return d
 }
+
+var _ logging.Slog = BatchDTO{}

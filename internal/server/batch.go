@@ -119,3 +119,39 @@ func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) getBatchById(w http.ResponseWriter, r *http.Request) {
+	rawId := r.PathValue(IDKey)
+	id, err := uuid.Parse(rawId)
+	if err != nil {
+		slog.Error("parsing batch id from path", logging.Err(err), slog.String("id", rawId))
+		http.Error(w, FailedToParsePathId, http.StatusBadRequest)
+		return
+	}
+
+	batch, err := s.svc.GetBatchById(id)
+	if err != nil {
+		slog.Error("fetching batch by id", logging.Err(err), slog.String("id", id.String()))
+		http.Error(w, "failed to fetch batch by id", http.StatusInternalServerError)
+		return
+	}
+
+	if batch == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	batchDto := new(dto.BatchDTO).FromModel(*batch)
+
+	batchJson, err := json.Marshal(batchDto)
+	if err != nil {
+		slog.Error("marshalling batch to json", []any{logging.Err(err), batchDto.Slog()}...)
+		http.Error(w, FailedToMarshall, http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(batchJson); err != nil {
+		slog.Error("failed to write batch", []any{logging.Err(err), batchDto.Slog()}...)
+		return
+	}
+}

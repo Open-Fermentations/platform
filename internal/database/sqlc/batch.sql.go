@@ -53,6 +53,26 @@ func (q *Queries) DeleteBatch(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getBatchById = `-- name: GetBatchById :one
+select id, name, user_id, created, modified from "batch" where id = $1
+`
+
+// GetBatchById
+//
+//	select id, name, user_id, created, modified from "batch" where id = $1
+func (q *Queries) GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error) {
+	row := q.db.QueryRow(ctx, getBatchById, id)
+	var i Batch
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.UserID,
+		&i.Created,
+		&i.Modified,
+	)
+	return i, err
+}
+
 const getBatches = `-- name: GetBatches :many
 select id, name, user_id, created, modified, count(id) over() as total from "batch"
 where "name" like $1::text

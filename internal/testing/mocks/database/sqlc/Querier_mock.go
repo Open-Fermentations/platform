@@ -219,6 +219,72 @@ func (_c *MockQuerier_DeleteBatch_Call) RunAndReturn(run func(ctx context.Contex
 	return _c
 }
 
+// GetBatchById provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetBatchById(ctx context.Context, id uuid.UUID) (sqlc.Batch, error) {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBatchById")
+	}
+
+	var r0 sqlc.Batch
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (sqlc.Batch, error)); ok {
+		return returnFunc(ctx, id)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) sqlc.Batch); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Get(0).(sqlc.Batch)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = returnFunc(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetBatchById_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBatchById'
+type MockQuerier_GetBatchById_Call struct {
+	*mock.Call
+}
+
+// GetBatchById is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id uuid.UUID
+func (_e *MockQuerier_Expecter) GetBatchById(ctx any, id any) *MockQuerier_GetBatchById_Call {
+	return &MockQuerier_GetBatchById_Call{Call: _e.mock.On("GetBatchById", ctx, id)}
+}
+
+func (_c *MockQuerier_GetBatchById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_GetBatchById_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetBatchById_Call) Return(batch sqlc.Batch, err error) *MockQuerier_GetBatchById_Call {
+	_c.Call.Return(batch, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetBatchById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (sqlc.Batch, error)) *MockQuerier_GetBatchById_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetBatches provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) GetBatches(ctx context.Context, arg sqlc.GetBatchesParams) ([]sqlc.GetBatchesRow, error) {
 	ret := _mock.Called(ctx, arg)

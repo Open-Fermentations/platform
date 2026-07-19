@@ -158,6 +158,68 @@ func (_c *MockService_DeleteBatch_Call) RunAndReturn(run func(id uuid.UUID) erro
 	return _c
 }
 
+// GetBatchById provides a mock function for the type MockService
+func (_mock *MockService) GetBatchById(id uuid.UUID) (*model.Batch, error) {
+	ret := _mock.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBatchById")
+	}
+
+	var r0 *model.Batch
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) (*model.Batch, error)); ok {
+		return returnFunc(id)
+	}
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) *model.Batch); ok {
+		r0 = returnFunc(id)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Batch)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(uuid.UUID) error); ok {
+		r1 = returnFunc(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_GetBatchById_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBatchById'
+type MockService_GetBatchById_Call struct {
+	*mock.Call
+}
+
+// GetBatchById is a helper method to define mock.On call
+//   - id uuid.UUID
+func (_e *MockService_Expecter) GetBatchById(id any) *MockService_GetBatchById_Call {
+	return &MockService_GetBatchById_Call{Call: _e.mock.On("GetBatchById", id)}
+}
+
+func (_c *MockService_GetBatchById_Call) Run(run func(id uuid.UUID)) *MockService_GetBatchById_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_GetBatchById_Call) Return(batch *model.Batch, err error) *MockService_GetBatchById_Call {
+	_c.Call.Return(batch, err)
+	return _c
+}
+
+func (_c *MockService_GetBatchById_Call) RunAndReturn(run func(id uuid.UUID) (*model.Batch, error)) *MockService_GetBatchById_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetBatches provides a mock function for the type MockService
 func (_mock *MockService) GetBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
 	ret := _mock.Called(name, limit, offset)

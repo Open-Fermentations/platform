@@ -17,6 +17,7 @@ type Service interface {
 	CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)
 	DeleteBatch(id uuid.UUID) error
 	GetBatches(name string, limit, offset int) ([]model.Batch, int, error)
+	GetBatchById(id uuid.UUID) (*model.Batch, error)
 }
 
 type service struct {
