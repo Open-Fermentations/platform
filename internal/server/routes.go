@@ -23,6 +23,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	defaultMiddleware := []route.Middleware{
 		s.corsMiddleware,
+		route.LoggingMiddleware,
 	}
 
 	// Register routes
