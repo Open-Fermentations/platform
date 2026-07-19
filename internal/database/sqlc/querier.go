@@ -56,6 +56,11 @@ type Querier interface {
 	//  from "user"
 	//  where username = $1
 	GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error)
+	//UpdateBatch
+	//
+	//  update "batch" set "name" = $2 where id = $1
+	//  returning id, "name", "user_id", created, modified
+	UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error)
 }
 
 var _ Querier = (*Queries)(nil)
