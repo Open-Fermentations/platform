@@ -1,4 +1,4 @@
-@id=d0245313-651a-481d-ba54-3183e39271e1
+@id=d0245313-651a-481d-ba54-3183e39271e6
 ### Create batch
 POST {{url}}/api/batch
 Content-Type: application/json
@@ -15,3 +15,11 @@ GET {{url}}/api/batch
 
 ### Get batch
 GET {{url}}/api/batch/{{id}}
+
+### Update batch
+PUT {{url}}/api/batch/{{id}}
+Content-Type: application/json
+
+{
+  "name": "new name"
+}

@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 func generateJwt(key []byte, exp time.Duration, u *model.User) (string, error) {
@@ -165,7 +166,13 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
-			if id, ok := claims["id"].(string); ok {
+			if rawId, ok := claims["id"].(string); ok {
+				id, err := uuid.Parse(rawId)
+				if err != nil {
+					slog.Error("could not parse user id from claims", logging.Err(err), slog.String("id", rawId))
+					http.Error(w, "unauthorized", http.StatusUnauthorized)
+					return
+				}
 				ctx = context.WithValue(ctx, ContextUserIdKey, id)
 			} else {
 				slog.Error("could not get 'id' claim from token")

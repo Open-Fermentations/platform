@@ -129,3 +129,30 @@ func (q *Queries) GetBatches(ctx context.Context, arg GetBatchesParams) ([]GetBa
 	}
 	return items, nil
 }
+
+const updateBatch = `-- name: UpdateBatch :one
+update "batch" set "name" = $2 where id = $1
+returning id, "name", "user_id", created, modified
+`
+
+type UpdateBatchParams struct {
+	ID   uuid.UUID
+	Name string
+}
+
+// UpdateBatch
+//
+//	update "batch" set "name" = $2 where id = $1
+//	returning id, "name", "user_id", created, modified
+func (q *Queries) UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error) {
+	row := q.db.QueryRow(ctx, updateBatch, arg.ID, arg.Name)
+	var i Batch
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.UserID,
+		&i.Created,
+		&i.Modified,
+	)
+	return i, err
+}

@@ -15,3 +15,7 @@ offset $3;
 
 -- name: GetBatchById :one
 select * from "batch" where id = $1;
+
+-- name: UpdateBatch :one
+update "batch" set "name" = $2 where id = $1
+returning id, "name", "user_id", created, modified;

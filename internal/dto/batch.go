@@ -59,3 +59,14 @@ func (d *BatchDTO) FromModel(m model.Batch) *BatchDTO {
 }
 
 var _ logging.Slog = BatchDTO{}
+
+type UpdateBatchDTO struct {
+	Name string `json:"name"`
+}
+
+// Slog implements [logging.Slog].
+func (u UpdateBatchDTO) Slog() []any {
+	return []any{slog.Group("update_batch_dto", slog.String("name", u.Name))}
+}
+
+var _ logging.Slog = UpdateBatchDTO{}
