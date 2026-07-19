@@ -12,7 +12,7 @@ func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
 	var b []dto.CreateDeviceDTO
 	if err := readBody(r, &b); err != nil {
 		slog.Error("reading create device dto body", logging.Err(err))
-		http.Error(w, BadBodyRead, http.StatusBadRequest)
+		http.Error(w, FailedReadingBody, http.StatusBadRequest)
 		return
 	}
 

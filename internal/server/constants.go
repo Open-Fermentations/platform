@@ -5,11 +5,12 @@ const ContextUserIdKey = "user_id"
 const ServerPrefix = "/api"
 
 const (
-	BadBodyRead         = "Failed to read request body"
-	FailedToUnmarshall  = "Failed to unmarhsall json body"
-	FailedToMarshall    = "Failed to marshall json body"
-	FailedToParseUserId = "Failed to parse user id"
-	FailedToParsePathId = "Failed to parse path id"
+	Unauthorised        = "Unauthorised"
+	FailedReadingBody   = "Failed to read request body"
+	FailedUnmarshalling = "Failed to unmarhsall json body"
+	FailedMarshalling   = "Failed to marshall json body"
+	FailedParsingUserId = "Failed to parse user id"
+	FailedParsingPathId = "Failed to parse path id"
 	FailedParsingLimit  = "Failed to parse limit"
 	FailedParsingOffset = "Failed to parse offset"
 )
