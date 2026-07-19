@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -40,4 +41,63 @@ func (q *Queries) CreateDevice(ctx context.Context, arg CreateDeviceParams) (Dev
 		&i.Modified,
 	)
 	return i, err
+}
+
+const searchDevices = `-- name: SearchDevices :many
+select id, name, mac_address, user_id, created, modified, count(id) over() as total from "device"
+where "name" like $1::text
+order by created 
+limit $3::integer 
+offset $2::integer
+`
+
+type SearchDevicesParams struct {
+	Name      string
+	Offsetval int32
+	Limitval  int32
+}
+
+type SearchDevicesRow struct {
+	ID         uuid.UUID
+	Name       string
+	MacAddress []byte
+	UserID     uuid.UUID
+	Created    time.Time
+	Modified   time.Time
+	Total      int64
+}
+
+// SearchDevices
+//
+//	select id, name, mac_address, user_id, created, modified, count(id) over() as total from "device"
+//	where "name" like $1::text
+//	order by created
+//	limit $3::integer
+//	offset $2::integer
+func (q *Queries) SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error) {
+	rows, err := q.db.Query(ctx, searchDevices, arg.Name, arg.Offsetval, arg.Limitval)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchDevicesRow
+	for rows.Next() {
+		var i SearchDevicesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.MacAddress,
+			&i.UserID,
+			&i.Created,
+			&i.Modified,
+			&i.Total,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

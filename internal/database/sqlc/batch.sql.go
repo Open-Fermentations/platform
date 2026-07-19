@@ -96,7 +96,7 @@ type GetBatchesRow struct {
 	Total    int64
 }
 
-// GetBatches
+// TODO: rename to Search
 //
 //	select id, name, user_id, created, modified, count(id) over() as total from "batch"
 //	where "name" like $1::text
