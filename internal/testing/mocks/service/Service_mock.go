@@ -39,47 +39,47 @@ func (_m *MockService) EXPECT() *MockService_Expecter {
 	return &MockService_Expecter{mock: &_m.Mock}
 }
 
-// CreateBatch provides a mock function for the type MockService
-func (_mock *MockService) CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
-	ret := _mock.Called(id, d)
+// CreateBatches provides a mock function for the type MockService
+func (_mock *MockService) CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
+	ret := _mock.Called(userId, d)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CreateBatch")
+		panic("no return value specified for CreateBatches")
 	}
 
 	var r0 []model.Batch
 	var r1 error
 	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateBatchDTO) ([]model.Batch, error)); ok {
-		return returnFunc(id, d)
+		return returnFunc(userId, d)
 	}
 	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateBatchDTO) []model.Batch); ok {
-		r0 = returnFunc(id, d)
+		r0 = returnFunc(userId, d)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]model.Batch)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, []dto.CreateBatchDTO) error); ok {
-		r1 = returnFunc(id, d)
+		r1 = returnFunc(userId, d)
 	} else {
 		r1 = ret.Error(1)
 	}
 	return r0, r1
 }
 
-// MockService_CreateBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateBatch'
-type MockService_CreateBatch_Call struct {
+// MockService_CreateBatches_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateBatches'
+type MockService_CreateBatches_Call struct {
 	*mock.Call
 }
 
-// CreateBatch is a helper method to define mock.On call
-//   - id uuid.UUID
+// CreateBatches is a helper method to define mock.On call
+//   - userId uuid.UUID
 //   - d []dto.CreateBatchDTO
-func (_e *MockService_Expecter) CreateBatch(id any, d any) *MockService_CreateBatch_Call {
-	return &MockService_CreateBatch_Call{Call: _e.mock.On("CreateBatch", id, d)}
+func (_e *MockService_Expecter) CreateBatches(userId any, d any) *MockService_CreateBatches_Call {
+	return &MockService_CreateBatches_Call{Call: _e.mock.On("CreateBatches", userId, d)}
 }
 
-func (_c *MockService_CreateBatch_Call) Run(run func(id uuid.UUID, d []dto.CreateBatchDTO)) *MockService_CreateBatch_Call {
+func (_c *MockService_CreateBatches_Call) Run(run func(userId uuid.UUID, d []dto.CreateBatchDTO)) *MockService_CreateBatches_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 uuid.UUID
 		if args[0] != nil {
@@ -97,12 +97,80 @@ func (_c *MockService_CreateBatch_Call) Run(run func(id uuid.UUID, d []dto.Creat
 	return _c
 }
 
-func (_c *MockService_CreateBatch_Call) Return(batchs []model.Batch, err error) *MockService_CreateBatch_Call {
+func (_c *MockService_CreateBatches_Call) Return(batchs []model.Batch, err error) *MockService_CreateBatches_Call {
 	_c.Call.Return(batchs, err)
 	return _c
 }
 
-func (_c *MockService_CreateBatch_Call) RunAndReturn(run func(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)) *MockService_CreateBatch_Call {
+func (_c *MockService_CreateBatches_Call) RunAndReturn(run func(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)) *MockService_CreateBatches_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateDevices provides a mock function for the type MockService
+func (_mock *MockService) CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error) {
+	ret := _mock.Called(userId, d)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateDevices")
+	}
+
+	var r0 []model.Device
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateDeviceDTO) ([]model.Device, error)); ok {
+		return returnFunc(userId, d)
+	}
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateDeviceDTO) []model.Device); ok {
+		r0 = returnFunc(userId, d)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Device)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, []dto.CreateDeviceDTO) error); ok {
+		r1 = returnFunc(userId, d)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_CreateDevices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateDevices'
+type MockService_CreateDevices_Call struct {
+	*mock.Call
+}
+
+// CreateDevices is a helper method to define mock.On call
+//   - userId uuid.UUID
+//   - d []dto.CreateDeviceDTO
+func (_e *MockService_Expecter) CreateDevices(userId any, d any) *MockService_CreateDevices_Call {
+	return &MockService_CreateDevices_Call{Call: _e.mock.On("CreateDevices", userId, d)}
+}
+
+func (_c *MockService_CreateDevices_Call) Run(run func(userId uuid.UUID, d []dto.CreateDeviceDTO)) *MockService_CreateDevices_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		var arg1 []dto.CreateDeviceDTO
+		if args[1] != nil {
+			arg1 = args[1].([]dto.CreateDeviceDTO)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_CreateDevices_Call) Return(devices []model.Device, err error) *MockService_CreateDevices_Call {
+	_c.Call.Return(devices, err)
+	return _c
+}
+
+func (_c *MockService_CreateDevices_Call) RunAndReturn(run func(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)) *MockService_CreateDevices_Call {
 	_c.Call.Return(run)
 	return _c
 }

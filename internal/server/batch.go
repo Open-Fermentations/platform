@@ -35,7 +35,7 @@ func (s *Server) postBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ms, err := s.svc.CreateBatch(userId, b)
+	ms, err := s.svc.CreateBatches(userId, b)
 	if err != nil {
 		slog.Error("creating batch", logging.Err(err))
 		http.Error(w, "error creating batch", http.StatusInternalServerError)
