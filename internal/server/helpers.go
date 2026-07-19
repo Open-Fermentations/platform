@@ -5,6 +5,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"open-fermentations/internal/route"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -38,4 +39,8 @@ func readBody(r *http.Request, d interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func setContentTypeJson(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", route.ContentTypeJSON)
 }
