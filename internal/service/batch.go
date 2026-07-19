@@ -83,3 +83,19 @@ func (s service) GetBatchById(id uuid.UUID) (*model.Batch, error) {
 
 	return new(model.Batch).FromModel(batch), nil
 }
+
+// UpdateBatch implements [Service].
+func (s service) UpdateBatch(id uuid.UUID, name string) (*model.Batch, error) {
+	batch, err := s.db.Querier().UpdateBatch(s.ctx, sqlc.UpdateBatchParams{
+		ID:   id,
+		Name: name,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return new(model.Batch).FromModel(batch), nil
+}

@@ -367,3 +367,71 @@ func (_c *MockService_Login_Call) RunAndReturn(run func(username string, passwor
 	_c.Call.Return(run)
 	return _c
 }
+
+// UpdateBatch provides a mock function for the type MockService
+func (_mock *MockService) UpdateBatch(id uuid.UUID, name string) (*model.Batch, error) {
+	ret := _mock.Called(id, name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateBatch")
+	}
+
+	var r0 *model.Batch
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, string) (*model.Batch, error)); ok {
+		return returnFunc(id, name)
+	}
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, string) *model.Batch); ok {
+		r0 = returnFunc(id, name)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Batch)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, string) error); ok {
+		r1 = returnFunc(id, name)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_UpdateBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateBatch'
+type MockService_UpdateBatch_Call struct {
+	*mock.Call
+}
+
+// UpdateBatch is a helper method to define mock.On call
+//   - id uuid.UUID
+//   - name string
+func (_e *MockService_Expecter) UpdateBatch(id any, name any) *MockService_UpdateBatch_Call {
+	return &MockService_UpdateBatch_Call{Call: _e.mock.On("UpdateBatch", id, name)}
+}
+
+func (_c *MockService_UpdateBatch_Call) Run(run func(id uuid.UUID, name string)) *MockService_UpdateBatch_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_UpdateBatch_Call) Return(batch *model.Batch, err error) *MockService_UpdateBatch_Call {
+	_c.Call.Return(batch, err)
+	return _c
+}
+
+func (_c *MockService_UpdateBatch_Call) RunAndReturn(run func(id uuid.UUID, name string) (*model.Batch, error)) *MockService_UpdateBatch_Call {
+	_c.Call.Return(run)
+	return _c
+}

@@ -18,6 +18,7 @@ type Service interface {
 	DeleteBatch(id uuid.UUID) error
 	GetBatches(name string, limit, offset int) ([]model.Batch, int, error)
 	GetBatchById(id uuid.UUID) (*model.Batch, error)
+	UpdateBatch(id uuid.UUID, name string) (*model.Batch, error)
 }
 
 type service struct {
