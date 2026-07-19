@@ -61,7 +61,7 @@ func TestLoginHandler(t *testing.T) {
 
 func TestLogoutHandler(t *testing.T) {
 	t.Run("sets cookie with blank value", testCase(func(t *testing.T, c *testContext) {
-		c.s.env = &env.Env{Cookie: env.CookieEnv{Secure: false}}
+		c.s.env = &env.Env{Cookie: env.CookieEnv{Secure: false, Key: "some_key"}}
 		server := httptest.NewServer(http.HandlerFunc(c.s.logoutHandler))
 		defer server.Close()
 
@@ -75,7 +75,7 @@ func TestLogoutHandler(t *testing.T) {
 		assert.NotEmpty(t, cookie)
 
 		parsedCookie := parseCookie(cookie)
-		assert.EqualValues(t, "", parsedCookie["auth_token"])
+		assert.EqualValues(t, "", parsedCookie[c.s.env.Cookie.Key])
 	}))
 }
 
