@@ -28,11 +28,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// Register routes
 	authenticatedRoutesWithPrefix := []*route.Route{
 		route.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
+		route.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)).
+			WithJsonBody(),
 	}
 
 	routeHandlers := []*route.Route{
 		route.New(http.MethodPost, "/login", http.HandlerFunc(s.loginHandler)).
-			WithPrefix(ServerPrefix),
+			WithPrefix(ServerPrefix).
+			WithJsonBody(),
 		route.New(http.MethodGet, "/health", http.HandlerFunc(s.healthHandler)),
 	}
 

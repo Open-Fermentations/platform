@@ -18,10 +18,14 @@ values ($1, $2)
 `
 
 type CreateUserParams struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string
+	Password string
 }
 
+// CreateUser
+//
+//	insert into "user" (username, password)
+//	values ($1, $2)
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	_, err := q.db.Exec(ctx, createUser, arg.Username, arg.Password)
 	return err
@@ -34,12 +38,17 @@ where id = $1
 `
 
 type GetUserByIdRow struct {
-	ID       uuid.UUID `json:"id"`
-	Username string    `json:"username"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
+	ID       uuid.UUID
+	Username string
+	Created  time.Time
+	Modified time.Time
 }
 
+// GetUserById
+//
+//	select id, username, created, modified
+//	from "user"
+//	where id = $1
 func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error) {
 	row := q.db.QueryRow(ctx, getUserById, id)
 	var i GetUserByIdRow
@@ -59,12 +68,17 @@ where username = $1
 `
 
 type GetUserByUsernameRow struct {
-	ID       uuid.UUID `json:"id"`
-	Username string    `json:"username"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
+	ID       uuid.UUID
+	Username string
+	Created  time.Time
+	Modified time.Time
 }
 
+// GetUserByUsername
+//
+//	select id, username, created, modified
+//	from "user"
+//	where username = $1
 func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
 	row := q.db.QueryRow(ctx, getUserByUsername, username)
 	var i GetUserByUsernameRow
@@ -84,13 +98,18 @@ where username = $1
 `
 
 type GetUserByUsernameWithPasswordRow struct {
-	ID       uuid.UUID `json:"id"`
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
+	ID       uuid.UUID
+	Username string
+	Password string
+	Created  time.Time
+	Modified time.Time
 }
 
+// GetUserByUsernameWithPassword
+//
+//	select id, username, password, created, modified
+//	from "user"
+//	where username = $1
 func (q *Queries) GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error) {
 	row := q.db.QueryRow(ctx, getUserByUsernameWithPassword, username)
 	var i GetUserByUsernameWithPasswordRow

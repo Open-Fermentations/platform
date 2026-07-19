@@ -25,6 +25,10 @@ func (r *Route) WithPrefix(prefix string) *Route {
 	return r
 }
 
+func (r *Route) WithJsonBody() *Route {
+	return r.WithMiddleware(jsonBodyMiddleware)
+}
+
 func New(method, route string, handler http.Handler) *Route {
 	return &Route{
 		Route:   route,

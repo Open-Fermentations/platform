@@ -35,8 +35,8 @@ func (e *ReadingTypeEnum) Scan(src interface{}) error {
 }
 
 type NullReadingTypeEnum struct {
-	ReadingTypeEnum ReadingTypeEnum `json:"reading_type_enum"`
-	Valid           bool            `json:"valid"` // Valid is true if ReadingTypeEnum is not NULL
+	ReadingTypeEnum ReadingTypeEnum
+	Valid           bool // Valid is true if ReadingTypeEnum is not NULL
 }
 
 // Scan implements the Scanner interface.
@@ -58,69 +58,69 @@ func (ns NullReadingTypeEnum) Value() (driver.Value, error) {
 }
 
 type Batch struct {
-	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name"`
-	UserID   uuid.UUID `json:"user_id"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
+	ID       uuid.UUID
+	Name     string
+	UserID   uuid.UUID
+	Created  time.Time
+	Modified time.Time
 }
 
 type BatchReading struct {
-	ID       uuid.UUID `json:"id"`
-	BatchID  uuid.UUID `json:"batch_id"`
-	UserID   uuid.UUID `json:"user_id"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
+	ID       uuid.UUID
+	BatchID  uuid.UUID
+	UserID   uuid.UUID
+	Created  time.Time
+	Modified time.Time
 }
 
 type Device struct {
-	ID         uuid.UUID `json:"id"`
-	Name       string    `json:"name"`
-	MacAddress []byte    `json:"mac_address"`
-	UserID     uuid.UUID `json:"user_id"`
-	Created    time.Time `json:"created"`
-	Modified   time.Time `json:"modified"`
+	ID         uuid.UUID
+	Name       string
+	MacAddress []byte
+	UserID     uuid.UUID
+	Created    time.Time
+	Modified   time.Time
 }
 
 type DeviceCapability struct {
-	ID         uuid.UUID       `json:"id"`
-	DeviceID   uuid.UUID       `json:"device_id"`
-	Capability ReadingTypeEnum `json:"capability"`
-	Created    time.Time       `json:"created"`
-	Modified   time.Time       `json:"modified"`
+	ID         uuid.UUID
+	DeviceID   uuid.UUID
+	Capability ReadingTypeEnum
+	Created    time.Time
+	Modified   time.Time
 }
 
 type Permission struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
+	ID   uuid.UUID
+	Name string
 }
 
 type Reading struct {
-	ID          uuid.UUID       `json:"id"`
-	ReadingType ReadingTypeEnum `json:"reading_type"`
-	Value       float32         `json:"value"`
-	DeviceID    uuid.UUID       `json:"device_id"`
-	UserID      uuid.UUID       `json:"user_id"`
-	Created     time.Time       `json:"created"`
-	Modified    time.Time       `json:"modified"`
+	ID          uuid.UUID
+	ReadingType ReadingTypeEnum
+	Value       float32
+	DeviceID    uuid.UUID
+	UserID      uuid.UUID
+	Created     time.Time
+	Modified    time.Time
 }
 
 type Role struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
+	ID   uuid.UUID
+	Name string
 }
 
 type RolePermission struct {
-	ID           uuid.UUID `json:"id"`
-	RoleID       uuid.UUID `json:"role_id"`
-	PermissionID uuid.UUID `json:"permission_id"`
+	ID           uuid.UUID
+	RoleID       uuid.UUID
+	PermissionID uuid.UUID
 }
 
 type User struct {
-	ID       uuid.UUID `json:"id"`
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	Active   bool      `json:"active"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
+	ID       uuid.UUID
+	Username string
+	Password string
+	Active   bool
+	Created  time.Time
+	Modified time.Time
 }

@@ -11,9 +11,34 @@ import (
 )
 
 type Querier interface {
+	//CreateBatch
+	//
+	//  insert into "batch" ("name", user_id)
+	//  values ($1, $2)
+	//  returning id, "name", user_id, created, modified
+	CreateBatch(ctx context.Context, arg CreateBatchParams) (Batch, error)
+	//CreateUser
+	//
+	//  insert into "user" (username, password)
+	//  values ($1, $2)
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	//GetUserById
+	//
+	//  select id, username, created, modified
+	//  from "user"
+	//  where id = $1
 	GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error)
+	//GetUserByUsername
+	//
+	//  select id, username, created, modified
+	//  from "user"
+	//  where username = $1
 	GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error)
+	//GetUserByUsernameWithPassword
+	//
+	//  select id, username, password, created, modified
+	//  from "user"
+	//  where username = $1
 	GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error)
 }
 
