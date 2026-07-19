@@ -1,11 +1,11 @@
 ### login
-POST http://localhost:8088/api/login
+POST {{url}}/api/login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin"
+  "username": "{{username}}",
+  "password": "{{password}}"
 }
 
 ### logout
-GET http://localhost:8088/api/logout
+GET {{url}}/api/logout

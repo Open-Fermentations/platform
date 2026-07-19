@@ -1,7 +1,10 @@
 ### Create batch
-POST http://localhost:8088/api/batch
+POST {{url}}/api/batch
 Content-Type: application/json
 
 [{
   "name": "first batch"
 }]
+
+### Delet batch
+DELETE {{url}}/api/batch/some-id
