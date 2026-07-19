@@ -36,14 +36,6 @@ type Querier interface {
 	//
 	//  select id, name, user_id, created, modified from "batch" where id = $1
 	GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error)
-	// TODO: rename to Search
-	//
-	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
-	//  where "name" like $1::text
-	//  order by created
-	//  limit $2
-	//  offset $3
-	GetBatches(ctx context.Context, arg GetBatchesParams) ([]GetBatchesRow, error)
 	//GetUserById
 	//
 	//  select id, username, created, modified
@@ -62,6 +54,14 @@ type Querier interface {
 	//  from "user"
 	//  where username = $1
 	GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error)
+	//SearchBatches
+	//
+	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
+	//  where "name" like $1::text
+	//  order by created
+	//  limit $3::integer
+	//  offset $2::integer
+	SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error)
 	//SearchDevices
 	//
 	//  select id, name, mac_address, user_id, created, modified, count(id) over() as total from "device"

@@ -71,7 +71,7 @@ func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
 	limit := getIntQueryParam(r, "limit", 50)
 	offset := getIntQueryParam(r, "offset", 0)
 
-	batches, total, err := s.svc.GetBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
+	batches, total, err := s.svc.SearchBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
 	if err != nil {
 		slog.Error("getting batches from service", logging.Err(err), slog.Group("query",
 			slog.Int("limit", limit),

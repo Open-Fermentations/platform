@@ -73,21 +73,21 @@ func (q *Queries) GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error)
 	return i, err
 }
 
-const getBatches = `-- name: GetBatches :many
+const searchBatches = `-- name: SearchBatches :many
 select id, name, user_id, created, modified, count(id) over() as total from "batch"
 where "name" like $1::text
 order by created
-limit $2
-offset $3
+limit $3::integer
+offset $2::integer
 `
 
-type GetBatchesParams struct {
-	Column1 string
-	Limit   int32
-	Offset  int32
+type SearchBatchesParams struct {
+	Name      string
+	Offsetval int32
+	Limitval  int32
 }
 
-type GetBatchesRow struct {
+type SearchBatchesRow struct {
 	ID       uuid.UUID
 	Name     string
 	UserID   uuid.UUID
@@ -96,22 +96,22 @@ type GetBatchesRow struct {
 	Total    int64
 }
 
-// TODO: rename to Search
+// SearchBatches
 //
 //	select id, name, user_id, created, modified, count(id) over() as total from "batch"
 //	where "name" like $1::text
 //	order by created
-//	limit $2
-//	offset $3
-func (q *Queries) GetBatches(ctx context.Context, arg GetBatchesParams) ([]GetBatchesRow, error) {
-	rows, err := q.db.Query(ctx, getBatches, arg.Column1, arg.Limit, arg.Offset)
+//	limit $3::integer
+//	offset $2::integer
+func (q *Queries) SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error) {
+	rows, err := q.db.Query(ctx, searchBatches, arg.Name, arg.Offsetval, arg.Limitval)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetBatchesRow
+	var items []SearchBatchesRow
 	for rows.Next() {
-		var i GetBatchesRow
+		var i SearchBatchesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
