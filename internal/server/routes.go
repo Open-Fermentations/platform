@@ -32,6 +32,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		route.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)).
 			WithJsonBody(),
 		route.New(http.MethodGet, "/batch", http.HandlerFunc(s.getBatches)),
+		route.New(http.MethodGet, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.getBatchById)),
 		route.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
 	}
 

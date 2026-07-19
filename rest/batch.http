@@ -1,4 +1,4 @@
-@id=1d48244c-9d22-4da4-90f3-50c28898bf87
+@id=d0245313-651a-481d-ba54-3183e39271e1
 ### Create batch
 POST {{url}}/api/batch
 Content-Type: application/json
@@ -12,3 +12,6 @@ DELETE {{url}}/api/batch/{{id}}
 
 ### Get batches
 GET {{url}}/api/batch
+
+### Get batch
+GET {{url}}/api/batch/{{id}}

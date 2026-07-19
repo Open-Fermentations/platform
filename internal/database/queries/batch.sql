@@ -12,3 +12,6 @@ where "name" like $1::text
 order by created
 limit $2
 offset $3;
+
+-- name: GetBatchById :one
+select * from "batch" where id = $1;
