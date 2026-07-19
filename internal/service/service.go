@@ -15,6 +15,7 @@ type Service interface {
 	Login(username string, password string) (*model.User, error)
 
 	CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)
+	DeleteBatch(id uuid.UUID) error
 }
 
 type service struct {

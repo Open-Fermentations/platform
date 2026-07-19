@@ -22,6 +22,10 @@ type Querier interface {
 	//  insert into "user" (username, password)
 	//  values ($1, $2)
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	//DeleteBatch
+	//
+	//  delete from "batch" where id = $1
+	DeleteBatch(ctx context.Context, id uuid.UUID) error
 	//GetUserById
 	//
 	//  select id, username, created, modified

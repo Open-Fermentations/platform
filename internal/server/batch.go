@@ -60,3 +60,21 @@ func (s *Server) postBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) deleteBatch(w http.ResponseWriter, r *http.Request) {
+	idString := r.PathValue(IDKey)
+	id, err := uuid.Parse(idString)
+	if err != nil {
+		slog.Error("parsing batch id", slog.String(IDKey, idString), logging.Err(err))
+		http.Error(w, FailedToParsePathId, http.StatusBadRequest)
+		return
+	}
+
+	if err = s.svc.DeleteBatch(id); err != nil {
+		slog.Error("deleting batch", logging.Err(err))
+		http.Error(w, "Failed to successfully delete batch", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

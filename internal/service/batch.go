@@ -33,3 +33,8 @@ func (s service) CreateBatch(id uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batc
 
 	return batches, nil
 }
+
+// DeleteBatch implements [Service].
+func (s service) DeleteBatch(id uuid.UUID) error {
+	return s.db.Querier().DeleteBatch(s.ctx, id)
+}

@@ -107,6 +107,57 @@ func (_c *MockService_CreateBatch_Call) RunAndReturn(run func(id uuid.UUID, d []
 	return _c
 }
 
+// DeleteBatch provides a mock function for the type MockService
+func (_mock *MockService) DeleteBatch(id uuid.UUID) error {
+	ret := _mock.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteBatch")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) error); ok {
+		r0 = returnFunc(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockService_DeleteBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteBatch'
+type MockService_DeleteBatch_Call struct {
+	*mock.Call
+}
+
+// DeleteBatch is a helper method to define mock.On call
+//   - id uuid.UUID
+func (_e *MockService_Expecter) DeleteBatch(id any) *MockService_DeleteBatch_Call {
+	return &MockService_DeleteBatch_Call{Call: _e.mock.On("DeleteBatch", id)}
+}
+
+func (_c *MockService_DeleteBatch_Call) Run(run func(id uuid.UUID)) *MockService_DeleteBatch_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_DeleteBatch_Call) Return(err error) *MockService_DeleteBatch_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockService_DeleteBatch_Call) RunAndReturn(run func(id uuid.UUID) error) *MockService_DeleteBatch_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Login provides a mock function for the type MockService
 func (_mock *MockService) Login(username string, password string) (*model.User, error) {
 	ret := _mock.Called(username, password)
