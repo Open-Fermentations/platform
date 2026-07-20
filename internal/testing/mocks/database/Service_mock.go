@@ -5,7 +5,11 @@
 package mockdatabase
 
 import (
+	"context"
+	"open-fermentations/internal/database"
 	"open-fermentations/internal/database/sqlc"
+	"open-fermentations/internal/dto"
+	"open-fermentations/internal/model"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -158,6 +162,74 @@ func (_c *MockService_Querier_Call) Return(querier sqlc.Querier) *MockService_Qu
 }
 
 func (_c *MockService_Querier_Call) RunAndReturn(run func() sqlc.Querier) *MockService_Querier_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SearchDevices provides a mock function for the type MockService
+func (_mock *MockService) SearchDevices(ctx context.Context, arg database.SearchDevicesParams) (*dto.PageDTO[model.Device], error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SearchDevices")
+	}
+
+	var r0 *dto.PageDTO[model.Device]
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, database.SearchDevicesParams) (*dto.PageDTO[model.Device], error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, database.SearchDevicesParams) *dto.PageDTO[model.Device]); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*dto.PageDTO[model.Device])
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, database.SearchDevicesParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_SearchDevices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchDevices'
+type MockService_SearchDevices_Call struct {
+	*mock.Call
+}
+
+// SearchDevices is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg database.SearchDevicesParams
+func (_e *MockService_Expecter) SearchDevices(ctx any, arg any) *MockService_SearchDevices_Call {
+	return &MockService_SearchDevices_Call{Call: _e.mock.On("SearchDevices", ctx, arg)}
+}
+
+func (_c *MockService_SearchDevices_Call) Run(run func(ctx context.Context, arg database.SearchDevicesParams)) *MockService_SearchDevices_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 database.SearchDevicesParams
+		if args[1] != nil {
+			arg1 = args[1].(database.SearchDevicesParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_SearchDevices_Call) Return(pageDTO *dto.PageDTO[model.Device], err error) *MockService_SearchDevices_Call {
+	_c.Call.Return(pageDTO, err)
+	return _c
+}
+
+func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(ctx context.Context, arg database.SearchDevicesParams) (*dto.PageDTO[model.Device], error)) *MockService_SearchDevices_Call {
 	_c.Call.Return(run)
 	return _c
 }

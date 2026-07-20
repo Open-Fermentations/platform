@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
-	"open-fermentations/internal/database/sqlc"
+	"open-fermentations/internal/database"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/model"
 
@@ -41,28 +41,19 @@ func (s service) CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]mod
 }
 
 // SearchDevices implements [Service].
-func (s service) SearchDevices(name string, limit int, offset int) ([]model.Device, int, error) {
-	devices, err := s.db.Querier().SearchDevices(s.ctx, sqlc.SearchDevicesParams{
-		Name:      fmt.Sprintf("%%%v%%", name),
-		Limitval:  int32(limit),
-		Offsetval: int32(offset),
+func (s service) SearchDevices(name string, limit int, offset int) (*dto.PageDTO[model.Device], error) {
+	devices, err := s.db.SearchDevices(s.ctx, database.SearchDevicesParams{
+		Name:   fmt.Sprintf("%%%v%%", name),
+		Limit:  int32(limit),
+		Offset: int32(offset),
+		Order:  "name",
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return []model.Device{}, 0, nil
+			return nil, nil
 		}
-		return nil, 0, err
+		return nil, err
 	}
 
-	total := 0
-	if len(devices) > 0 {
-		total = int(devices[0].Total)
-	}
-
-	deviceModels := make([]model.Device, len(devices))
-	for i, d := range devices {
-		deviceModels[i] = *new(model.Device).FromSearchDevicesRow(d)
-	}
-
-	return deviceModels, total, nil
+	return devices, nil
 }

@@ -3,8 +3,8 @@ POST {{url}}/api/device
 Content-Type: application/json
 
 [{
-  "name":"some device name",
-  "macAddress": "3B-FB-19-6A-92-94"
+  "name":"Z it starts with z",
+  "macAddress": "3B-FB-19-6A-92-61"
 }]
 
 ### Search devices

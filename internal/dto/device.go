@@ -33,7 +33,7 @@ type DeviceDTO struct {
 func (d *DeviceDTO) FromModel(m *model.Device) *DeviceDTO {
 	d.ID = m.ID
 	d.Name = m.Name
-	d.MacAddress = m.MacAddress
+	d.MacAddress = string(m.MacAddress)
 	d.UserID = m.UserID
 	d.Created = m.Created
 	d.Modified = m.Modified

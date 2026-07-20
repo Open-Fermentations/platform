@@ -50,7 +50,7 @@ func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
 	limit := getIntQueryParam(r, "limit", 50)
 	offset := getIntQueryParam(r, "offset", 0)
 
-	devices, total, err := s.svc.SearchDevices(name, limit, offset)
+	devicesPage, err := s.svc.SearchDevices(name, limit, offset)
 	if err != nil {
 		slog.Error("searching devices", logging.Err(err), slog.Group("query",
 			slog.Int("limit", limit),
@@ -60,15 +60,15 @@ func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	deviceDtos := make([]dto.DeviceDTO, len(devices))
-	for i, b := range devices {
+	deviceDtos := make([]dto.DeviceDTO, len(devicesPage.Data))
+	for i, b := range devicesPage.Data {
 		deviceDtos[i] = *new(dto.DeviceDTO).FromModel(&b)
 	}
 
 	page := dto.PageDTO[dto.DeviceDTO]{
 		Limit:  limit,
 		Offset: offset,
-		Total:  total,
+		Total:  devicesPage.Total,
 		Data:   deviceDtos,
 	}
 

@@ -437,37 +437,31 @@ func (_c *MockService_SearchBatches_Call) RunAndReturn(run func(name string, lim
 }
 
 // SearchDevices provides a mock function for the type MockService
-func (_mock *MockService) SearchDevices(name string, limit int, offset int) ([]model.Device, int, error) {
+func (_mock *MockService) SearchDevices(name string, limit int, offset int) (*dto.PageDTO[model.Device], error) {
 	ret := _mock.Called(name, limit, offset)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SearchDevices")
 	}
 
-	var r0 []model.Device
-	var r1 int
-	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) ([]model.Device, int, error)); ok {
+	var r0 *dto.PageDTO[model.Device]
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) (*dto.PageDTO[model.Device], error)); ok {
 		return returnFunc(name, limit, offset)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) []model.Device); ok {
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) *dto.PageDTO[model.Device]); ok {
 		r0 = returnFunc(name, limit, offset)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]model.Device)
+			r0 = ret.Get(0).(*dto.PageDTO[model.Device])
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string, int, int) int); ok {
+	if returnFunc, ok := ret.Get(1).(func(string, int, int) error); ok {
 		r1 = returnFunc(name, limit, offset)
 	} else {
-		r1 = ret.Get(1).(int)
+		r1 = ret.Error(1)
 	}
-	if returnFunc, ok := ret.Get(2).(func(string, int, int) error); ok {
-		r2 = returnFunc(name, limit, offset)
-	} else {
-		r2 = ret.Error(2)
-	}
-	return r0, r1, r2
+	return r0, r1
 }
 
 // MockService_SearchDevices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchDevices'
@@ -506,12 +500,12 @@ func (_c *MockService_SearchDevices_Call) Run(run func(name string, limit int, o
 	return _c
 }
 
-func (_c *MockService_SearchDevices_Call) Return(devices []model.Device, n int, err error) *MockService_SearchDevices_Call {
-	_c.Call.Return(devices, n, err)
+func (_c *MockService_SearchDevices_Call) Return(pageDTO *dto.PageDTO[model.Device], err error) *MockService_SearchDevices_Call {
+	_c.Call.Return(pageDTO, err)
 	return _c
 }
 
-func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(name string, limit int, offset int) ([]model.Device, int, error)) *MockService_SearchDevices_Call {
+func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(name string, limit int, offset int) (*dto.PageDTO[model.Device], error)) *MockService_SearchDevices_Call {
 	_c.Call.Return(run)
 	return _c
 }
