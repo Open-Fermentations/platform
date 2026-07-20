@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
-	"open-fermentations/internal/route"
 
 	"github.com/google/uuid"
 )
@@ -66,9 +65,9 @@ func (s *Server) deleteBatch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
+func (s *Server) searchBatches(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
-	limit := getIntQueryParam(r, "limit", 50)
+	limit := getIntQueryParam(r, "5limit", 50)
 	offset := getIntQueryParam(r, "offset", 0)
 
 	batches, total, err := s.svc.SearchBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
@@ -77,7 +76,8 @@ func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
 			slog.Int("limit", limit),
 			slog.Int("offset", offset),
 			slog.String("name", name)))
-		http.Error(w, "Failed to get batches", http.StatusInternalServerError)
+		http.Error(w, "Failed to search batches", http.StatusInternalServerError)
+		return
 	}
 
 	batchDtos := make([]dto.BatchDTO, len(batches))
@@ -99,7 +99,7 @@ func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", route.ContentTypeJSON)
+	setContentTypeJson(w)
 	if _, err := w.Write(pageJson); err != nil {
 		slog.Error("writing batch page", logging.Err(err))
 		return
