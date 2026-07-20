@@ -436,6 +436,86 @@ func (_c *MockService_SearchBatches_Call) RunAndReturn(run func(name string, lim
 	return _c
 }
 
+// SearchDevices provides a mock function for the type MockService
+func (_mock *MockService) SearchDevices(name string, limit int, offset int) ([]model.Device, int, error) {
+	ret := _mock.Called(name, limit, offset)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SearchDevices")
+	}
+
+	var r0 []model.Device
+	var r1 int
+	var r2 error
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) ([]model.Device, int, error)); ok {
+		return returnFunc(name, limit, offset)
+	}
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) []model.Device); ok {
+		r0 = returnFunc(name, limit, offset)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Device)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(string, int, int) int); ok {
+		r1 = returnFunc(name, limit, offset)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+	if returnFunc, ok := ret.Get(2).(func(string, int, int) error); ok {
+		r2 = returnFunc(name, limit, offset)
+	} else {
+		r2 = ret.Error(2)
+	}
+	return r0, r1, r2
+}
+
+// MockService_SearchDevices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchDevices'
+type MockService_SearchDevices_Call struct {
+	*mock.Call
+}
+
+// SearchDevices is a helper method to define mock.On call
+//   - name string
+//   - limit int
+//   - offset int
+func (_e *MockService_Expecter) SearchDevices(name any, limit any, offset any) *MockService_SearchDevices_Call {
+	return &MockService_SearchDevices_Call{Call: _e.mock.On("SearchDevices", name, limit, offset)}
+}
+
+func (_c *MockService_SearchDevices_Call) Run(run func(name string, limit int, offset int)) *MockService_SearchDevices_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_SearchDevices_Call) Return(devices []model.Device, n int, err error) *MockService_SearchDevices_Call {
+	_c.Call.Return(devices, n, err)
+	return _c
+}
+
+func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(name string, limit int, offset int) ([]model.Device, int, error)) *MockService_SearchDevices_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateBatch provides a mock function for the type MockService
 func (_mock *MockService) UpdateBatch(id uuid.UUID, name string) (*model.Batch, error) {
 	ret := _mock.Called(id, name)

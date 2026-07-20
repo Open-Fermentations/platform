@@ -21,6 +21,7 @@ type Service interface {
 	UpdateBatch(id uuid.UUID, name string) (*model.Batch, error)
 
 	CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)
+	SearchDevices(name string, limit, offset int) ([]model.Device, int, error)
 }
 
 type service struct {

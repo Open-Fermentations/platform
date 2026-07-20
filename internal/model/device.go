@@ -26,3 +26,14 @@ func (d *Device) FromModel(m sqlc.Device) *Device {
 
 	return d
 }
+
+func (d *Device) FromSearchDevicesRow(m sqlc.SearchDevicesRow) *Device {
+	d.ID = m.ID
+	d.MacAddress = string(m.MacAddress)
+	d.Name = m.Name
+	d.Created = m.Created
+	d.UserID = m.UserID
+	d.Modified = m.Modified
+
+	return d
+}

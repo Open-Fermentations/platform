@@ -39,6 +39,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		route.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
 
 		route.New(http.MethodPost, "/device", http.HandlerFunc(s.postDevices)).WithJsonBody(),
+		route.New(http.MethodGet, "/device", http.HandlerFunc(s.searchDevices)),
 	}
 
 	routeHandlers := []*route.Route{

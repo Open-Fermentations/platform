@@ -44,3 +44,44 @@ func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	limit := getIntQueryParam(r, "limit", 50)
+	offset := getIntQueryParam(r, "offset", 0)
+
+	devices, total, err := s.svc.SearchDevices(name, limit, offset)
+	if err != nil {
+		slog.Error("searching devices", logging.Err(err), slog.Group("query",
+			slog.Int("limit", limit),
+			slog.Int("offset", offset),
+			slog.String("name", name)))
+		http.Error(w, "Failed to search devices", http.StatusInternalServerError)
+		return
+	}
+
+	deviceDtos := make([]dto.DeviceDTO, len(devices))
+	for i, b := range devices {
+		deviceDtos[i] = *new(dto.DeviceDTO).FromModel(&b)
+	}
+
+	page := dto.PageDTO[dto.DeviceDTO]{
+		Limit:  limit,
+		Offset: offset,
+		Total:  total,
+		Data:   deviceDtos,
+	}
+
+	pageJson, err := json.Marshal(page)
+	if err != nil {
+		slog.Error("marshalling device page to json", logging.Err(err))
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
+		return
+	}
+
+	setContentTypeJson(w)
+	if _, err := w.Write(pageJson); err != nil {
+		slog.Error("writing device page", logging.Err(err))
+		return
+	}
+}
