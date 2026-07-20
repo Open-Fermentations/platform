@@ -62,14 +62,6 @@ type Querier interface {
 	//  limit $3::integer
 	//  offset $2::integer
 	SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error)
-	//SearchDevices
-	//
-	//  select id, name, mac_address, user_id, created, modified, count(id) over() as total from "device"
-	//  where "name" like $1::text
-	//  order by created
-	//  limit $3::integer
-	//  offset $2::integer
-	SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error)
 	//UpdateBatch
 	//
 	//  update "batch" set "name" = $2 where id = $1
