@@ -19,6 +19,7 @@ order by
   case when sqlc.arg('orderCol')::text = 'user_id' and sqlc.arg('asc')::bool then "device"."user_id" end asc nulls last,
   case when sqlc.arg('orderCol')::text = 'user_id' and sqlc.arg('asc')::bool != true then "device"."user_id" end desc nulls last,
   case when sqlc.arg('orderCol')::text = 'mac_address' and sqlc.arg('asc')::bool then "device"."mac_address" end asc nulls last,
-  case when sqlc.arg('orderCol')::text = 'mac_address' and sqlc.arg('asc')::bool != true then "device"."mac_address" end desc nulls last
+  case when sqlc.arg('orderCol')::text = 'mac_address' and sqlc.arg('asc')::bool != true then "device"."mac_address" end desc nulls last,
+  "device"."created" asc nulls last
 limit @limitVal
 offset @offsetVal;

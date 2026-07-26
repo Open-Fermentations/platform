@@ -79,7 +79,8 @@ type Querier interface {
 	//    case when $2::text = 'user_id' and $3::bool then "device"."user_id" end asc nulls last,
 	//    case when $2::text = 'user_id' and $3::bool != true then "device"."user_id" end desc nulls last,
 	//    case when $2::text = 'mac_address' and $3::bool then "device"."mac_address" end asc nulls last,
-	//    case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last
+	//    case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last,
+	//    "device"."created" asc nulls last
 	//  limit $5
 	//  offset $4
 	SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error)
