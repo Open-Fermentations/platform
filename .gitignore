@@ -42,3 +42,8 @@ main
 .mqtt/config/pwfile
 .mqtt/data
 .mqtt/log
+
+# Continue
+.continue
+
+__debug_*
