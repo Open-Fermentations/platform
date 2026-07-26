@@ -226,6 +226,57 @@ func (_c *MockService_DeleteBatch_Call) RunAndReturn(run func(id uuid.UUID) erro
 	return _c
 }
 
+// DeleteDevice provides a mock function for the type MockService
+func (_mock *MockService) DeleteDevice(id uuid.UUID) error {
+	ret := _mock.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteDevice")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) error); ok {
+		r0 = returnFunc(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockService_DeleteDevice_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteDevice'
+type MockService_DeleteDevice_Call struct {
+	*mock.Call
+}
+
+// DeleteDevice is a helper method to define mock.On call
+//   - id uuid.UUID
+func (_e *MockService_Expecter) DeleteDevice(id any) *MockService_DeleteDevice_Call {
+	return &MockService_DeleteDevice_Call{Call: _e.mock.On("DeleteDevice", id)}
+}
+
+func (_c *MockService_DeleteDevice_Call) Run(run func(id uuid.UUID)) *MockService_DeleteDevice_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_DeleteDevice_Call) Return(err error) *MockService_DeleteDevice_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockService_DeleteDevice_Call) RunAndReturn(run func(id uuid.UUID) error) *MockService_DeleteDevice_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetBatchById provides a mock function for the type MockService
 func (_mock *MockService) GetBatchById(id uuid.UUID) (*model.Batch, error) {
 	ret := _mock.Called(id)

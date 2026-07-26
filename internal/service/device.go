@@ -88,3 +88,8 @@ func (s service) GetDeviceById(id uuid.UUID) (*model.Device, error) {
 
 	return new(model.Device).FromModel(device), nil
 }
+
+// DeleteDevice implements [Service].
+func (s service) DeleteDevice(id uuid.UUID) error {
+	return s.db.Querier().RemoveDeviceById(s.ctx, id)
+}
