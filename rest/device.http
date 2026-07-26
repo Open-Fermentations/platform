@@ -1,4 +1,4 @@
-@id=0291fe4c-5cd9-4a83-8c78-68a0e2a13a1a
+@id=0291fe4c-5cd9-4a83-8c78-68a0e2a13a1e
 ### Create devices
 POST {{url}}/api/device
 Content-Type: application/json
@@ -13,3 +13,6 @@ GET {{url}}/api/device?orderBy=id&asc=true
 
 ### Get Device by id
 GET {{url}}/api/device/{{id}}
+
+### Delete Device by id
+DELETE {{url}}/api/device/{{id}}

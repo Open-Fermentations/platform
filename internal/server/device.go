@@ -118,3 +118,21 @@ func (s *Server) getDeviceById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) deleteDeviceById(w http.ResponseWriter, r *http.Request) {
+	rawId := r.PathValue(IDKey)
+	id, err := uuid.Parse(rawId)
+	if err != nil {
+		slog.Error("parsing device id", slog.String(IDKey, rawId), logging.Err(err))
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
+		return
+	}
+
+	if err = s.svc.DeleteDevice(id); err != nil {
+		slog.Error("deleting device", logging.Err(err))
+		http.Error(w, "Failed to successfully delete device", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
