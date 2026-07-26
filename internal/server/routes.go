@@ -40,6 +40,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 		route.New(http.MethodPost, "/device", http.HandlerFunc(s.postDevices)).WithJsonBody(),
 		route.New(http.MethodGet, "/device", http.HandlerFunc(s.searchDevices)),
+		route.New(http.MethodGet, fmt.Sprintf("/device/{%v}", IDKey), http.HandlerFunc(s.getDeviceById)),
 	}
 
 	routeHandlers := []*route.Route{
