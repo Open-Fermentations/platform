@@ -56,3 +56,30 @@ func (d *DeviceDTO) FromModel(m *model.Device) *DeviceDTO {
 }
 
 var _ logging.Slog = DeviceDTO{}
+
+type UpdateDeviceDTO struct {
+	Name       string    `json:"name" validate:"required"`
+	MacAddress string    `json:"macAddress" validate:"required,mac"`
+	UserID     uuid.UUID `json:"userId" validate:"required,uuid"`
+}
+
+// Slog implements [logging.Slog].
+func (d UpdateDeviceDTO) Slog() []any {
+	return []any{slog.Group("updateDevice",
+		slog.String("name", d.Name),
+		slog.String("macAddress", d.MacAddress),
+		slog.String("userId", d.UserID.String()),
+	)}
+}
+
+func (d *UpdateDeviceDTO) ToUpdateDeviceParams(id uuid.UUID) sqlc.UpdateDeviceParams {
+	u := sqlc.UpdateDeviceParams{}
+	u.Name = d.Name
+	u.Macaddress = []byte(d.MacAddress)
+	u.UserID = d.UserID
+	u.ID = id
+
+	return u
+}
+
+var _ logging.Slog = UpdateDeviceDTO{}

@@ -136,3 +136,43 @@ func (s *Server) deleteDeviceById(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
+	deviceDto := &dto.UpdateDeviceDTO{}
+	defer r.Body.Close()
+	if err := json.NewDecoder(r.Body).Decode(&deviceDto); err != nil {
+		slog.Error("unable to decode body on device update", []any{logging.Err(err), deviceDto.Slog()}...)
+		http.Error(w, FailedReadingBody, http.StatusBadRequest)
+		return
+	}
+
+	err := s.validate.Struct(deviceDto)
+	if err != nil {
+		slog.Error("faled to validate update device dto", logging.Err(err))
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id := r.Context().Value(IDKey).(uuid.UUID)
+
+	device, err := s.svc.UpdateDevice(id, deviceDto.ToUpdateDeviceParams(id))
+	if err != nil {
+		slog.Error("failed to successfully update device", logging.Err(err))
+		http.Error(w, "Failed to successfully update device", http.StatusInternalServerError)
+		return
+	}
+
+	returnDto := new(dto.DeviceDTO).FromModel(device)
+
+	deviceJson, err := json.Marshal(returnDto)
+	if err != nil {
+		slog.Error("failed to marshal device after update", []any{logging.Err(err), returnDto.Slog()}...)
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(deviceJson); err != nil {
+		slog.Error("failed to write", logging.Err(err))
+		return
+	}
+}

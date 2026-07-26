@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	_ "github.com/joho/godotenv/autoload"
 
 	"open-fermentations/internal/database"
@@ -16,10 +17,11 @@ import (
 )
 
 type Server struct {
-	ctx context.Context
-	env *env.Env
-	db  database.Service
-	svc service.Service
+	ctx      context.Context
+	env      *env.Env
+	db       database.Service
+	svc      service.Service
+	validate *validator.Validate
 }
 
 func NewServer(ctx context.Context, env *env.Env) (*http.Server, error) {
@@ -29,9 +31,10 @@ func NewServer(ctx context.Context, env *env.Env) (*http.Server, error) {
 		return nil, err
 	}
 	newServer := &Server{
-		env: env,
-		db:  db,
-		svc: service.New(ctx, env, db),
+		env:      env,
+		db:       db,
+		svc:      service.New(ctx, env, db),
+		validate: validator.New(validator.WithRequiredStructEnabled()),
 	}
 
 	server := &http.Server{
