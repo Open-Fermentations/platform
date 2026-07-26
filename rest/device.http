@@ -1,4 +1,4 @@
-@id=0291fe4c-5cd9-4a83-8c78-68a0e2a13a1e
+@id=7cc0046c-0946-4e8d-9c82-d675ba9121b2
 ### Create devices
 POST {{url}}/api/device
 Content-Type: application/json
@@ -16,3 +16,13 @@ GET {{url}}/api/device/{{id}}
 
 ### Delete Device by id
 DELETE {{url}}/api/device/{{id}}
+
+### Update Device
+PUT {{url}}/api/device/{{id}}
+Content-Type: application/json
+
+{
+  "name": "some new name",
+  "macAddress": "3B-FB-19-6A-92-63",
+  "userId": "1d48244c-9d22-4da4-90f3-50c28898bf87"
+}

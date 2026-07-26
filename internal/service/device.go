@@ -93,3 +93,16 @@ func (s service) GetDeviceById(id uuid.UUID) (*model.Device, error) {
 func (s service) DeleteDevice(id uuid.UUID) error {
 	return s.db.Querier().RemoveDeviceById(s.ctx, id)
 }
+
+// UpdateDevice implements [Service].
+func (s service) UpdateDevice(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error) {
+	device, err := s.db.Querier().UpdateDevice(s.ctx, update)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return new(model.Device).FromModel(device), nil
+}

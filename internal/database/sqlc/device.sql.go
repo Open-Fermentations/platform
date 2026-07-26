@@ -174,3 +174,40 @@ func (q *Queries) SearchDevices(ctx context.Context, arg SearchDevicesParams) ([
 	}
 	return items, nil
 }
+
+const updateDevice = `-- name: UpdateDevice :one
+update "device" set "name" = $1::text, mac_address = $2, user_id = $3, modified = current_timestamp
+where id = $4
+returning id, name, mac_address, user_id, created, modified
+`
+
+type UpdateDeviceParams struct {
+	Name       string
+	Macaddress []byte
+	UserID     uuid.UUID
+	ID         uuid.UUID
+}
+
+// UpdateDevice
+//
+//	update "device" set "name" = $1::text, mac_address = $2, user_id = $3, modified = current_timestamp
+//	where id = $4
+//	returning id, name, mac_address, user_id, created, modified
+func (q *Queries) UpdateDevice(ctx context.Context, arg UpdateDeviceParams) (Device, error) {
+	row := q.db.QueryRow(ctx, updateDevice,
+		arg.Name,
+		arg.Macaddress,
+		arg.UserID,
+		arg.ID,
+	)
+	var i Device
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.MacAddress,
+		&i.UserID,
+		&i.Created,
+		&i.Modified,
+	)
+	return i, err
+}

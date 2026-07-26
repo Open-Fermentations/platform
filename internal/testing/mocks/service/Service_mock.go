@@ -5,6 +5,7 @@
 package mockservice
 
 import (
+	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/model"
 
@@ -675,6 +676,74 @@ func (_c *MockService_UpdateBatch_Call) Return(batch *model.Batch, err error) *M
 }
 
 func (_c *MockService_UpdateBatch_Call) RunAndReturn(run func(id uuid.UUID, name string) (*model.Batch, error)) *MockService_UpdateBatch_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateDevice provides a mock function for the type MockService
+func (_mock *MockService) UpdateDevice(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error) {
+	ret := _mock.Called(id, update)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateDevice")
+	}
+
+	var r0 *model.Device
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, sqlc.UpdateDeviceParams) (*model.Device, error)); ok {
+		return returnFunc(id, update)
+	}
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, sqlc.UpdateDeviceParams) *model.Device); ok {
+		r0 = returnFunc(id, update)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Device)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, sqlc.UpdateDeviceParams) error); ok {
+		r1 = returnFunc(id, update)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_UpdateDevice_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateDevice'
+type MockService_UpdateDevice_Call struct {
+	*mock.Call
+}
+
+// UpdateDevice is a helper method to define mock.On call
+//   - id uuid.UUID
+//   - update sqlc.UpdateDeviceParams
+func (_e *MockService_Expecter) UpdateDevice(id any, update any) *MockService_UpdateDevice_Call {
+	return &MockService_UpdateDevice_Call{Call: _e.mock.On("UpdateDevice", id, update)}
+}
+
+func (_c *MockService_UpdateDevice_Call) Run(run func(id uuid.UUID, update sqlc.UpdateDeviceParams)) *MockService_UpdateDevice_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		var arg1 sqlc.UpdateDeviceParams
+		if args[1] != nil {
+			arg1 = args[1].(sqlc.UpdateDeviceParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_UpdateDevice_Call) Return(device *model.Device, err error) *MockService_UpdateDevice_Call {
+	_c.Call.Return(device, err)
+	return _c
+}
+
+func (_c *MockService_UpdateDevice_Call) RunAndReturn(run func(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)) *MockService_UpdateDevice_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -131,8 +131,8 @@ func (q *Queries) SearchBatches(ctx context.Context, arg SearchBatchesParams) ([
 }
 
 const updateBatch = `-- name: UpdateBatch :one
-update "batch" set "name" = $2 where id = $1
-returning id, "name", "user_id", created, modified
+update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+returning id, name, user_id, created, modified
 `
 
 type UpdateBatchParams struct {
@@ -142,8 +142,8 @@ type UpdateBatchParams struct {
 
 // UpdateBatch
 //
-//	update "batch" set "name" = $2 where id = $1
-//	returning id, "name", "user_id", created, modified
+//	update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+//	returning id, name, user_id, created, modified
 func (q *Queries) UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error) {
 	row := q.db.QueryRow(ctx, updateBatch, arg.ID, arg.Name)
 	var i Batch
