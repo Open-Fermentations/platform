@@ -150,7 +150,7 @@ func Test_authenticationMiddleware(t *testing.T) {
 			}
 
 			assert.EqualValues(t, http.StatusUnauthorized, resp.StatusCode)
-			assert.EqualValues(t, "unauthorized", strings.Trim(string(b), "\n"))
+			assert.EqualValues(t, Unauthorised, strings.Trim(string(b), "\n"))
 		}))
 
 	t.Run("no cookie, should return 401 and not reach handler func", testCase(func(t *testing.T, c *testContext) {
@@ -175,6 +175,6 @@ func Test_authenticationMiddleware(t *testing.T) {
 		}
 
 		assert.EqualValues(t, http.StatusUnauthorized, resp.StatusCode)
-		assert.EqualValues(t, "unauthorized", strings.Trim(string(b), "\n"))
+		assert.EqualValues(t, Unauthorised, strings.Trim(string(b), "\n"))
 	}))
 }

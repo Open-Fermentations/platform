@@ -16,11 +16,12 @@ type Service interface {
 
 	CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)
 	DeleteBatch(id uuid.UUID) error
-	GetBatches(name string, limit, offset int) ([]model.Batch, int, error)
+	SearchBatches(name string, limit, offset int) ([]model.Batch, int, error)
 	GetBatchById(id uuid.UUID) (*model.Batch, error)
 	UpdateBatch(id uuid.UUID, name string) (*model.Batch, error)
 
 	CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)
+	SearchDevices(dto.SearchDTO) (*dto.PageDTO[model.Device], error)
 }
 
 type service struct {

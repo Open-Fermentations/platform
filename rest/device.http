@@ -1,0 +1,11 @@
+### Create devices
+POST {{url}}/api/device
+Content-Type: application/json
+
+[{
+  "name":"Z it starts with z",
+  "macAddress": "3B-FB-19-6A-92-61"
+}]
+
+### Search devices
+GET {{url}}/api/device?orderBy=id&asc=true

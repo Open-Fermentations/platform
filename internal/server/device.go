@@ -12,7 +12,7 @@ func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
 	var b []dto.CreateDeviceDTO
 	if err := readBody(r, &b); err != nil {
 		slog.Error("reading create device dto body", logging.Err(err))
-		http.Error(w, BadBodyRead, http.StatusBadRequest)
+		http.Error(w, FailedReadingBody, http.StatusBadRequest)
 		return
 	}
 
@@ -41,6 +41,42 @@ func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	if _, err := w.Write(jsonResp); err != nil {
 		slog.Error("writing response", logging.Err(err))
+		return
+	}
+}
+
+func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
+	search := new(dto.SearchDTO).FromRequest(r)
+
+	devicesPage, err := s.svc.SearchDevices(*search)
+	if err != nil {
+		slog.Error("searching devices", []any{logging.Err(err), search.Slog()}...)
+		http.Error(w, "Failed to search devices", http.StatusInternalServerError)
+		return
+	}
+
+	deviceDtos := make([]dto.DeviceDTO, len(devicesPage.Data))
+	for i, b := range devicesPage.Data {
+		deviceDtos[i] = *new(dto.DeviceDTO).FromModel(&b)
+	}
+
+	page := dto.PageDTO[dto.DeviceDTO]{
+		Limit:  search.Limit,
+		Offset: search.Offset,
+		Total:  devicesPage.Total,
+		Data:   deviceDtos,
+	}
+
+	pageJson, err := json.Marshal(page)
+	if err != nil {
+		slog.Error("marshalling device page to json", logging.Err(err))
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
+		return
+	}
+
+	setContentTypeJson(w)
+	if _, err := w.Write(pageJson); err != nil {
+		slog.Error("writing device page", logging.Err(err))
 		return
 	}
 }

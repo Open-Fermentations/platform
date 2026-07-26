@@ -25,7 +25,7 @@ func (b *Batch) FromModel(m sqlc.Batch) *Batch {
 	return b
 }
 
-func (b *Batch) FromGetBatchesRow(m sqlc.GetBatchesRow) *Batch {
+func (b *Batch) FromSearchBatchesRow(m sqlc.SearchBatchesRow) *Batch {
 	b.ID = m.ID
 	b.Name = m.Name
 	b.UserID = m.UserID

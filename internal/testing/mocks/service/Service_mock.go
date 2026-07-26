@@ -288,86 +288,6 @@ func (_c *MockService_GetBatchById_Call) RunAndReturn(run func(id uuid.UUID) (*m
 	return _c
 }
 
-// GetBatches provides a mock function for the type MockService
-func (_mock *MockService) GetBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
-	ret := _mock.Called(name, limit, offset)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetBatches")
-	}
-
-	var r0 []model.Batch
-	var r1 int
-	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) ([]model.Batch, int, error)); ok {
-		return returnFunc(name, limit, offset)
-	}
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) []model.Batch); ok {
-		r0 = returnFunc(name, limit, offset)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]model.Batch)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(string, int, int) int); ok {
-		r1 = returnFunc(name, limit, offset)
-	} else {
-		r1 = ret.Get(1).(int)
-	}
-	if returnFunc, ok := ret.Get(2).(func(string, int, int) error); ok {
-		r2 = returnFunc(name, limit, offset)
-	} else {
-		r2 = ret.Error(2)
-	}
-	return r0, r1, r2
-}
-
-// MockService_GetBatches_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBatches'
-type MockService_GetBatches_Call struct {
-	*mock.Call
-}
-
-// GetBatches is a helper method to define mock.On call
-//   - name string
-//   - limit int
-//   - offset int
-func (_e *MockService_Expecter) GetBatches(name any, limit any, offset any) *MockService_GetBatches_Call {
-	return &MockService_GetBatches_Call{Call: _e.mock.On("GetBatches", name, limit, offset)}
-}
-
-func (_c *MockService_GetBatches_Call) Run(run func(name string, limit int, offset int)) *MockService_GetBatches_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
-		if args[0] != nil {
-			arg0 = args[0].(string)
-		}
-		var arg1 int
-		if args[1] != nil {
-			arg1 = args[1].(int)
-		}
-		var arg2 int
-		if args[2] != nil {
-			arg2 = args[2].(int)
-		}
-		run(
-			arg0,
-			arg1,
-			arg2,
-		)
-	})
-	return _c
-}
-
-func (_c *MockService_GetBatches_Call) Return(batchs []model.Batch, n int, err error) *MockService_GetBatches_Call {
-	_c.Call.Return(batchs, n, err)
-	return _c
-}
-
-func (_c *MockService_GetBatches_Call) RunAndReturn(run func(name string, limit int, offset int) ([]model.Batch, int, error)) *MockService_GetBatches_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // Login provides a mock function for the type MockService
 func (_mock *MockService) Login(username string, password string) (*model.User, error) {
 	ret := _mock.Called(username, password)
@@ -432,6 +352,148 @@ func (_c *MockService_Login_Call) Return(user *model.User, err error) *MockServi
 }
 
 func (_c *MockService_Login_Call) RunAndReturn(run func(username string, password string) (*model.User, error)) *MockService_Login_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SearchBatches provides a mock function for the type MockService
+func (_mock *MockService) SearchBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
+	ret := _mock.Called(name, limit, offset)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SearchBatches")
+	}
+
+	var r0 []model.Batch
+	var r1 int
+	var r2 error
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) ([]model.Batch, int, error)); ok {
+		return returnFunc(name, limit, offset)
+	}
+	if returnFunc, ok := ret.Get(0).(func(string, int, int) []model.Batch); ok {
+		r0 = returnFunc(name, limit, offset)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Batch)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(string, int, int) int); ok {
+		r1 = returnFunc(name, limit, offset)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+	if returnFunc, ok := ret.Get(2).(func(string, int, int) error); ok {
+		r2 = returnFunc(name, limit, offset)
+	} else {
+		r2 = ret.Error(2)
+	}
+	return r0, r1, r2
+}
+
+// MockService_SearchBatches_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchBatches'
+type MockService_SearchBatches_Call struct {
+	*mock.Call
+}
+
+// SearchBatches is a helper method to define mock.On call
+//   - name string
+//   - limit int
+//   - offset int
+func (_e *MockService_Expecter) SearchBatches(name any, limit any, offset any) *MockService_SearchBatches_Call {
+	return &MockService_SearchBatches_Call{Call: _e.mock.On("SearchBatches", name, limit, offset)}
+}
+
+func (_c *MockService_SearchBatches_Call) Run(run func(name string, limit int, offset int)) *MockService_SearchBatches_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		var arg1 int
+		if args[1] != nil {
+			arg1 = args[1].(int)
+		}
+		var arg2 int
+		if args[2] != nil {
+			arg2 = args[2].(int)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_SearchBatches_Call) Return(batchs []model.Batch, n int, err error) *MockService_SearchBatches_Call {
+	_c.Call.Return(batchs, n, err)
+	return _c
+}
+
+func (_c *MockService_SearchBatches_Call) RunAndReturn(run func(name string, limit int, offset int) ([]model.Batch, int, error)) *MockService_SearchBatches_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SearchDevices provides a mock function for the type MockService
+func (_mock *MockService) SearchDevices(searchDTO dto.SearchDTO) (*dto.PageDTO[model.Device], error) {
+	ret := _mock.Called(searchDTO)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SearchDevices")
+	}
+
+	var r0 *dto.PageDTO[model.Device]
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(dto.SearchDTO) (*dto.PageDTO[model.Device], error)); ok {
+		return returnFunc(searchDTO)
+	}
+	if returnFunc, ok := ret.Get(0).(func(dto.SearchDTO) *dto.PageDTO[model.Device]); ok {
+		r0 = returnFunc(searchDTO)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*dto.PageDTO[model.Device])
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(dto.SearchDTO) error); ok {
+		r1 = returnFunc(searchDTO)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_SearchDevices_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchDevices'
+type MockService_SearchDevices_Call struct {
+	*mock.Call
+}
+
+// SearchDevices is a helper method to define mock.On call
+//   - searchDTO dto.SearchDTO
+func (_e *MockService_Expecter) SearchDevices(searchDTO any) *MockService_SearchDevices_Call {
+	return &MockService_SearchDevices_Call{Call: _e.mock.On("SearchDevices", searchDTO)}
+}
+
+func (_c *MockService_SearchDevices_Call) Run(run func(searchDTO dto.SearchDTO)) *MockService_SearchDevices_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 dto.SearchDTO
+		if args[0] != nil {
+			arg0 = args[0].(dto.SearchDTO)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_SearchDevices_Call) Return(pageDTO *dto.PageDTO[model.Device], err error) *MockService_SearchDevices_Call {
+	_c.Call.Return(pageDTO, err)
+	return _c
+}
+
+func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(searchDTO dto.SearchDTO) (*dto.PageDTO[model.Device], error)) *MockService_SearchDevices_Call {
 	_c.Call.Return(run)
 	return _c
 }

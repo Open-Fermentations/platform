@@ -16,7 +16,7 @@ func (s *Server) postBatch(w http.ResponseWriter, r *http.Request) {
 	var b []dto.CreateBatchDTO
 	if err := readBody(r, &b); err != nil {
 		slog.Error("reading create batch dto body", logging.Err(err))
-		http.Error(w, BadBodyRead, http.StatusBadRequest)
+		http.Error(w, FailedReadingBody, http.StatusBadRequest)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (s *Server) deleteBatch(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(idString)
 	if err != nil {
 		slog.Error("parsing batch id", slog.String(IDKey, idString), logging.Err(err))
-		http.Error(w, FailedToParsePathId, http.StatusBadRequest)
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
 		return
 	}
 
@@ -66,18 +66,19 @@ func (s *Server) deleteBatch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
+func (s *Server) searchBatches(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
-	limit := getIntQueryParam(r, "limit", 50)
-	offset := getIntQueryParam(r, "offset", 0)
+	limit := route.GetIntQueryParam(r, "limit", 50)
+	offset := route.GetIntQueryParam(r, "offset", 0)
 
-	batches, total, err := s.svc.GetBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
+	batches, total, err := s.svc.SearchBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
 	if err != nil {
 		slog.Error("getting batches from service", logging.Err(err), slog.Group("query",
 			slog.Int("limit", limit),
 			slog.Int("offset", offset),
 			slog.String("name", name)))
-		http.Error(w, "Failed to get batches", http.StatusInternalServerError)
+		http.Error(w, "Failed to search batches", http.StatusInternalServerError)
+		return
 	}
 
 	batchDtos := make([]dto.BatchDTO, len(batches))
@@ -95,11 +96,11 @@ func (s *Server) getBatches(w http.ResponseWriter, r *http.Request) {
 	pageJson, err := json.Marshal(page)
 	if err != nil {
 		slog.Error("marshalling batch page to json", logging.Err(err))
-		http.Error(w, FailedToMarshall, http.StatusInternalServerError)
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", route.ContentTypeJSON)
+	setContentTypeJson(w)
 	if _, err := w.Write(pageJson); err != nil {
 		slog.Error("writing batch page", logging.Err(err))
 		return
@@ -111,7 +112,7 @@ func (s *Server) getBatchById(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(rawId)
 	if err != nil {
 		slog.Error("parsing batch id from path", logging.Err(err), slog.String("id", rawId))
-		http.Error(w, FailedToParsePathId, http.StatusBadRequest)
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
 		return
 	}
 
@@ -132,7 +133,7 @@ func (s *Server) getBatchById(w http.ResponseWriter, r *http.Request) {
 	batchJson, err := json.Marshal(batchDto)
 	if err != nil {
 		slog.Error("marshalling batch to json", []any{logging.Err(err), batchDto.Slog()}...)
-		http.Error(w, FailedToMarshall, http.StatusInternalServerError)
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
 		return
 	}
 
@@ -147,14 +148,14 @@ func (s *Server) putBatchById(w http.ResponseWriter, r *http.Request) {
 	batchId, err := uuid.Parse(rawBatchId)
 	if err != nil {
 		slog.Error("parsing batch id from path", logging.Err(err), slog.String("id", rawBatchId))
-		http.Error(w, FailedToParsePathId, http.StatusBadRequest)
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
 		return
 	}
 
 	var d dto.UpdateBatchDTO
 	if err := readBody(r, &d); err != nil {
 		slog.Error("reading body", logging.Err(err))
-		http.Error(w, BadBodyRead, http.StatusBadRequest)
+		http.Error(w, FailedReadingBody, http.StatusBadRequest)
 		return
 	}
 
@@ -170,7 +171,7 @@ func (s *Server) putBatchById(w http.ResponseWriter, r *http.Request) {
 	jsonResp, err := json.Marshal(batchDto)
 	if err != nil {
 		slog.Error("marshalling batch dto", []any{logging.Err(err), batchDto.Slog()}...)
-		http.Error(w, FailedToMarshall, http.StatusInternalServerError)
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
 		return
 	}
 

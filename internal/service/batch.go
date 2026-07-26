@@ -44,12 +44,12 @@ func (s service) DeleteBatch(id uuid.UUID) error {
 	return s.db.Querier().DeleteBatch(s.ctx, id)
 }
 
-// GetBatches implements [Service].
-func (s service) GetBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
-	batches, err := s.db.Querier().GetBatches(s.ctx, sqlc.GetBatchesParams{
-		Column1: name,
-		Limit:   int32(limit),
-		Offset:  int32(offset),
+// SearchBatches implements [Service].
+func (s service) SearchBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
+	batches, err := s.db.Querier().SearchBatches(s.ctx, sqlc.SearchBatchesParams{
+		Name:      name,
+		Limitval:  int32(limit),
+		Offsetval: int32(offset),
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -65,7 +65,7 @@ func (s service) GetBatches(name string, limit int, offset int) ([]model.Batch, 
 
 	batchModels := make([]model.Batch, len(batches))
 	for i, b := range batches {
-		batchModels[i] = *new(model.Batch).FromGetBatchesRow(b)
+		batchModels[i] = *new(model.Batch).FromSearchBatchesRow(b)
 	}
 
 	return batchModels, total, nil

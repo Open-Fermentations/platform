@@ -36,14 +36,6 @@ type Querier interface {
 	//
 	//  select id, name, user_id, created, modified from "batch" where id = $1
 	GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error)
-	//GetBatches
-	//
-	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
-	//  where "name" like $1::text
-	//  order by created
-	//  limit $2
-	//  offset $3
-	GetBatches(ctx context.Context, arg GetBatchesParams) ([]GetBatchesRow, error)
 	//GetUserById
 	//
 	//  select id, username, created, modified
@@ -62,6 +54,36 @@ type Querier interface {
 	//  from "user"
 	//  where username = $1
 	GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error)
+	//SearchBatches
+	//
+	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
+	//  where "name" like $1::text
+	//  order by created
+	//  limit $3::integer
+	//  offset $2::integer
+	SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error)
+	//SearchDevices
+	//
+	//  select id, name, mac_address, user_id, created, modified, count(*) over() as total
+	//  from "device"
+	//  where "name" like $1::text
+	//  order by
+	//    case when $2::text = 'name' and $3::bool then "device"."name" end asc nulls last,
+	//    case when $2::text = 'name' and $3::bool != true then "device"."name" end desc nulls last,
+	//    case when $2::text = 'created' and $3::bool then "device"."created" end asc nulls last,
+	//    case when $2::text = 'created' and $3::bool != true then "device"."created" end desc nulls last,
+	//    case when $2::text = 'modified' and $3::bool then "device"."modified" end asc nulls last,
+	//    case when $2::text = 'modified' and $3::bool != true then "device"."modified" end desc nulls last,
+	//    case when $2::text = 'id' and $3::bool then "device"."id" end asc nulls last,
+	//    case when $2::text = 'id' and $3::bool != true then "device"."id" end desc nulls last,
+	//    case when $2::text = 'user_id' and $3::bool then "device"."user_id" end asc nulls last,
+	//    case when $2::text = 'user_id' and $3::bool != true then "device"."user_id" end desc nulls last,
+	//    case when $2::text = 'mac_address' and $3::bool then "device"."mac_address" end asc nulls last,
+	//    case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last,
+	//    "device"."created" asc nulls last
+	//  limit $5
+	//  offset $4
+	SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error)
 	//UpdateBatch
 	//
 	//  update "batch" set "name" = $2 where id = $1

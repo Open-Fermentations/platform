@@ -6,12 +6,12 @@ returning id, "name", user_id, created, modified;
 -- name: DeleteBatch :exec
 delete from "batch" where id = $1;
 
--- name: GetBatches :many
+-- name: SearchBatches :many
 select *, count(id) over() as total from "batch"
-where "name" like $1::text
+where "name" like @name::text
 order by created
-limit $2
-offset $3;
+limit @limitVal::integer
+offset @offsetVal::integer;
 
 -- name: GetBatchById :one
 select * from "batch" where id = $1;
