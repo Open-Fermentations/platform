@@ -32,3 +32,7 @@ where id = @id;
 delete from "device"
 where id = $1;
 
+-- name: UpdateDevice :one
+update "device" set "name" = @name::text, mac_address = @macAddress, user_id = @user_id, modified = current_timestamp
+where id = @id
+returning *;

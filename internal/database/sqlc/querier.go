@@ -96,9 +96,15 @@ type Querier interface {
 	SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error)
 	//UpdateBatch
 	//
-	//  update "batch" set "name" = $2 where id = $1
-	//  returning id, "name", "user_id", created, modified
+	//  update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+	//  returning id, name, user_id, created, modified
 	UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error)
+	//UpdateDevice
+	//
+	//  update "device" set "name" = $1::text, mac_address = $2, user_id = $3, modified = current_timestamp
+	//  where id = $4
+	//  returning id, name, mac_address, user_id, created, modified
+	UpdateDevice(ctx context.Context, arg UpdateDeviceParams) (Device, error)
 }
 
 var _ Querier = (*Queries)(nil)
