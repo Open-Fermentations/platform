@@ -22,6 +22,7 @@ type Service interface {
 
 	CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)
 	SearchDevices(dto.SearchDTO) (*dto.PageDTO[model.Device], error)
+	GetDeviceById(id uuid.UUID) (*model.Device, error)
 }
 
 type service struct {

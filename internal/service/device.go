@@ -75,3 +75,16 @@ func (s service) SearchDevices(search dto.SearchDTO) (*dto.PageDTO[model.Device]
 
 	return &p, nil
 }
+
+// GetDeviceById implements [Service].
+func (s service) GetDeviceById(id uuid.UUID) (*model.Device, error) {
+	device, err := s.db.Querier().GetDeviceById(s.ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return new(model.Device).FromModel(device), nil
+}

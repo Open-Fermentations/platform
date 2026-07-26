@@ -288,6 +288,68 @@ func (_c *MockService_GetBatchById_Call) RunAndReturn(run func(id uuid.UUID) (*m
 	return _c
 }
 
+// GetDeviceById provides a mock function for the type MockService
+func (_mock *MockService) GetDeviceById(id uuid.UUID) (*model.Device, error) {
+	ret := _mock.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetDeviceById")
+	}
+
+	var r0 *model.Device
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) (*model.Device, error)); ok {
+		return returnFunc(id)
+	}
+	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) *model.Device); ok {
+		r0 = returnFunc(id)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Device)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(uuid.UUID) error); ok {
+		r1 = returnFunc(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockService_GetDeviceById_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetDeviceById'
+type MockService_GetDeviceById_Call struct {
+	*mock.Call
+}
+
+// GetDeviceById is a helper method to define mock.On call
+//   - id uuid.UUID
+func (_e *MockService_Expecter) GetDeviceById(id any) *MockService_GetDeviceById_Call {
+	return &MockService_GetDeviceById_Call{Call: _e.mock.On("GetDeviceById", id)}
+}
+
+func (_c *MockService_GetDeviceById_Call) Run(run func(id uuid.UUID)) *MockService_GetDeviceById_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 uuid.UUID
+		if args[0] != nil {
+			arg0 = args[0].(uuid.UUID)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockService_GetDeviceById_Call) Return(device *model.Device, err error) *MockService_GetDeviceById_Call {
+	_c.Call.Return(device, err)
+	return _c
+}
+
+func (_c *MockService_GetDeviceById_Call) RunAndReturn(run func(id uuid.UUID) (*model.Device, error)) *MockService_GetDeviceById_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Login provides a mock function for the type MockService
 func (_mock *MockService) Login(username string, password string) (*model.User, error) {
 	ret := _mock.Called(username, password)
