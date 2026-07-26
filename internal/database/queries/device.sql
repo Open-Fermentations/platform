@@ -28,3 +28,7 @@ offset @offsetVal;
 select * from "device"
 where id = @id;
 
+-- name: RemoveDeviceById :exec
+delete from "device"
+where id = $1;
+

@@ -59,6 +59,11 @@ type Querier interface {
 	//  from "user"
 	//  where username = $1
 	GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error)
+	//RemoveDeviceById
+	//
+	//  delete from "device"
+	//  where id = $1
+	RemoveDeviceById(ctx context.Context, id uuid.UUID) error
 	//SearchBatches
 	//
 	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
