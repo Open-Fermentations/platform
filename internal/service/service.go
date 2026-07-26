@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"open-fermentations/internal/database"
+	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/env"
 	"open-fermentations/internal/model"
@@ -24,6 +25,7 @@ type Service interface {
 	SearchDevices(dto.SearchDTO) (*dto.PageDTO[model.Device], error)
 	GetDeviceById(id uuid.UUID) (*model.Device, error)
 	DeleteDevice(id uuid.UUID) error
+	UpdateDevice(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)
 }
 
 type service struct {
