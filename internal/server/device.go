@@ -46,16 +46,11 @@ func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-	limit := getIntQueryParam(r, "limit", 50)
-	offset := getIntQueryParam(r, "offset", 0)
+	search := new(dto.SearchDTO).FromRequest(r)
 
-	devicesPage, err := s.svc.SearchDevices(name, limit, offset)
+	devicesPage, err := s.svc.SearchDevices(*search)
 	if err != nil {
-		slog.Error("searching devices", logging.Err(err), slog.Group("query",
-			slog.Int("limit", limit),
-			slog.Int("offset", offset),
-			slog.String("name", name)))
+		slog.Error("searching devices", []any{logging.Err(err), search.Slog()}...)
 		http.Error(w, "Failed to search devices", http.StatusInternalServerError)
 		return
 	}
@@ -66,8 +61,8 @@ func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page := dto.PageDTO[dto.DeviceDTO]{
-		Limit:  limit,
-		Offset: offset,
+		Limit:  search.Limit,
+		Offset: search.Offset,
 		Total:  devicesPage.Total,
 		Data:   deviceDtos,
 	}

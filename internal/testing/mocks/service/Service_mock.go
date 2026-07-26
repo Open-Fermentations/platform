@@ -437,8 +437,8 @@ func (_c *MockService_SearchBatches_Call) RunAndReturn(run func(name string, lim
 }
 
 // SearchDevices provides a mock function for the type MockService
-func (_mock *MockService) SearchDevices(name string, limit int, offset int) (*dto.PageDTO[model.Device], error) {
-	ret := _mock.Called(name, limit, offset)
+func (_mock *MockService) SearchDevices(searchDTO dto.SearchDTO) (*dto.PageDTO[model.Device], error) {
+	ret := _mock.Called(searchDTO)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SearchDevices")
@@ -446,18 +446,18 @@ func (_mock *MockService) SearchDevices(name string, limit int, offset int) (*dt
 
 	var r0 *dto.PageDTO[model.Device]
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) (*dto.PageDTO[model.Device], error)); ok {
-		return returnFunc(name, limit, offset)
+	if returnFunc, ok := ret.Get(0).(func(dto.SearchDTO) (*dto.PageDTO[model.Device], error)); ok {
+		return returnFunc(searchDTO)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) *dto.PageDTO[model.Device]); ok {
-		r0 = returnFunc(name, limit, offset)
+	if returnFunc, ok := ret.Get(0).(func(dto.SearchDTO) *dto.PageDTO[model.Device]); ok {
+		r0 = returnFunc(searchDTO)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*dto.PageDTO[model.Device])
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string, int, int) error); ok {
-		r1 = returnFunc(name, limit, offset)
+	if returnFunc, ok := ret.Get(1).(func(dto.SearchDTO) error); ok {
+		r1 = returnFunc(searchDTO)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -470,31 +470,19 @@ type MockService_SearchDevices_Call struct {
 }
 
 // SearchDevices is a helper method to define mock.On call
-//   - name string
-//   - limit int
-//   - offset int
-func (_e *MockService_Expecter) SearchDevices(name any, limit any, offset any) *MockService_SearchDevices_Call {
-	return &MockService_SearchDevices_Call{Call: _e.mock.On("SearchDevices", name, limit, offset)}
+//   - searchDTO dto.SearchDTO
+func (_e *MockService_Expecter) SearchDevices(searchDTO any) *MockService_SearchDevices_Call {
+	return &MockService_SearchDevices_Call{Call: _e.mock.On("SearchDevices", searchDTO)}
 }
 
-func (_c *MockService_SearchDevices_Call) Run(run func(name string, limit int, offset int)) *MockService_SearchDevices_Call {
+func (_c *MockService_SearchDevices_Call) Run(run func(searchDTO dto.SearchDTO)) *MockService_SearchDevices_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 dto.SearchDTO
 		if args[0] != nil {
-			arg0 = args[0].(string)
-		}
-		var arg1 int
-		if args[1] != nil {
-			arg1 = args[1].(int)
-		}
-		var arg2 int
-		if args[2] != nil {
-			arg2 = args[2].(int)
+			arg0 = args[0].(dto.SearchDTO)
 		}
 		run(
 			arg0,
-			arg1,
-			arg2,
 		)
 	})
 	return _c
@@ -505,7 +493,7 @@ func (_c *MockService_SearchDevices_Call) Return(pageDTO *dto.PageDTO[model.Devi
 	return _c
 }
 
-func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(name string, limit int, offset int) (*dto.PageDTO[model.Device], error)) *MockService_SearchDevices_Call {
+func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(searchDTO dto.SearchDTO) (*dto.PageDTO[model.Device], error)) *MockService_SearchDevices_Call {
 	_c.Call.Return(run)
 	return _c
 }

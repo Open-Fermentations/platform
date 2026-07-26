@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"open-fermentations/internal/database/sqlc"
-	"open-fermentations/internal/dto"
 	"open-fermentations/internal/env"
-	"open-fermentations/internal/model"
 	"strconv"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -20,8 +18,6 @@ type Service interface {
 	Close()
 
 	Querier() sqlc.Querier
-
-	SearchDevices(ctx context.Context, arg SearchDevicesParams) (*dto.PageDTO[model.Device], error)
 }
 
 type service struct {

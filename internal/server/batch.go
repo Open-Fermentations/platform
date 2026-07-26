@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
+	"open-fermentations/internal/route"
 
 	"github.com/google/uuid"
 )
@@ -67,8 +68,8 @@ func (s *Server) deleteBatch(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) searchBatches(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
-	limit := getIntQueryParam(r, "5limit", 50)
-	offset := getIntQueryParam(r, "offset", 0)
+	limit := route.GetIntQueryParam(r, "limit", 50)
+	offset := route.GetIntQueryParam(r, "offset", 0)
 
 	batches, total, err := s.svc.SearchBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
 	if err != nil {

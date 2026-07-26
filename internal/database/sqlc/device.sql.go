@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -40,4 +41,97 @@ func (q *Queries) CreateDevice(ctx context.Context, arg CreateDeviceParams) (Dev
 		&i.Modified,
 	)
 	return i, err
+}
+
+const searchDevices = `-- name: SearchDevices :many
+select id, name, mac_address, user_id, created, modified, count(*) over() as total
+from "device"
+where "name" like $1::text
+order by
+  case when $2::text = 'name' and $3::bool then "device"."name" end asc nulls last,
+  case when $2::text = 'name' and $3::bool != true then "device"."name" end desc nulls last,
+  case when $2::text = 'created' and $3::bool then "device"."created" end asc nulls last,
+  case when $2::text = 'created' and $3::bool != true then "device"."created" end desc nulls last,
+  case when $2::text = 'modified' and $3::bool then "device"."modified" end asc nulls last,
+  case when $2::text = 'modified' and $3::bool != true then "device"."modified" end desc nulls last,
+  case when $2::text = 'id' and $3::bool then "device"."id" end asc nulls last,
+  case when $2::text = 'id' and $3::bool != true then "device"."id" end desc nulls last,
+  case when $2::text = 'user_id' and $3::bool then "device"."user_id" end asc nulls last,
+  case when $2::text = 'user_id' and $3::bool != true then "device"."user_id" end desc nulls last,
+  case when $2::text = 'mac_address' and $3::bool then "device"."mac_address" end asc nulls last,
+  case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last
+limit $5
+offset $4
+`
+
+type SearchDevicesParams struct {
+	Search    string
+	OrderCol  string
+	Asc       bool
+	Offsetval int32
+	Limitval  int32
+}
+
+type SearchDevicesRow struct {
+	ID         uuid.UUID
+	Name       string
+	MacAddress []byte
+	UserID     uuid.UUID
+	Created    time.Time
+	Modified   time.Time
+	Total      int64
+}
+
+// SearchDevices
+//
+//	select id, name, mac_address, user_id, created, modified, count(*) over() as total
+//	from "device"
+//	where "name" like $1::text
+//	order by
+//	  case when $2::text = 'name' and $3::bool then "device"."name" end asc nulls last,
+//	  case when $2::text = 'name' and $3::bool != true then "device"."name" end desc nulls last,
+//	  case when $2::text = 'created' and $3::bool then "device"."created" end asc nulls last,
+//	  case when $2::text = 'created' and $3::bool != true then "device"."created" end desc nulls last,
+//	  case when $2::text = 'modified' and $3::bool then "device"."modified" end asc nulls last,
+//	  case when $2::text = 'modified' and $3::bool != true then "device"."modified" end desc nulls last,
+//	  case when $2::text = 'id' and $3::bool then "device"."id" end asc nulls last,
+//	  case when $2::text = 'id' and $3::bool != true then "device"."id" end desc nulls last,
+//	  case when $2::text = 'user_id' and $3::bool then "device"."user_id" end asc nulls last,
+//	  case when $2::text = 'user_id' and $3::bool != true then "device"."user_id" end desc nulls last,
+//	  case when $2::text = 'mac_address' and $3::bool then "device"."mac_address" end asc nulls last,
+//	  case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last
+//	limit $5
+//	offset $4
+func (q *Queries) SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error) {
+	rows, err := q.db.Query(ctx, searchDevices,
+		arg.Search,
+		arg.OrderCol,
+		arg.Asc,
+		arg.Offsetval,
+		arg.Limitval,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchDevicesRow
+	for rows.Next() {
+		var i SearchDevicesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.MacAddress,
+			&i.UserID,
+			&i.Created,
+			&i.Modified,
+			&i.Total,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

@@ -8,4 +8,4 @@ Content-Type: application/json
 }]
 
 ### Search devices
-GET {{url}}/api/device
+GET {{url}}/api/device?orderBy=id&asc=true
