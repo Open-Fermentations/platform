@@ -66,6 +66,20 @@ func (q *Queries) GetDeviceById(ctx context.Context, id uuid.UUID) (Device, erro
 	return i, err
 }
 
+const removeDeviceById = `-- name: RemoveDeviceById :exec
+delete from "device"
+where id = $1
+`
+
+// RemoveDeviceById
+//
+//	delete from "device"
+//	where id = $1
+func (q *Queries) RemoveDeviceById(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, removeDeviceById, id)
+	return err
+}
+
 const searchDevices = `-- name: SearchDevices :many
 select id, name, mac_address, user_id, created, modified, count(*) over() as total
 from "device"
