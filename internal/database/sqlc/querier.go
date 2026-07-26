@@ -36,6 +36,11 @@ type Querier interface {
 	//
 	//  select id, name, user_id, created, modified from "batch" where id = $1
 	GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error)
+	//GetDeviceById
+	//
+	//  select id, name, mac_address, user_id, created, modified from "device"
+	//  where id = $1
+	GetDeviceById(ctx context.Context, id uuid.UUID) (Device, error)
 	//GetUserById
 	//
 	//  select id, username, created, modified

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
+
+	"github.com/google/uuid"
 )
 
 func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +79,42 @@ func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
 	setContentTypeJson(w)
 	if _, err := w.Write(pageJson); err != nil {
 		slog.Error("writing device page", logging.Err(err))
+		return
+	}
+}
+
+func (s *Server) getDeviceById(w http.ResponseWriter, r *http.Request) {
+	rawId := r.PathValue(IDKey)
+	id, err := uuid.Parse(rawId)
+	if err != nil {
+		slog.Error("parsing device id from path", logging.Err(err), slog.String("id", rawId))
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
+		return
+	}
+
+	device, err := s.svc.GetDeviceById(id)
+	if err != nil {
+		slog.Error("fetching device by id", logging.Err(err), slog.String("id", id.String()))
+		http.Error(w, "failed to fetch device by id", http.StatusInternalServerError)
+		return
+	}
+
+	if device == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	deviceDto := new(dto.DeviceDTO).FromModel(device)
+
+	deviceJson, err := json.Marshal(deviceDto)
+	if err != nil {
+		slog.Error("marshalling device to json", []any{logging.Err(err), deviceDto.Slog()}...)
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(deviceJson); err != nil {
+		slog.Error("failed to write device", []any{logging.Err(err), deviceDto.Slog()}...)
 		return
 	}
 }

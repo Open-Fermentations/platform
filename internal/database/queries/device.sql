@@ -23,3 +23,8 @@ order by
   "device"."created" asc nulls last
 limit @limitVal
 offset @offsetVal;
+
+-- name: GetDeviceById :one
+select * from "device"
+where id = @id;
+

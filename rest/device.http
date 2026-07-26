@@ -1,3 +1,4 @@
+@id=0291fe4c-5cd9-4a83-8c78-68a0e2a13a1a
 ### Create devices
 POST {{url}}/api/device
 Content-Type: application/json
@@ -9,3 +10,6 @@ Content-Type: application/json
 
 ### Search devices
 GET {{url}}/api/device?orderBy=id&asc=true
+
+### Get Device by id
+GET {{url}}/api/device/{{id}}

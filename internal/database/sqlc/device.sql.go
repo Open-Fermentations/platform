@@ -43,6 +43,29 @@ func (q *Queries) CreateDevice(ctx context.Context, arg CreateDeviceParams) (Dev
 	return i, err
 }
 
+const getDeviceById = `-- name: GetDeviceById :one
+select id, name, mac_address, user_id, created, modified from "device"
+where id = $1
+`
+
+// GetDeviceById
+//
+//	select id, name, mac_address, user_id, created, modified from "device"
+//	where id = $1
+func (q *Queries) GetDeviceById(ctx context.Context, id uuid.UUID) (Device, error) {
+	row := q.db.QueryRow(ctx, getDeviceById, id)
+	var i Device
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.MacAddress,
+		&i.UserID,
+		&i.Created,
+		&i.Modified,
+	)
+	return i, err
+}
+
 const searchDevices = `-- name: SearchDevices :many
 select id, name, mac_address, user_id, created, modified, count(*) over() as total
 from "device"
