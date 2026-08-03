@@ -37,7 +37,7 @@ func TestLoginHandler(t *testing.T) {
 				Duration: time.Second,
 			}}
 			c.mSvc.EXPECT().Login(mock.Anything, mock.Anything).
-				Return(&model.User{Username: "admin"}, nil)
+				Return(&model.AuthenticatedUser{User: model.User{Username: "admin"}}, nil)
 			server := httptest.NewServer(http.HandlerFunc(c.s.loginHandler))
 			defer server.Close()
 

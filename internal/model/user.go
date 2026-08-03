@@ -15,7 +15,7 @@ type User struct {
 	Modified time.Time `json:"modified"`
 }
 
-func (u *User) FromUsernameWithPasswordRow(m *sqlc.GetUserByUsernameWithPasswordRow) *User {
+func (u *User) FromModel(m *sqlc.User) *User {
 	u.ID = m.ID
 	u.Username = m.Username
 	u.Password = m.Password
@@ -23,4 +23,10 @@ func (u *User) FromUsernameWithPasswordRow(m *sqlc.GetUserByUsernameWithPassword
 	u.Modified = m.Modified
 
 	return u
+}
+
+type AuthenticatedUser struct {
+	User
+	Permissions []Permission
+	Roles       []Role
 }

@@ -13,7 +13,7 @@ import (
 )
 
 type Service interface {
-	Login(username string, password string) (*model.User, error)
+	Login(username string, password string) (*model.AuthenticatedUser, error)
 
 	CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)
 	DeleteBatch(id uuid.UUID) error

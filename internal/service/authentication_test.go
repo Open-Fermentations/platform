@@ -52,19 +52,21 @@ func testCase(test func(t *testing.T, c *testContext)) func(*testing.T) {
 }
 
 func Test_Login(t *testing.T) {
-	mockUser := sqlc.GetUserByUsernameWithPasswordRow{
-		Username: "MockUsername",
-		// Password is 'admin' hashed
-		Password: "$2a$10$5nmh/cOu.dzk05V7lfBqQua9FO6nG.aQTGTJQFB26DGMSMwp5FWxu",
+	mockUser := sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow{
+		User: sqlc.User{
+			Username: "MockUsername",
+			// Password is 'admin' hashed
+			Password: "$2a$10$5nmh/cOu.dzk05V7lfBqQua9FO6nG.aQTGTJQFB26DGMSMwp5FWxu",
+		},
 	}
 
 	t.Run("with db.GetUserByUsernameWithPassword returning an error",
 		testCase(func(t *testing.T, c *testContext) {
 			u := "non-existent-username"
 			c.mockSqlc.EXPECT().
-				GetUserByUsernameWithPassword(mock.Anything, u).
+				GetUserByUsernameWithPasswordAndRolesAndPermissions(mock.Anything, u).
 				Once().
-				Return(sqlc.GetUserByUsernameWithPasswordRow{}, ErrMock)
+				Return(nil, ErrMock)
 
 			usr, err := c.svc.Login(u, "")
 			assert.Nil(t, usr)
@@ -74,26 +76,26 @@ func Test_Login(t *testing.T) {
 	t.Run("with an incorrect password, should return ErrInvalidCredentialsErr",
 		testCase(func(t *testing.T, c *testContext) {
 			c.mockSqlc.EXPECT().
-				GetUserByUsernameWithPassword(mock.Anything, mockUser.Username).
+				GetUserByUsernameWithPasswordAndRolesAndPermissions(mock.Anything, mockUser.User.Username).
 				Once().
-				Return(mockUser, nil)
+				Return([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow{mockUser}, nil)
 
-			usr, err := c.svc.Login(mockUser.Username, "some incorrect password")
+			usr, err := c.svc.Login(mockUser.User.Username, "some incorrect password")
 			assert.Nil(t, usr)
 			var invalidCredentialsErr ErrInvalidCredentials
 			assert.ErrorAs(t, err, &invalidCredentialsErr)
-			assert.EqualValues(t, invalidCredentialsErr.Username, mockUser.Username)
+			assert.EqualValues(t, invalidCredentialsErr.Username, mockUser.User.Username)
 		}))
 
 	t.Run("with correct password, should return model.User",
 		testCase(func(t *testing.T, c *testContext) {
 			c.mockSqlc.EXPECT().
-				GetUserByUsernameWithPassword(mock.Anything, mockUser.Username).
+				GetUserByUsernameWithPasswordAndRolesAndPermissions(mock.Anything, mockUser.User.Username).
 				Once().
-				Return(mockUser, nil)
+				Return([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow{mockUser}, nil)
 
-			usr, err := c.svc.Login(mockUser.Username, "admin")
+			usr, err := c.svc.Login(mockUser.User.Username, "admin")
 			assert.Nil(t, err)
-			assert.EqualValues(t, mockUser.Username, usr.Username)
+			assert.EqualValues(t, mockUser.User.Username, usr.Username)
 		}))
 }

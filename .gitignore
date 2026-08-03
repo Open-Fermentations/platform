@@ -47,3 +47,5 @@ main
 .continue
 
 __debug_*
+
+docker-compose.yml

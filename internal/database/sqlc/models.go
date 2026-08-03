@@ -124,3 +124,15 @@ type User struct {
 	Created  time.Time
 	Modified time.Time
 }
+
+type UserPermission struct {
+	ID           uuid.UUID
+	UserID       uuid.UUID
+	PermissionID uuid.UUID
+}
+
+type UserRole struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+	RoleID uuid.UUID
+}

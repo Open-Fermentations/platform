@@ -484,22 +484,22 @@ func (_c *MockQuerier_GetUserById_Call) RunAndReturn(run func(ctx context.Contex
 }
 
 // GetUserByUsername provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetUserByUsername(ctx context.Context, username string) (sqlc.GetUserByUsernameRow, error) {
+func (_mock *MockQuerier) GetUserByUsername(ctx context.Context, username string) (sqlc.User, error) {
 	ret := _mock.Called(ctx, username)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetUserByUsername")
 	}
 
-	var r0 sqlc.GetUserByUsernameRow
+	var r0 sqlc.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (sqlc.GetUserByUsernameRow, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (sqlc.User, error)); ok {
 		return returnFunc(ctx, username)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) sqlc.GetUserByUsernameRow); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) sqlc.User); ok {
 		r0 = returnFunc(ctx, username)
 	} else {
-		r0 = ret.Get(0).(sqlc.GetUserByUsernameRow)
+		r0 = ret.Get(0).(sqlc.User)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = returnFunc(ctx, username)
@@ -539,33 +539,35 @@ func (_c *MockQuerier_GetUserByUsername_Call) Run(run func(ctx context.Context, 
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsername_Call) Return(getUserByUsernameRow sqlc.GetUserByUsernameRow, err error) *MockQuerier_GetUserByUsername_Call {
-	_c.Call.Return(getUserByUsernameRow, err)
+func (_c *MockQuerier_GetUserByUsername_Call) Return(user sqlc.User, err error) *MockQuerier_GetUserByUsername_Call {
+	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsername_Call) RunAndReturn(run func(ctx context.Context, username string) (sqlc.GetUserByUsernameRow, error)) *MockQuerier_GetUserByUsername_Call {
+func (_c *MockQuerier_GetUserByUsername_Call) RunAndReturn(run func(ctx context.Context, username string) (sqlc.User, error)) *MockQuerier_GetUserByUsername_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// GetUserByUsernameWithPassword provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetUserByUsernameWithPassword(ctx context.Context, username string) (sqlc.GetUserByUsernameWithPasswordRow, error) {
+// GetUserByUsernameWithPasswordAndRolesAndPermissions provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx context.Context, username string) ([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error) {
 	ret := _mock.Called(ctx, username)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetUserByUsernameWithPassword")
+		panic("no return value specified for GetUserByUsernameWithPasswordAndRolesAndPermissions")
 	}
 
-	var r0 sqlc.GetUserByUsernameWithPasswordRow
+	var r0 []sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (sqlc.GetUserByUsernameWithPasswordRow, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) ([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error)); ok {
 		return returnFunc(ctx, username)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) sqlc.GetUserByUsernameWithPasswordRow); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) []sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow); ok {
 		r0 = returnFunc(ctx, username)
 	} else {
-		r0 = ret.Get(0).(sqlc.GetUserByUsernameWithPasswordRow)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow)
+		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = returnFunc(ctx, username)
@@ -575,19 +577,19 @@ func (_mock *MockQuerier) GetUserByUsernameWithPassword(ctx context.Context, use
 	return r0, r1
 }
 
-// MockQuerier_GetUserByUsernameWithPassword_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByUsernameWithPassword'
-type MockQuerier_GetUserByUsernameWithPassword_Call struct {
+// MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByUsernameWithPasswordAndRolesAndPermissions'
+type MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call struct {
 	*mock.Call
 }
 
-// GetUserByUsernameWithPassword is a helper method to define mock.On call
+// GetUserByUsernameWithPasswordAndRolesAndPermissions is a helper method to define mock.On call
 //   - ctx context.Context
 //   - username string
-func (_e *MockQuerier_Expecter) GetUserByUsernameWithPassword(ctx any, username any) *MockQuerier_GetUserByUsernameWithPassword_Call {
-	return &MockQuerier_GetUserByUsernameWithPassword_Call{Call: _e.mock.On("GetUserByUsernameWithPassword", ctx, username)}
+func (_e *MockQuerier_Expecter) GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx any, username any) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
+	return &MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call{Call: _e.mock.On("GetUserByUsernameWithPasswordAndRolesAndPermissions", ctx, username)}
 }
 
-func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) Run(run func(ctx context.Context, username string)) *MockQuerier_GetUserByUsernameWithPassword_Call {
+func (_c *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call) Run(run func(ctx context.Context, username string)) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -605,12 +607,12 @@ func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) Run(run func(ctx conte
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) Return(getUserByUsernameWithPasswordRow sqlc.GetUserByUsernameWithPasswordRow, err error) *MockQuerier_GetUserByUsernameWithPassword_Call {
-	_c.Call.Return(getUserByUsernameWithPasswordRow, err)
+func (_c *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call) Return(getUserByUsernameWithPasswordAndRolesAndPermissionsRows []sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, err error) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
+	_c.Call.Return(getUserByUsernameWithPasswordAndRolesAndPermissionsRows, err)
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) RunAndReturn(run func(ctx context.Context, username string) (sqlc.GetUserByUsernameWithPasswordRow, error)) *MockQuerier_GetUserByUsernameWithPassword_Call {
+func (_c *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call) RunAndReturn(run func(ctx context.Context, username string) ([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error)) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
 	_c.Call.Return(run)
 	return _c
 }

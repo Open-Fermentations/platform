@@ -403,23 +403,23 @@ func (_c *MockService_GetDeviceById_Call) RunAndReturn(run func(id uuid.UUID) (*
 }
 
 // Login provides a mock function for the type MockService
-func (_mock *MockService) Login(username string, password string) (*model.User, error) {
+func (_mock *MockService) Login(username string, password string) (*model.AuthenticatedUser, error) {
 	ret := _mock.Called(username, password)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Login")
 	}
 
-	var r0 *model.User
+	var r0 *model.AuthenticatedUser
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string, string) (*model.User, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(string, string) (*model.AuthenticatedUser, error)); ok {
 		return returnFunc(username, password)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string, string) *model.User); ok {
+	if returnFunc, ok := ret.Get(0).(func(string, string) *model.AuthenticatedUser); ok {
 		r0 = returnFunc(username, password)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*model.User)
+			r0 = ret.Get(0).(*model.AuthenticatedUser)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(string, string) error); ok {
@@ -460,12 +460,12 @@ func (_c *MockService_Login_Call) Run(run func(username string, password string)
 	return _c
 }
 
-func (_c *MockService_Login_Call) Return(user *model.User, err error) *MockService_Login_Call {
-	_c.Call.Return(user, err)
+func (_c *MockService_Login_Call) Return(authenticatedUser *model.AuthenticatedUser, err error) *MockService_Login_Call {
+	_c.Call.Return(authenticatedUser, err)
 	return _c
 }
 
-func (_c *MockService_Login_Call) RunAndReturn(run func(username string, password string) (*model.User, error)) *MockService_Login_Call {
+func (_c *MockService_Login_Call) RunAndReturn(run func(username string, password string) (*model.AuthenticatedUser, error)) *MockService_Login_Call {
 	_c.Call.Return(run)
 	return _c
 }

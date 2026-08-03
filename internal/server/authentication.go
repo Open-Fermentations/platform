@@ -35,7 +35,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDto := new(dto.UserDTO).FromModel(user)
+	userDto := new(dto.UserDTO).FromModel(&user.User)
 	jsonResp, err := json.Marshal(userDto)
 	if err != nil {
 		slog.Error("marshalling user dto", logging.Err(err))
@@ -43,7 +43,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJwt([]byte(s.env.Jwt.Key), s.env.Jwt.Expiry, user)
+	token, err := generateJwt([]byte(s.env.Jwt.Key), s.env.Jwt.Expiry, &user.User)
 	if err != nil {
 		panic(err)
 	}

@@ -15,23 +15,21 @@ begin;
 
   create unique index unique_username_constraint on "user"(username);
 
-  insert into "user"
-    (username, password)
-  values
-    ('admin', '$2a$10$5nmh/cOu.dzk05V7lfBqQua9FO6nG.aQTGTJQFB26DGMSMwp5FWxu');
-  -- password = admin
-
   create table "role"
   (
     id uuid primary key default uuid_generate_v4(),
-    "name" varchar(15) not null
+    "name" varchar(20) not null
   );
+
+  create unique index unique_role_name_constraint on "role"("name");
 
   create table "permission"
   (
     id uuid primary key default uuid_generate_v4(),
-    "name" varchar(15) not null
+    "name" varchar(20) not null
   );
+
+  create unique index unique_permission_name_constraint on "permission"("name");
 
   create table "role_permission"
   (
@@ -45,6 +43,38 @@ begin;
       foreign key(permission_id)
       references "permission"(id)
   );
+
+  -- TODO: add constraint for unique role_id and permission_id
+
+  create table "user_role"
+  (
+    id uuid primary key default uuid_generate_v4(),
+    user_id uuid not null,
+    role_id uuid not null,
+    constraint fk_user_role_user
+      foreign key(user_id)
+      references "user"(id),
+    constraint fk_user_role_role
+      foreign key(role_id)
+      references "role"(id)
+  );
+
+  -- TODO: add constraint for unique user_id and role_id
+
+  create table "user_permission"
+  (
+    id uuid primary key default uuid_generate_v4(),
+    user_id uuid not null,
+    permission_id uuid not null,
+    constraint fk_user_permission_user
+      foreign key(user_id)
+      references "user"(id),
+    constraint fk_user_permission_permission
+      foreign key(permission_id)
+      references "permission"(id)
+  );
+
+  -- TODO: create constraint for unique user_id and permission_id
 
   create table "batch"
   (
@@ -118,3 +148,37 @@ begin;
   );
 
 commit;
+
+do $$
+declare
+  admin_user uuid = uuid_generate_v4();
+  admin_uuid uuid = uuid_generate_v4();
+  user_uuid uuid = uuid_generate_v4();
+begin
+  insert into "user"
+    (id, username, password)
+  values
+    (admin_user, 'admin', '$2a$10$5nmh/cOu.dzk05V7lfBqQua9FO6nG.aQTGTJQFB26DGMSMwp5FWxu');
+  -- password = admin  
+
+  insert into "role" (id, "name") values
+    (admin_uuid, 'admin'),
+    (user_uuid, 'user');
+
+  insert into "permission" ("name") values
+    ('create_user'), ('read_other_users'), ('delete_any_user'), ('delete_own_user'), ('update_own_user'), ('update_any_user');
+
+  insert into "role_permission" ("role_id", "permission_id") values
+  (admin_uuid, (select id from "permission" where "name" = 'create_user')),
+  (admin_uuid, (select id from "permission" where "name" = 'read_other_users')),
+  (admin_uuid, (select id from "permission" where "name" = 'delete_any_user')),
+  (admin_uuid, (select id from "permission" where "name" = 'delete_own_user')),
+  (admin_uuid, (select id from "permission" where "name" = 'update_own_user')),
+  (admin_uuid, (select id from "permission" where "name" = 'update_any_user')),
+  
+  (user_uuid, (select id from "permission" where "name" = 'update_own_user')),
+  (user_uuid, (select id from "permission" where "name" = 'delete_own_user'));
+
+  insert into "user_role" ("user_id", "role_id") values
+  (admin_user, admin_uuid);
+end $$;

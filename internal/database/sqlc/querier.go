@@ -49,16 +49,21 @@ type Querier interface {
 	GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error)
 	//GetUserByUsername
 	//
-	//  select id, username, created, modified
+	//  select id, username, password, active, created, modified
 	//  from "user"
 	//  where username = $1
-	GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error)
-	//GetUserByUsernameWithPassword
+	GetUserByUsername(ctx context.Context, username string) (User, error)
+	//GetUserByUsernameWithPasswordAndRolesAndPermissions
 	//
-	//  select id, username, password, created, modified
-	//  from "user"
+	//  select u.id, u.username, u.password, u.active, u.created, u.modified, r.id, r.name, p.id, p.name
+	//  from "user" u
+	//  left join "user_role" ur on ur.user_id = u.id
+	//  left join "user_permission" up on up.user_id = u.id
+	//  left join "role" r on ur.role_id = r.id
+	//  left join "role_permission" rp on r.id = rp.role_id
+	//  left join "permission" p on up.permission_id = p.id or p.id = rp.permission_id
 	//  where username = $1
-	GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error)
+	GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx context.Context, username string) ([]GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error)
 	//RemoveDeviceById
 	//
 	//  delete from "device"
