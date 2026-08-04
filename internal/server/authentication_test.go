@@ -94,7 +94,7 @@ func Test_authenticationMiddleware(t *testing.T) {
 			testHandler(t, successText, http.StatusOK))))
 		defer server.Close()
 
-		token, err := generateJwt([]byte(c.s.env.Jwt.Key), 30*time.Minute, &model.User{})
+		token, err := generateJwt([]byte(c.s.env.Jwt.Key), 30*time.Minute, &model.AuthenticatedUser{})
 		if err != nil {
 			t.Fatalf("could not create jwt: Err %v", err.Error())
 		}
@@ -128,7 +128,7 @@ func Test_authenticationMiddleware(t *testing.T) {
 				testHandler(t, successText, http.StatusOK))))
 			defer server.Close()
 
-			token, err := generateJwt([]byte("some-other-key"), 30*time.Minute, &model.User{})
+			token, err := generateJwt([]byte("some-other-key"), 30*time.Minute, &model.AuthenticatedUser{})
 			if err != nil {
 				t.Fatalf("could not create jwt: Err %v", err.Error())
 			}
