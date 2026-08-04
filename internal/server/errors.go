@@ -25,3 +25,14 @@ func (e ErrJWTExpired) Error() string {
 var _ error = ErrJWTExpired{}
 
 var _ logging.Slog = ErrJWTExpired{}
+
+type ErrJWTClaim struct {
+	Key string
+}
+
+// Error implements [error].
+func (e ErrJWTClaim) Error() string {
+	return fmt.Sprintf("Could not get key from JWT claims. Key: %s", e.Key)
+}
+
+var _ error = ErrJWTClaim{}

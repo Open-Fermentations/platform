@@ -15,6 +15,12 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	JWTIdKey          string = "id"
+	JWTPermissionsKey string = "permissions"
+	JWTRolesKey       string = "roles"
+)
+
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	var b dto.LoginBody
 	if err := readBody(r, &b); err != nil {
@@ -110,16 +116,10 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 				http.Error(w, Unauthorised, http.StatusUnauthorized)
 				return
 			}
-			if rawId, ok := claims["id"].(string); ok {
-				id, err := uuid.Parse(rawId)
-				if err != nil {
-					slog.Error("could not parse user id from claims", logging.Err(err), slog.String("id", rawId))
-					http.Error(w, Unauthorised, http.StatusUnauthorized)
-					return
-				}
-				ctx = context.WithValue(ctx, ContextUserIdKey, id)
-			} else {
-				slog.Error("could not get 'id' claim from token")
+
+			ctx, err = mapClaimsToContext(ctx, claims)
+			if err != nil {
+				slog.Error("mapping claims to context", logging.Err(err))
 				http.Error(w, Unauthorised, http.StatusUnauthorized)
 				return
 			}
@@ -131,4 +131,68 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func addUserIdToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	if rawId, ok := claims[JWTIdKey].(string); ok {
+		id, err := uuid.Parse(rawId)
+		if err != nil {
+			return nil, err
+		}
+
+		return context.WithValue(ctx, ContextUserIdKey, id), nil
+	} else {
+		return nil, ErrJWTClaim{Key: JWTIdKey}
+	}
+}
+
+func addRolesToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	switch v := claims[JWTRolesKey].(type) {
+	case []string:
+		return context.WithValue(ctx, ContextRolesKey, v), nil
+	case []interface{}:
+		strRoles := make([]string, len(v))
+		for i, item := range v {
+			if strVal, ok := item.(string); ok {
+				strRoles[i] = strVal
+			}
+		}
+		return context.WithValue(ctx, ContextRolesKey, strRoles), nil
+	default:
+		return nil, ErrJWTClaim{Key: JWTRolesKey}
+	}
+}
+
+func addPermissionsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	switch v := claims[JWTPermissionsKey].(type) {
+	case []string:
+		return context.WithValue(ctx, ContextPermissionsKey, v), nil
+	case []interface{}:
+		strPermissions := make([]string, len(v))
+		for i, p := range v {
+			if strVal, ok := p.(string); ok {
+				strPermissions[i] = strVal
+			}
+		}
+		return context.WithValue(ctx, ContextPermissionsKey, strPermissions), nil
+	default:
+		return nil, ErrJWTClaim{Key: JWTPermissionsKey}
+	}
+}
+
+func mapClaimsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	var err error
+	ctx, err = addUserIdToContext(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+	ctx, err = addRolesToContext(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+	ctx, err = addPermissionsToContext(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+	return ctx, nil
 }

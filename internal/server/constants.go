@@ -1,6 +1,10 @@
 package server
 
-const ContextUserIdKey = "user_id"
+const (
+	ContextUserIdKey      = "user_id"
+	ContextRolesKey       = "roles"
+	ContextPermissionsKey = "permissions"
+)
 
 const ServerPrefix = "/api"
 

@@ -44,12 +44,12 @@ func generateJwt(key []byte, exp time.Duration, u *model.AuthenticatedUser) (str
 	}
 
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss":         "open-fermentations", // TODO get this from env
-		"sub":         u.Username,
-		"id":          u.ID.String(),
-		"exp":         time.Now().Add(exp).Unix(),
-		"roles":       roles,
-		"permissions": permissions,
+		"iss":             "open-fermentations", // TODO get this from env
+		"sub":             u.Username,
+		JWTIdKey:          u.ID.String(),
+		"exp":             time.Now().Add(exp).Unix(),
+		JWTRolesKey:       roles,
+		JWTPermissionsKey: permissions,
 	})
 
 	return t.SignedString(key)
