@@ -3,6 +3,7 @@ package route
 import (
 	"log/slog"
 	"net/http"
+	"slices"
 	"time"
 )
 
@@ -51,4 +52,28 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 			slog.Duration("duration", time.Since(start)),
 		))
 	})
+}
+
+func (r *Route) PermissionsMiddleware(permissions []string) Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			if len(r.PermissionsKey) == 0 {
+				slog.Error("Permissions key not set for route",
+					slog.String("route", r.Route),
+					slog.String("method", r.Method))
+				http.Error(w, "Internal error", http.StatusInternalServerError)
+				return
+			}
+
+			userPermissions := GetStringSliceFromContext(req, r.PermissionsKey)
+
+			for _, permission := range permissions {
+				if slices.Contains(userPermissions, permission) == false {
+					slog.Error("Unauthorised for user", slog.String("permission", permission))
+					http.Error(w, "Forbidden", http.StatusForbidden)
+					return
+				}
+			}
+		})
+	}
 }

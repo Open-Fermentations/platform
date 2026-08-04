@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"open-fermentations/internal/logging"
 	"open-fermentations/internal/route"
+	routefactory "open-fermentations/internal/route_factory"
 
 	"fmt"
 	"time"
@@ -26,23 +27,27 @@ func (s *Server) RegisterRoutes() http.Handler {
 		route.LoggingMiddleware,
 	}
 
+	rf := routefactory.New(ContextPermissionsKey, ContextRolesKey)
+
 	// Register routes
 	authenticatedRoutesWithPrefix := []*route.Route{
-		route.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
+		rf.New(http.MethodGet, "/logout", http.HandlerFunc(s.logoutHandler)),
 
-		route.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)).
+		rf.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)).
+			WithJsonBody().
+			WithPermissions(Permission_CreateBatch),
+		rf.New(http.MethodGet, "/batch", http.HandlerFunc(s.searchBatches)).
+			WithPermissions(Permission_ReadBatch),
+		rf.New(http.MethodGet, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.getBatchById)),
+		rf.New(http.MethodPut, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.putBatchById)).
 			WithJsonBody(),
-		route.New(http.MethodGet, "/batch", http.HandlerFunc(s.searchBatches)),
-		route.New(http.MethodGet, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.getBatchById)),
-		route.New(http.MethodPut, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.putBatchById)).
-			WithJsonBody(),
-		route.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
+		rf.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
 
-		route.New(http.MethodPost, "/device", http.HandlerFunc(s.postDevices)).WithJsonBody(),
-		route.New(http.MethodGet, "/device", http.HandlerFunc(s.searchDevices)),
-		route.New(http.MethodGet, fmt.Sprintf("/device/{%v}", IDKey), http.HandlerFunc(s.getDeviceById)),
-		route.New(http.MethodDelete, fmt.Sprintf("/device/{%v}", IDKey), http.HandlerFunc(s.deleteDeviceById)),
-		route.New(http.MethodPut, fmt.Sprintf("/device/{%v}", IDKey), http.HandlerFunc(s.updateDevice)).WithPathUuid(IDKey).WithJsonBody(),
+		rf.New(http.MethodPost, "/device", http.HandlerFunc(s.postDevices)).WithJsonBody(),
+		rf.New(http.MethodGet, "/device", http.HandlerFunc(s.searchDevices)),
+		rf.New(http.MethodGet, fmt.Sprintf("/device/{%v}", IDKey), http.HandlerFunc(s.getDeviceById)),
+		rf.New(http.MethodDelete, fmt.Sprintf("/device/{%v}", IDKey), http.HandlerFunc(s.deleteDeviceById)),
+		rf.New(http.MethodPut, fmt.Sprintf("/device/{%v}", IDKey), http.HandlerFunc(s.updateDevice)).WithPathUuid(IDKey).WithJsonBody(),
 	}
 
 	routeHandlers := []*route.Route{

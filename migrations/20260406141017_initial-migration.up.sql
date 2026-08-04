@@ -166,7 +166,8 @@ begin
     (user_uuid, 'user');
 
   insert into "permission" ("name") values
-    ('create_user'), ('read_other_users'), ('delete_any_user'), ('delete_own_user'), ('update_own_user'), ('update_any_user');
+    ('create_user'), ('read_other_users'), ('delete_any_user'), ('delete_own_user'), ('update_own_user'), ('update_any_user'),
+    ('create_batch'), ('read_batch');
 
   insert into "role_permission" ("role_id", "permission_id") values
   (admin_uuid, (select id from "permission" where "name" = 'create_user')),
@@ -175,6 +176,8 @@ begin
   (admin_uuid, (select id from "permission" where "name" = 'delete_own_user')),
   (admin_uuid, (select id from "permission" where "name" = 'update_own_user')),
   (admin_uuid, (select id from "permission" where "name" = 'update_any_user')),
+  (admin_uuid, (select id from "permission" where "name" = 'create_batch')), 
+  (admin_uuid, (select id from "permission" where "name" = 'read_batch')),
   
   (user_uuid, (select id from "permission" where "name" = 'update_own_user')),
   (user_uuid, (select id from "permission" where "name" = 'delete_own_user'));

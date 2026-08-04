@@ -36,3 +36,11 @@ func GetBoolQueryParam(r *http.Request, key string, def bool) bool {
 
 	return b
 }
+
+func GetStringSliceFromContext(r *http.Request, key string) []string {
+	if val, ok := r.Context().Value(key).([]string); ok {
+		return val
+	}
+
+	return []string{}
+}
