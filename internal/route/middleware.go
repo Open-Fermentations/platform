@@ -3,6 +3,7 @@ package route
 import (
 	"log/slog"
 	"net/http"
+	"open-fermentations/internal/model"
 	"slices"
 	"time"
 )
@@ -65,10 +66,13 @@ func (r *Route) PermissionsMiddleware(permissions []string) Middleware {
 				return
 			}
 
-			userPermissions := GetStringSliceFromContext(req, r.PermissionsKey)
+			userPermissions := GetSliceOfTypeFromContetx[string](req, r.PermissionsKey)
+			roles := GetSliceOfTypeFromContetx[model.Role](req, r.RolesKey)
 
 			for _, permission := range permissions {
-				if slices.Contains(userPermissions, permission) == false {
+				if slices.Contains(userPermissions, permission) == false && slices.ContainsFunc(roles, func(r model.Role) bool {
+					return slices.ContainsFunc(r.Permissions, func(p model.Permission) bool { return p.Name == permission })
+				}) {
 					slog.Error("Unauthorised for user", slog.String("permission", permission))
 					http.Error(w, "Forbidden", http.StatusForbidden)
 					return

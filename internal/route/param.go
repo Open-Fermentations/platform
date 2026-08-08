@@ -37,10 +37,10 @@ func GetBoolQueryParam(r *http.Request, key string, def bool) bool {
 	return b
 }
 
-func GetStringSliceFromContext(r *http.Request, key string) []string {
-	if val, ok := r.Context().Value(key).([]string); ok {
+func GetSliceOfTypeFromContetx[T any](r *http.Request, key string) []T {
+	if val, ok := r.Context().Value(key).([]T); ok {
 		return val
 	}
 
-	return []string{}
+	return []T{}
 }

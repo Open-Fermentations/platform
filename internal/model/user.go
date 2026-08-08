@@ -40,16 +40,34 @@ func (a *AuthenticatedUser) FromUserQuery(q []sqlc.GetUserByUsernameWithPassword
 	a.User = *new(User).FromModel(&q[0].User)
 
 	for i, urp := range q {
-		if slices.ContainsFunc(a.Permissions, func(p Permission) bool {
+		if urp.Role.ID == uuid.Nil && slices.ContainsFunc(a.Permissions, func(p Permission) bool {
 			return urp.Permission.ID == p.ID
 		}) == false {
 			a.Permissions = append(a.Permissions, *new(Permission).FromModel(&q[i].Permission))
+			continue
 		}
 
-		if slices.ContainsFunc(a.Roles, func(r Role) bool {
-			return urp.Role.ID == r.ID
-		}) == false {
-			a.Roles = append(a.Roles, *new(Role).FromModel(&q[i].Role))
+		var role *Role
+		roleIndex := -1
+		for ri, r := range a.Roles {
+			if urp.Role.ID == r.ID {
+				role = &r
+				roleIndex = ri
+				break
+			}
+		}
+		if role == nil {
+			role = &Role{ID: urp.Role.ID, Name: urp.Role.Name}
+			if urp.Permission.ID != uuid.Nil {
+				role.Permissions = append(role.Permissions, Permission{ID: urp.Permission.ID, Name: urp.Permission.Name})
+			}
+			a.Roles = append(a.Roles, *role)
+		} else {
+			if urp.Permission.ID != uuid.Nil && slices.ContainsFunc(role.Permissions, func(p Permission) bool {
+				return urp.Permission.ID == p.ID
+			}) == false {
+				a.Roles[roleIndex].Permissions = append(role.Permissions, Permission{ID: urp.Permission.ID, Name: urp.Permission.Name})
+			}
 		}
 	}
 

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
+	"open-fermentations/internal/model"
 	"open-fermentations/internal/service"
 	"time"
 
@@ -117,7 +118,7 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			ctx, err = mapClaimsToContext(ctx, claims)
+			ctx, err = s.mapClaimsToContext(ctx, claims)
 			if err != nil {
 				slog.Error("mapping claims to context", logging.Err(err))
 				http.Error(w, Unauthorised, http.StatusUnauthorized)
@@ -146,15 +147,21 @@ func addUserIdToContext(ctx context.Context, claims jwt.MapClaims) (context.Cont
 	}
 }
 
-func addRolesToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+func (s *Server) addRolesToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
 	switch v := claims[JWTRolesKey].(type) {
 	case []string:
 		return context.WithValue(ctx, ContextRolesKey, v), nil
 	case []interface{}:
-		strRoles := make([]string, len(v))
+		strRoles := make([]model.Role, len(v))
 		for i, item := range v {
 			if strVal, ok := item.(string); ok {
-				strRoles[i] = strVal
+				var role model.Role
+				for _, roleItem := range s.roles {
+					if roleItem.Name == strVal {
+						role = roleItem
+					}
+				}
+				strRoles[i] = role
 			}
 		}
 		return context.WithValue(ctx, ContextRolesKey, strRoles), nil
@@ -163,7 +170,7 @@ func addRolesToContext(ctx context.Context, claims jwt.MapClaims) (context.Conte
 	}
 }
 
-func addPermissionsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+func (s *Server) addPermissionsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
 	switch v := claims[JWTPermissionsKey].(type) {
 	case []string:
 		return context.WithValue(ctx, ContextPermissionsKey, v), nil
@@ -180,17 +187,17 @@ func addPermissionsToContext(ctx context.Context, claims jwt.MapClaims) (context
 	}
 }
 
-func mapClaimsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+func (s *Server) mapClaimsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
 	var err error
 	ctx, err = addUserIdToContext(ctx, claims)
 	if err != nil {
 		return nil, err
 	}
-	ctx, err = addRolesToContext(ctx, claims)
+	ctx, err = s.addRolesToContext(ctx, claims)
 	if err != nil {
 		return nil, err
 	}
-	ctx, err = addPermissionsToContext(ctx, claims)
+	ctx, err = s.addPermissionsToContext(ctx, claims)
 	if err != nil {
 		return nil, err
 	}

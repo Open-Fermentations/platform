@@ -41,6 +41,16 @@ type Querier interface {
 	//  select id, name, mac_address, user_id, created, modified from "device"
 	//  where id = $1
 	GetDeviceById(ctx context.Context, id uuid.UUID) (Device, error)
+	//GetPermissions
+	//
+	//  select id, name from "permission"
+	GetPermissions(ctx context.Context) ([]Permission, error)
+	//GetRolesWithPermissions
+	//
+	//  select r.id, r.name, p.id, p.name
+	//  from "role" r
+	//  left join "permission" p on r.id = p.role_id
+	GetRolesWithPermissions(ctx context.Context) ([]GetRolesWithPermissionsRow, error)
 	//GetUserById
 	//
 	//  select id, username, created, modified
