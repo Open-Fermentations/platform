@@ -285,6 +285,63 @@ func (_c *MockQuerier_DeleteBatch_Call) RunAndReturn(run func(ctx context.Contex
 	return _c
 }
 
+// DeleteBatchByUserId provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DeleteBatchByUserId(ctx context.Context, arg sqlc.DeleteBatchByUserIdParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteBatchByUserId")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.DeleteBatchByUserIdParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_DeleteBatchByUserId_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteBatchByUserId'
+type MockQuerier_DeleteBatchByUserId_Call struct {
+	*mock.Call
+}
+
+// DeleteBatchByUserId is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg sqlc.DeleteBatchByUserIdParams
+func (_e *MockQuerier_Expecter) DeleteBatchByUserId(ctx any, arg any) *MockQuerier_DeleteBatchByUserId_Call {
+	return &MockQuerier_DeleteBatchByUserId_Call{Call: _e.mock.On("DeleteBatchByUserId", ctx, arg)}
+}
+
+func (_c *MockQuerier_DeleteBatchByUserId_Call) Run(run func(ctx context.Context, arg sqlc.DeleteBatchByUserIdParams)) *MockQuerier_DeleteBatchByUserId_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 sqlc.DeleteBatchByUserIdParams
+		if args[1] != nil {
+			arg1 = args[1].(sqlc.DeleteBatchByUserIdParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_DeleteBatchByUserId_Call) Return(err error) *MockQuerier_DeleteBatchByUserId_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_DeleteBatchByUserId_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.DeleteBatchByUserIdParams) error) *MockQuerier_DeleteBatchByUserId_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetBatchById provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) GetBatchById(ctx context.Context, id uuid.UUID) (sqlc.Batch, error) {
 	ret := _mock.Called(ctx, id)

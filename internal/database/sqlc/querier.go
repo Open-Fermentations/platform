@@ -32,6 +32,10 @@ type Querier interface {
 	//
 	//  delete from "batch" where id = $1
 	DeleteBatch(ctx context.Context, id uuid.UUID) error
+	//DeleteBatchByUserId
+	//
+	//  delete from "batch" where id = $1 and user_id = $2
+	DeleteBatchByUserId(ctx context.Context, arg DeleteBatchByUserIdParams) error
 	//GetBatchById
 	//
 	//  select id, name, user_id, created, modified from "batch" where id = $1

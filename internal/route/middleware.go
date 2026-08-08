@@ -66,8 +66,8 @@ func (r *Route) PermissionsMiddleware(permissions []string) Middleware {
 				return
 			}
 
-			userPermissions := GetSliceOfTypeFromContetx[string](req, r.PermissionsKey)
-			roles := GetSliceOfTypeFromContetx[model.Role](req, r.RolesKey)
+			userPermissions := GetSliceOfType[string](req.Context(), r.PermissionsKey)
+			roles := GetSliceOfType[model.Role](req.Context(), r.RolesKey)
 
 			for _, permission := range permissions {
 				if slices.Contains(userPermissions, permission) == false && slices.ContainsFunc(roles, func(r model.Role) bool {

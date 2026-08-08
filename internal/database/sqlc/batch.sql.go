@@ -53,6 +53,23 @@ func (q *Queries) DeleteBatch(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const deleteBatchByUserId = `-- name: DeleteBatchByUserId :exec
+delete from "batch" where id = $1 and user_id = $2
+`
+
+type DeleteBatchByUserIdParams struct {
+	ID     uuid.UUID
+	Userid uuid.UUID
+}
+
+// DeleteBatchByUserId
+//
+//	delete from "batch" where id = $1 and user_id = $2
+func (q *Queries) DeleteBatchByUserId(ctx context.Context, arg DeleteBatchByUserIdParams) error {
+	_, err := q.db.Exec(ctx, deleteBatchByUserId, arg.ID, arg.Userid)
+	return err
+}
+
 const getBatchById = `-- name: GetBatchById :one
 select id, name, user_id, created, modified from "batch" where id = $1
 `

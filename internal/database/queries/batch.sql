@@ -4,7 +4,10 @@ values ($1, $2)
 returning id, "name", user_id, created, modified;
 
 -- name: DeleteBatch :exec
-delete from "batch" where id = $1;
+delete from "batch" where id = @id;
+
+-- name: DeleteBatchByUserId :exec
+delete from "batch" where id = @id and user_id = @userId;
 
 -- name: SearchBatches :many
 select *, count(id) over() as total from "batch"
