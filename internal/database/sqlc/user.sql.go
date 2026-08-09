@@ -62,63 +62,84 @@ func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-select id, username, created, modified
+select id, username, password, active, created, modified
 from "user"
 where username = $1
 `
-
-type GetUserByUsernameRow struct {
-	ID       uuid.UUID
-	Username string
-	Created  time.Time
-	Modified time.Time
-}
 
 // GetUserByUsername
 //
-//	select id, username, created, modified
+//	select id, username, password, active, created, modified
 //	from "user"
 //	where username = $1
-func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByUsername, username)
-	var i GetUserByUsernameRow
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Created,
-		&i.Modified,
-	)
-	return i, err
-}
-
-const getUserByUsernameWithPassword = `-- name: GetUserByUsernameWithPassword :one
-select id, username, password, created, modified
-from "user"
-where username = $1
-`
-
-type GetUserByUsernameWithPasswordRow struct {
-	ID       uuid.UUID
-	Username string
-	Password string
-	Created  time.Time
-	Modified time.Time
-}
-
-// GetUserByUsernameWithPassword
-//
-//	select id, username, password, created, modified
-//	from "user"
-//	where username = $1
-func (q *Queries) GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error) {
-	row := q.db.QueryRow(ctx, getUserByUsernameWithPassword, username)
-	var i GetUserByUsernameWithPasswordRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
 		&i.Password,
+		&i.Active,
 		&i.Created,
 		&i.Modified,
 	)
 	return i, err
+}
+
+const getUserByUsernameWithPasswordAndRolesAndPermissions = `-- name: GetUserByUsernameWithPasswordAndRolesAndPermissions :many
+select u.id, u.username, u.password, u.active, u.created, u.modified, r.id, r.name, p.id, p.name 
+from "user" u 
+left join "user_role" ur on ur.user_id = u.id 
+left join "user_permission" up on up.user_id = u.id 
+left join "role" r on ur.role_id = r.id 
+left join "role_permission" rp on r.id = rp.role_id 
+left join "permission" p on up.permission_id = p.id or p.id = rp.permission_id 
+where username = $1
+`
+
+type GetUserByUsernameWithPasswordAndRolesAndPermissionsRow struct {
+	User       User
+	Role       Role
+	Permission Permission
+}
+
+// GetUserByUsernameWithPasswordAndRolesAndPermissions
+//
+//	select u.id, u.username, u.password, u.active, u.created, u.modified, r.id, r.name, p.id, p.name
+//	from "user" u
+//	left join "user_role" ur on ur.user_id = u.id
+//	left join "user_permission" up on up.user_id = u.id
+//	left join "role" r on ur.role_id = r.id
+//	left join "role_permission" rp on r.id = rp.role_id
+//	left join "permission" p on up.permission_id = p.id or p.id = rp.permission_id
+//	where username = $1
+func (q *Queries) GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx context.Context, username string) ([]GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error) {
+	rows, err := q.db.Query(ctx, getUserByUsernameWithPasswordAndRolesAndPermissions, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserByUsernameWithPasswordAndRolesAndPermissionsRow
+	for rows.Next() {
+		var i GetUserByUsernameWithPasswordAndRolesAndPermissionsRow
+		if err := rows.Scan(
+			&i.User.ID,
+			&i.User.Username,
+			&i.User.Password,
+			&i.User.Active,
+			&i.User.Created,
+			&i.User.Modified,
+			&i.Role.ID,
+			&i.Role.Name,
+			&i.Permission.ID,
+			&i.Permission.Name,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

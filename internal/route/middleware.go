@@ -3,6 +3,8 @@ package route
 import (
 	"log/slog"
 	"net/http"
+	"open-fermentations/internal/model"
+	"slices"
 	"time"
 )
 
@@ -51,4 +53,32 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 			slog.Duration("duration", time.Since(start)),
 		))
 	})
+}
+
+func (r *Route) PermissionsMiddleware(permissions []string) Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			if len(r.PermissionsKey) == 0 {
+				slog.Error("Permissions key not set for route",
+					slog.String("route", r.Route),
+					slog.String("method", r.Method))
+				http.Error(w, "Internal error", http.StatusInternalServerError)
+				return
+			}
+
+			userPermissions := GetSliceOfType[string](req.Context(), r.PermissionsKey)
+			roles := GetSliceOfType[model.Role](req.Context(), r.RolesKey)
+
+			for _, permission := range permissions {
+				if slices.Contains(userPermissions, permission) == false && slices.ContainsFunc(roles, func(r model.Role) bool {
+					return slices.ContainsFunc(r.Permissions, func(p model.Permission) bool { return p.Name == permission })
+				}) == false {
+					slog.Error("Unauthorised for user", slog.String("permission", permission))
+					http.Error(w, "Forbidden", http.StatusForbidden)
+					return
+				}
+			}
+			next.ServeHTTP(w, req)
+		})
+	}
 }

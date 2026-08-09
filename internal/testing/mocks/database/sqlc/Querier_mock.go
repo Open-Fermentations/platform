@@ -229,16 +229,16 @@ func (_c *MockQuerier_CreateUser_Call) RunAndReturn(run func(ctx context.Context
 }
 
 // DeleteBatch provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) DeleteBatch(ctx context.Context, id uuid.UUID) error {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockQuerier) DeleteBatch(ctx context.Context, arg sqlc.DeleteBatchParams) error {
+	ret := _mock.Called(ctx, arg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBatch")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.DeleteBatchParams) error); ok {
+		r0 = returnFunc(ctx, arg)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -252,20 +252,20 @@ type MockQuerier_DeleteBatch_Call struct {
 
 // DeleteBatch is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockQuerier_Expecter) DeleteBatch(ctx any, id any) *MockQuerier_DeleteBatch_Call {
-	return &MockQuerier_DeleteBatch_Call{Call: _e.mock.On("DeleteBatch", ctx, id)}
+//   - arg sqlc.DeleteBatchParams
+func (_e *MockQuerier_Expecter) DeleteBatch(ctx any, arg any) *MockQuerier_DeleteBatch_Call {
+	return &MockQuerier_DeleteBatch_Call{Call: _e.mock.On("DeleteBatch", ctx, arg)}
 }
 
-func (_c *MockQuerier_DeleteBatch_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_DeleteBatch_Call {
+func (_c *MockQuerier_DeleteBatch_Call) Run(run func(ctx context.Context, arg sqlc.DeleteBatchParams)) *MockQuerier_DeleteBatch_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 uuid.UUID
+		var arg1 sqlc.DeleteBatchParams
 		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
+			arg1 = args[1].(sqlc.DeleteBatchParams)
 		}
 		run(
 			arg0,
@@ -280,14 +280,14 @@ func (_c *MockQuerier_DeleteBatch_Call) Return(err error) *MockQuerier_DeleteBat
 	return _c
 }
 
-func (_c *MockQuerier_DeleteBatch_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockQuerier_DeleteBatch_Call {
+func (_c *MockQuerier_DeleteBatch_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.DeleteBatchParams) error) *MockQuerier_DeleteBatch_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetBatchById provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetBatchById(ctx context.Context, id uuid.UUID) (sqlc.Batch, error) {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockQuerier) GetBatchById(ctx context.Context, arg sqlc.GetBatchByIdParams) (sqlc.Batch, error) {
+	ret := _mock.Called(ctx, arg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBatchById")
@@ -295,16 +295,16 @@ func (_mock *MockQuerier) GetBatchById(ctx context.Context, id uuid.UUID) (sqlc.
 
 	var r0 sqlc.Batch
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (sqlc.Batch, error)); ok {
-		return returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.GetBatchByIdParams) (sqlc.Batch, error)); ok {
+		return returnFunc(ctx, arg)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) sqlc.Batch); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.GetBatchByIdParams) sqlc.Batch); ok {
+		r0 = returnFunc(ctx, arg)
 	} else {
 		r0 = ret.Get(0).(sqlc.Batch)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, sqlc.GetBatchByIdParams) error); ok {
+		r1 = returnFunc(ctx, arg)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -318,20 +318,20 @@ type MockQuerier_GetBatchById_Call struct {
 
 // GetBatchById is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockQuerier_Expecter) GetBatchById(ctx any, id any) *MockQuerier_GetBatchById_Call {
-	return &MockQuerier_GetBatchById_Call{Call: _e.mock.On("GetBatchById", ctx, id)}
+//   - arg sqlc.GetBatchByIdParams
+func (_e *MockQuerier_Expecter) GetBatchById(ctx any, arg any) *MockQuerier_GetBatchById_Call {
+	return &MockQuerier_GetBatchById_Call{Call: _e.mock.On("GetBatchById", ctx, arg)}
 }
 
-func (_c *MockQuerier_GetBatchById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_GetBatchById_Call {
+func (_c *MockQuerier_GetBatchById_Call) Run(run func(ctx context.Context, arg sqlc.GetBatchByIdParams)) *MockQuerier_GetBatchById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 uuid.UUID
+		var arg1 sqlc.GetBatchByIdParams
 		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
+			arg1 = args[1].(sqlc.GetBatchByIdParams)
 		}
 		run(
 			arg0,
@@ -346,14 +346,14 @@ func (_c *MockQuerier_GetBatchById_Call) Return(batch sqlc.Batch, err error) *Mo
 	return _c
 }
 
-func (_c *MockQuerier_GetBatchById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (sqlc.Batch, error)) *MockQuerier_GetBatchById_Call {
+func (_c *MockQuerier_GetBatchById_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.GetBatchByIdParams) (sqlc.Batch, error)) *MockQuerier_GetBatchById_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetDeviceById provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetDeviceById(ctx context.Context, id uuid.UUID) (sqlc.Device, error) {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockQuerier) GetDeviceById(ctx context.Context, arg sqlc.GetDeviceByIdParams) (sqlc.Device, error) {
+	ret := _mock.Called(ctx, arg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetDeviceById")
@@ -361,16 +361,16 @@ func (_mock *MockQuerier) GetDeviceById(ctx context.Context, id uuid.UUID) (sqlc
 
 	var r0 sqlc.Device
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (sqlc.Device, error)); ok {
-		return returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.GetDeviceByIdParams) (sqlc.Device, error)); ok {
+		return returnFunc(ctx, arg)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) sqlc.Device); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.GetDeviceByIdParams) sqlc.Device); ok {
+		r0 = returnFunc(ctx, arg)
 	} else {
 		r0 = ret.Get(0).(sqlc.Device)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, sqlc.GetDeviceByIdParams) error); ok {
+		r1 = returnFunc(ctx, arg)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -384,20 +384,20 @@ type MockQuerier_GetDeviceById_Call struct {
 
 // GetDeviceById is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockQuerier_Expecter) GetDeviceById(ctx any, id any) *MockQuerier_GetDeviceById_Call {
-	return &MockQuerier_GetDeviceById_Call{Call: _e.mock.On("GetDeviceById", ctx, id)}
+//   - arg sqlc.GetDeviceByIdParams
+func (_e *MockQuerier_Expecter) GetDeviceById(ctx any, arg any) *MockQuerier_GetDeviceById_Call {
+	return &MockQuerier_GetDeviceById_Call{Call: _e.mock.On("GetDeviceById", ctx, arg)}
 }
 
-func (_c *MockQuerier_GetDeviceById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_GetDeviceById_Call {
+func (_c *MockQuerier_GetDeviceById_Call) Run(run func(ctx context.Context, arg sqlc.GetDeviceByIdParams)) *MockQuerier_GetDeviceById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 uuid.UUID
+		var arg1 sqlc.GetDeviceByIdParams
 		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
+			arg1 = args[1].(sqlc.GetDeviceByIdParams)
 		}
 		run(
 			arg0,
@@ -412,7 +412,131 @@ func (_c *MockQuerier_GetDeviceById_Call) Return(device sqlc.Device, err error) 
 	return _c
 }
 
-func (_c *MockQuerier_GetDeviceById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (sqlc.Device, error)) *MockQuerier_GetDeviceById_Call {
+func (_c *MockQuerier_GetDeviceById_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.GetDeviceByIdParams) (sqlc.Device, error)) *MockQuerier_GetDeviceById_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetPermissions provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetPermissions(ctx context.Context) ([]sqlc.Permission, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPermissions")
+	}
+
+	var r0 []sqlc.Permission
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]sqlc.Permission, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []sqlc.Permission); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]sqlc.Permission)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetPermissions_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetPermissions'
+type MockQuerier_GetPermissions_Call struct {
+	*mock.Call
+}
+
+// GetPermissions is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) GetPermissions(ctx any) *MockQuerier_GetPermissions_Call {
+	return &MockQuerier_GetPermissions_Call{Call: _e.mock.On("GetPermissions", ctx)}
+}
+
+func (_c *MockQuerier_GetPermissions_Call) Run(run func(ctx context.Context)) *MockQuerier_GetPermissions_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetPermissions_Call) Return(permissions []sqlc.Permission, err error) *MockQuerier_GetPermissions_Call {
+	_c.Call.Return(permissions, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetPermissions_Call) RunAndReturn(run func(ctx context.Context) ([]sqlc.Permission, error)) *MockQuerier_GetPermissions_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetRolesWithPermissions provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetRolesWithPermissions(ctx context.Context) ([]sqlc.GetRolesWithPermissionsRow, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetRolesWithPermissions")
+	}
+
+	var r0 []sqlc.GetRolesWithPermissionsRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]sqlc.GetRolesWithPermissionsRow, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []sqlc.GetRolesWithPermissionsRow); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]sqlc.GetRolesWithPermissionsRow)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetRolesWithPermissions_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetRolesWithPermissions'
+type MockQuerier_GetRolesWithPermissions_Call struct {
+	*mock.Call
+}
+
+// GetRolesWithPermissions is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) GetRolesWithPermissions(ctx any) *MockQuerier_GetRolesWithPermissions_Call {
+	return &MockQuerier_GetRolesWithPermissions_Call{Call: _e.mock.On("GetRolesWithPermissions", ctx)}
+}
+
+func (_c *MockQuerier_GetRolesWithPermissions_Call) Run(run func(ctx context.Context)) *MockQuerier_GetRolesWithPermissions_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetRolesWithPermissions_Call) Return(getRolesWithPermissionsRows []sqlc.GetRolesWithPermissionsRow, err error) *MockQuerier_GetRolesWithPermissions_Call {
+	_c.Call.Return(getRolesWithPermissionsRows, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetRolesWithPermissions_Call) RunAndReturn(run func(ctx context.Context) ([]sqlc.GetRolesWithPermissionsRow, error)) *MockQuerier_GetRolesWithPermissions_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -484,22 +608,22 @@ func (_c *MockQuerier_GetUserById_Call) RunAndReturn(run func(ctx context.Contex
 }
 
 // GetUserByUsername provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetUserByUsername(ctx context.Context, username string) (sqlc.GetUserByUsernameRow, error) {
+func (_mock *MockQuerier) GetUserByUsername(ctx context.Context, username string) (sqlc.User, error) {
 	ret := _mock.Called(ctx, username)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetUserByUsername")
 	}
 
-	var r0 sqlc.GetUserByUsernameRow
+	var r0 sqlc.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (sqlc.GetUserByUsernameRow, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (sqlc.User, error)); ok {
 		return returnFunc(ctx, username)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) sqlc.GetUserByUsernameRow); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) sqlc.User); ok {
 		r0 = returnFunc(ctx, username)
 	} else {
-		r0 = ret.Get(0).(sqlc.GetUserByUsernameRow)
+		r0 = ret.Get(0).(sqlc.User)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = returnFunc(ctx, username)
@@ -539,33 +663,35 @@ func (_c *MockQuerier_GetUserByUsername_Call) Run(run func(ctx context.Context, 
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsername_Call) Return(getUserByUsernameRow sqlc.GetUserByUsernameRow, err error) *MockQuerier_GetUserByUsername_Call {
-	_c.Call.Return(getUserByUsernameRow, err)
+func (_c *MockQuerier_GetUserByUsername_Call) Return(user sqlc.User, err error) *MockQuerier_GetUserByUsername_Call {
+	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsername_Call) RunAndReturn(run func(ctx context.Context, username string) (sqlc.GetUserByUsernameRow, error)) *MockQuerier_GetUserByUsername_Call {
+func (_c *MockQuerier_GetUserByUsername_Call) RunAndReturn(run func(ctx context.Context, username string) (sqlc.User, error)) *MockQuerier_GetUserByUsername_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// GetUserByUsernameWithPassword provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetUserByUsernameWithPassword(ctx context.Context, username string) (sqlc.GetUserByUsernameWithPasswordRow, error) {
+// GetUserByUsernameWithPasswordAndRolesAndPermissions provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx context.Context, username string) ([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error) {
 	ret := _mock.Called(ctx, username)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetUserByUsernameWithPassword")
+		panic("no return value specified for GetUserByUsernameWithPasswordAndRolesAndPermissions")
 	}
 
-	var r0 sqlc.GetUserByUsernameWithPasswordRow
+	var r0 []sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (sqlc.GetUserByUsernameWithPasswordRow, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) ([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error)); ok {
 		return returnFunc(ctx, username)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) sqlc.GetUserByUsernameWithPasswordRow); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) []sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow); ok {
 		r0 = returnFunc(ctx, username)
 	} else {
-		r0 = ret.Get(0).(sqlc.GetUserByUsernameWithPasswordRow)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow)
+		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = returnFunc(ctx, username)
@@ -575,19 +701,19 @@ func (_mock *MockQuerier) GetUserByUsernameWithPassword(ctx context.Context, use
 	return r0, r1
 }
 
-// MockQuerier_GetUserByUsernameWithPassword_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByUsernameWithPassword'
-type MockQuerier_GetUserByUsernameWithPassword_Call struct {
+// MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByUsernameWithPasswordAndRolesAndPermissions'
+type MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call struct {
 	*mock.Call
 }
 
-// GetUserByUsernameWithPassword is a helper method to define mock.On call
+// GetUserByUsernameWithPasswordAndRolesAndPermissions is a helper method to define mock.On call
 //   - ctx context.Context
 //   - username string
-func (_e *MockQuerier_Expecter) GetUserByUsernameWithPassword(ctx any, username any) *MockQuerier_GetUserByUsernameWithPassword_Call {
-	return &MockQuerier_GetUserByUsernameWithPassword_Call{Call: _e.mock.On("GetUserByUsernameWithPassword", ctx, username)}
+func (_e *MockQuerier_Expecter) GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx any, username any) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
+	return &MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call{Call: _e.mock.On("GetUserByUsernameWithPasswordAndRolesAndPermissions", ctx, username)}
 }
 
-func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) Run(run func(ctx context.Context, username string)) *MockQuerier_GetUserByUsernameWithPassword_Call {
+func (_c *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call) Run(run func(ctx context.Context, username string)) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -605,27 +731,27 @@ func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) Run(run func(ctx conte
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) Return(getUserByUsernameWithPasswordRow sqlc.GetUserByUsernameWithPasswordRow, err error) *MockQuerier_GetUserByUsernameWithPassword_Call {
-	_c.Call.Return(getUserByUsernameWithPasswordRow, err)
+func (_c *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call) Return(getUserByUsernameWithPasswordAndRolesAndPermissionsRows []sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, err error) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
+	_c.Call.Return(getUserByUsernameWithPasswordAndRolesAndPermissionsRows, err)
 	return _c
 }
 
-func (_c *MockQuerier_GetUserByUsernameWithPassword_Call) RunAndReturn(run func(ctx context.Context, username string) (sqlc.GetUserByUsernameWithPasswordRow, error)) *MockQuerier_GetUserByUsernameWithPassword_Call {
+func (_c *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call) RunAndReturn(run func(ctx context.Context, username string) ([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error)) *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // RemoveDeviceById provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) RemoveDeviceById(ctx context.Context, id uuid.UUID) error {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockQuerier) RemoveDeviceById(ctx context.Context, arg sqlc.RemoveDeviceByIdParams) error {
+	ret := _mock.Called(ctx, arg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for RemoveDeviceById")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.RemoveDeviceByIdParams) error); ok {
+		r0 = returnFunc(ctx, arg)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -639,20 +765,20 @@ type MockQuerier_RemoveDeviceById_Call struct {
 
 // RemoveDeviceById is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockQuerier_Expecter) RemoveDeviceById(ctx any, id any) *MockQuerier_RemoveDeviceById_Call {
-	return &MockQuerier_RemoveDeviceById_Call{Call: _e.mock.On("RemoveDeviceById", ctx, id)}
+//   - arg sqlc.RemoveDeviceByIdParams
+func (_e *MockQuerier_Expecter) RemoveDeviceById(ctx any, arg any) *MockQuerier_RemoveDeviceById_Call {
+	return &MockQuerier_RemoveDeviceById_Call{Call: _e.mock.On("RemoveDeviceById", ctx, arg)}
 }
 
-func (_c *MockQuerier_RemoveDeviceById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_RemoveDeviceById_Call {
+func (_c *MockQuerier_RemoveDeviceById_Call) Run(run func(ctx context.Context, arg sqlc.RemoveDeviceByIdParams)) *MockQuerier_RemoveDeviceById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 uuid.UUID
+		var arg1 sqlc.RemoveDeviceByIdParams
 		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
+			arg1 = args[1].(sqlc.RemoveDeviceByIdParams)
 		}
 		run(
 			arg0,
@@ -667,7 +793,7 @@ func (_c *MockQuerier_RemoveDeviceById_Call) Return(err error) *MockQuerier_Remo
 	return _c
 }
 
-func (_c *MockQuerier_RemoveDeviceById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockQuerier_RemoveDeviceById_Call {
+func (_c *MockQuerier_RemoveDeviceById_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.RemoveDeviceByIdParams) error) *MockQuerier_RemoveDeviceById_Call {
 	_c.Call.Return(run)
 	return _c
 }

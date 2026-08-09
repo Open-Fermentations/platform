@@ -6,13 +6,21 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
+	"open-fermentations/internal/model"
 	"open-fermentations/internal/service"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+)
+
+const (
+	JWTIdKey          string = "id"
+	JWTPermissionsKey string = "permissions"
+	JWTRolesKey       string = "roles"
 )
 
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +31,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := s.svc.Login(b.Username, b.Password)
+	user, err := s.svc.Login(r.Context(), b.Username, b.Password)
 	if err != nil {
 		var invalidCredentialError service.ErrInvalidCredentials
 		if errors.As(err, &invalidCredentialError) {
@@ -35,7 +43,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDto := new(dto.UserDTO).FromModel(user)
+	userDto := new(dto.AuthenticatedUserDTO).FromModel(user)
 	jsonResp, err := json.Marshal(userDto)
 	if err != nil {
 		slog.Error("marshalling user dto", logging.Err(err))
@@ -110,16 +118,10 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 				http.Error(w, Unauthorised, http.StatusUnauthorized)
 				return
 			}
-			if rawId, ok := claims["id"].(string); ok {
-				id, err := uuid.Parse(rawId)
-				if err != nil {
-					slog.Error("could not parse user id from claims", logging.Err(err), slog.String("id", rawId))
-					http.Error(w, Unauthorised, http.StatusUnauthorized)
-					return
-				}
-				ctx = context.WithValue(ctx, ContextUserIdKey, id)
-			} else {
-				slog.Error("could not get 'id' claim from token")
+
+			ctx, err = s.mapClaimsToContext(ctx, claims)
+			if err != nil {
+				slog.Error("mapping claims to context", logging.Err(err))
 				http.Error(w, Unauthorised, http.StatusUnauthorized)
 				return
 			}
@@ -131,4 +133,72 @@ func (s *Server) authenticationMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func addUserIdToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	if rawId, ok := claims[JWTIdKey].(string); ok {
+		id, err := uuid.Parse(rawId)
+		if err != nil {
+			return nil, err
+		}
+
+		return context.WithValue(ctx, constants.ContextUserIdKey, id), nil
+	} else {
+		return nil, ErrJWTClaim{Key: JWTIdKey}
+	}
+}
+
+func (s *Server) addRolesToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	switch v := claims[JWTRolesKey].(type) {
+	case []any:
+		roles := make([]model.Role, len(v))
+		for i, item := range v {
+			if strVal, ok := item.(string); ok {
+				var role model.Role
+				for _, roleItem := range s.roles {
+					if roleItem.Name == strVal {
+						role = roleItem
+					}
+				}
+				roles[i] = role
+			}
+		}
+		return context.WithValue(ctx, constants.ContextRolesKey, roles), nil
+	default:
+		return nil, ErrJWTClaim{Key: JWTRolesKey}
+	}
+}
+
+func (s *Server) addPermissionsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	switch v := claims[JWTPermissionsKey].(type) {
+	case []string:
+		return context.WithValue(ctx, constants.ContextPermissionsKey, v), nil
+	case []interface{}:
+		strPermissions := make([]string, len(v))
+		for i, p := range v {
+			if strVal, ok := p.(string); ok {
+				strPermissions[i] = strVal
+			}
+		}
+		return context.WithValue(ctx, constants.ContextPermissionsKey, strPermissions), nil
+	default:
+		return nil, ErrJWTClaim{Key: JWTPermissionsKey}
+	}
+}
+
+func (s *Server) mapClaimsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
+	var err error
+	ctx, err = addUserIdToContext(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+	ctx, err = s.addRolesToContext(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+	ctx, err = s.addPermissionsToContext(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+	return ctx, nil
 }

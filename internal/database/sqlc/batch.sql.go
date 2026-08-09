@@ -42,26 +42,36 @@ func (q *Queries) CreateBatch(ctx context.Context, arg CreateBatchParams) (Batch
 }
 
 const deleteBatch = `-- name: DeleteBatch :exec
-delete from "batch" where id = $1
+delete from "batch" where id = $1 and user_id = $2
 `
+
+type DeleteBatchParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
 
 // DeleteBatch
 //
-//	delete from "batch" where id = $1
-func (q *Queries) DeleteBatch(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteBatch, id)
+//	delete from "batch" where id = $1 and user_id = $2
+func (q *Queries) DeleteBatch(ctx context.Context, arg DeleteBatchParams) error {
+	_, err := q.db.Exec(ctx, deleteBatch, arg.ID, arg.UserID)
 	return err
 }
 
 const getBatchById = `-- name: GetBatchById :one
-select id, name, user_id, created, modified from "batch" where id = $1
+select id, name, user_id, created, modified from "batch" where id = $1 and user_id = $2
 `
+
+type GetBatchByIdParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
 
 // GetBatchById
 //
-//	select id, name, user_id, created, modified from "batch" where id = $1
-func (q *Queries) GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error) {
-	row := q.db.QueryRow(ctx, getBatchById, id)
+//	select id, name, user_id, created, modified from "batch" where id = $1 and user_id = $2
+func (q *Queries) GetBatchById(ctx context.Context, arg GetBatchByIdParams) (Batch, error) {
+	row := q.db.QueryRow(ctx, getBatchById, arg.ID, arg.UserID)
 	var i Batch
 	err := row.Scan(
 		&i.ID,
@@ -75,13 +85,15 @@ func (q *Queries) GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error)
 
 const searchBatches = `-- name: SearchBatches :many
 select id, name, user_id, created, modified, count(id) over() as total from "batch"
-where "name" like $1::text
-order by created
-limit $3::integer
-offset $2::integer
+where user_id = $1
+    AND "name" LIKE $2::text
+order by created desc
+limit $4::integer
+offset $3::integer
 `
 
 type SearchBatchesParams struct {
+	UserID    uuid.UUID
 	Name      string
 	Offsetval int32
 	Limitval  int32
@@ -99,12 +111,18 @@ type SearchBatchesRow struct {
 // SearchBatches
 //
 //	select id, name, user_id, created, modified, count(id) over() as total from "batch"
-//	where "name" like $1::text
-//	order by created
-//	limit $3::integer
-//	offset $2::integer
+//	where user_id = $1
+//	    AND "name" LIKE $2::text
+//	order by created desc
+//	limit $4::integer
+//	offset $3::integer
 func (q *Queries) SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error) {
-	rows, err := q.db.Query(ctx, searchBatches, arg.Name, arg.Offsetval, arg.Limitval)
+	rows, err := q.db.Query(ctx, searchBatches,
+		arg.UserID,
+		arg.Name,
+		arg.Offsetval,
+		arg.Limitval,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -131,21 +149,22 @@ func (q *Queries) SearchBatches(ctx context.Context, arg SearchBatchesParams) ([
 }
 
 const updateBatch = `-- name: UpdateBatch :one
-update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+update "batch" set "name" = $1, modified = current_timestamp where id = $2 and user_id = $3
 returning id, name, user_id, created, modified
 `
 
 type UpdateBatchParams struct {
-	ID   uuid.UUID
-	Name string
+	Name   string
+	ID     uuid.UUID
+	UserID uuid.UUID
 }
 
 // UpdateBatch
 //
-//	update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+//	update "batch" set "name" = $1, modified = current_timestamp where id = $2 and user_id = $3
 //	returning id, name, user_id, created, modified
 func (q *Queries) UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error) {
-	row := q.db.QueryRow(ctx, updateBatch, arg.ID, arg.Name)
+	row := q.db.QueryRow(ctx, updateBatch, arg.Name, arg.ID, arg.UserID)
 	var i Batch
 	err := row.Scan(
 		&i.ID,

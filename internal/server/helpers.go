@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/model"
 	"open-fermentations/internal/route"
 	"strings"
@@ -14,7 +15,7 @@ import (
 )
 
 func getUserId(r *http.Request) uuid.UUID {
-	id := r.Context().Value(ContextUserIdKey).(uuid.UUID)
+	id := r.Context().Value(constants.ContextUserIdKey).(uuid.UUID)
 
 	return id
 }
@@ -33,12 +34,23 @@ func setContentTypeJson(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", route.ContentTypeJSON)
 }
 
-func generateJwt(key []byte, exp time.Duration, u *model.User) (string, error) {
+func generateJwt(key []byte, exp time.Duration, u *model.AuthenticatedUser) (string, error) {
+	roles := []string{}
+	for _, r := range u.Roles {
+		roles = append(roles, r.Name)
+	}
+	permissions := []string{}
+	for _, p := range u.Permissions {
+		permissions = append(permissions, p.Name)
+	}
+
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss": "open-fermentations", // TODO get this from env
-		"sub": u.Username,
-		"id":  u.ID.String(),
-		"exp": time.Now().Add(exp).Unix(),
+		"iss":             "open-fermentations", // TODO get this from env
+		"sub":             u.Username,
+		JWTIdKey:          u.ID.String(),
+		"exp":             time.Now().Add(exp).Unix(),
+		JWTRolesKey:       roles,
+		JWTPermissionsKey: permissions,
 	})
 
 	return t.SignedString(key)

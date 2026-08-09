@@ -1,6 +1,7 @@
 package route
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -35,4 +36,12 @@ func GetBoolQueryParam(r *http.Request, key string, def bool) bool {
 	}
 
 	return b
+}
+
+func GetSliceOfType[T any](ctx context.Context, key string) []T {
+	if val, ok := ctx.Value(key).([]T); ok {
+		return val
+	}
+
+	return []T{}
 }

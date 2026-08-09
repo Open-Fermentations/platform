@@ -6,7 +6,7 @@ returning id, "name", mac_address, user_id, created, modified;
 -- name: SearchDevices :many
 select *, count(*) over() as total
 from "device"
-where "name" like @search::text
+where "name" like @search::text and user_id = @user_id
 order by
   case when sqlc.arg('orderCol')::text = 'name' and sqlc.arg('asc')::bool then "device"."name" end asc nulls last,
   case when sqlc.arg('orderCol')::text = 'name' and sqlc.arg('asc')::bool != true then "device"."name" end desc nulls last,
@@ -26,13 +26,13 @@ offset @offsetVal;
 
 -- name: GetDeviceById :one
 select * from "device"
-where id = @id;
+where id = @id and user_id = @user_id;
 
 -- name: RemoveDeviceById :exec
 delete from "device"
-where id = $1;
+where id = $1 and user_id = @user_id;
 
 -- name: UpdateDevice :one
 update "device" set "name" = @name::text, mac_address = @macAddress, user_id = @user_id, modified = current_timestamp
-where id = @id
+where id = @id and user_id = @user_id
 returning *;

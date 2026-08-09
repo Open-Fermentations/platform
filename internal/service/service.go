@@ -13,19 +13,19 @@ import (
 )
 
 type Service interface {
-	Login(username string, password string) (*model.User, error)
+	Login(ctx context.Context, username string, password string) (*model.AuthenticatedUser, error)
 
-	CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)
-	DeleteBatch(id uuid.UUID) error
-	SearchBatches(name string, limit, offset int) ([]model.Batch, int, error)
-	GetBatchById(id uuid.UUID) (*model.Batch, error)
-	UpdateBatch(id uuid.UUID, name string) (*model.Batch, error)
+	CreateBatches(ctx context.Context, d []dto.CreateBatchDTO) ([]model.Batch, error)
+	DeleteBatch(ctx context.Context, id uuid.UUID) error
+	SearchBatches(ctx context.Context, name string, limit, offset int) ([]model.Batch, int, error)
+	GetBatchById(ctx context.Context, id uuid.UUID) (*model.Batch, error)
+	UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*model.Batch, error)
 
-	CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)
-	SearchDevices(dto.SearchDTO) (*dto.PageDTO[model.Device], error)
-	GetDeviceById(id uuid.UUID) (*model.Device, error)
-	DeleteDevice(id uuid.UUID) error
-	UpdateDevice(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)
+	CreateDevices(ctx context.Context, d []dto.CreateDeviceDTO) ([]model.Device, error)
+	SearchDevices(ctx context.Context, search dto.SearchDTO) (*dto.PageDTO[model.Device], error)
+	GetDeviceById(ctx context.Context, id uuid.UUID) (*model.Device, error)
+	DeleteDevice(ctx context.Context, id uuid.UUID) error
+	UpdateDevice(ctx context.Context, id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)
 }
 
 type service struct {

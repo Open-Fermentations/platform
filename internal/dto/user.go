@@ -36,3 +36,25 @@ func (u UserDTO) Slog() []any {
 }
 
 var _ logging.Slog = UserDTO{}
+
+type AuthenticatedUserDTO struct {
+	User        *UserDTO        `json:"user"`
+	Roles       []RoleDTO       `json:"roles"`
+	Permissions []PermissionDTO `json:"permissions"`
+}
+
+func (a *AuthenticatedUserDTO) FromModel(m *model.AuthenticatedUser) *AuthenticatedUserDTO {
+	a.User = new(UserDTO).FromModel(&m.User)
+
+	a.Roles = []RoleDTO{}
+	for _, r := range m.Roles {
+		a.Roles = append(a.Roles, *new(RoleDTO).FromModel(&r))
+	}
+
+	a.Permissions = []PermissionDTO{}
+	for _, p := range m.Permissions {
+		a.Permissions = append(a.Permissions, *new(PermissionDTO).FromModel(&p))
+	}
+
+	return a
+}

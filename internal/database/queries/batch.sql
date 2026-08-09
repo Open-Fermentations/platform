@@ -4,18 +4,19 @@ values ($1, $2)
 returning id, "name", user_id, created, modified;
 
 -- name: DeleteBatch :exec
-delete from "batch" where id = $1;
+delete from "batch" where id = @id and user_id = @user_id;
 
 -- name: SearchBatches :many
 select *, count(id) over() as total from "batch"
-where "name" like @name::text
-order by created
+where user_id = @user_id
+    AND "name" LIKE @name::text
+order by created desc
 limit @limitVal::integer
 offset @offsetVal::integer;
 
 -- name: GetBatchById :one
-select * from "batch" where id = $1;
+select * from "batch" where id = @id and user_id = @user_id;
 
 -- name: UpdateBatch :one
-update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+update "batch" set "name" = @name, modified = current_timestamp where id = @id and user_id = @user_id
 returning *;

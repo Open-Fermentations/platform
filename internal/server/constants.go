@@ -1,7 +1,5 @@
 package server
 
-const ContextUserIdKey = "user_id"
-
 const ServerPrefix = "/api"
 
 const (

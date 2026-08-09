@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"open-fermentations/internal/model"
 
@@ -9,8 +10,8 @@ import (
 )
 
 // Login implements [Service].
-func (s service) Login(username string, password string) (*model.User, error) {
-	u, err := s.db.Querier().GetUserByUsernameWithPassword(s.ctx, username)
+func (s service) Login(ctx context.Context, username string, password string) (*model.AuthenticatedUser, error) {
+	userRolePermissions, err := s.db.Querier().GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx, username)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -18,12 +19,18 @@ func (s service) Login(username string, password string) (*model.User, error) {
 		return nil, err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	if err != nil {
-		return nil, errors.Join(ErrInvalidCredentials{ID: u.ID, Username: username}, err)
+	if len(userRolePermissions) == 0 {
+		return nil, pgx.ErrNoRows
 	}
 
-	user := new(model.User).FromUsernameWithPasswordRow(&u)
+	authedUser, err := new(model.AuthenticatedUser).FromUserQuery(userRolePermissions)
+	if err != nil {
+		return nil, err
+	}
 
-	return user, nil
+	err = bcrypt.CompareHashAndPassword([]byte(authedUser.Password), []byte(password))
+	if err != nil {
+		return nil, errors.Join(ErrInvalidCredentials{ID: authedUser.ID, Username: username}, err)
+	}
+	return authedUser, nil
 }

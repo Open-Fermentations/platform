@@ -20,8 +20,7 @@ func (s *Server) postBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId := getUserId(r)
-	ms, err := s.svc.CreateBatches(userId, b)
+	ms, err := s.svc.CreateBatches(r.Context(), b)
 	if err != nil {
 		slog.Error("creating batch", logging.Err(err))
 		http.Error(w, "error creating batch", http.StatusInternalServerError)
@@ -57,7 +56,7 @@ func (s *Server) deleteBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = s.svc.DeleteBatch(id); err != nil {
+	if err = s.svc.DeleteBatch(r.Context(), id); err != nil {
 		slog.Error("deleting batch", logging.Err(err))
 		http.Error(w, "Failed to successfully delete batch", http.StatusInternalServerError)
 		return
@@ -71,7 +70,7 @@ func (s *Server) searchBatches(w http.ResponseWriter, r *http.Request) {
 	limit := route.GetIntQueryParam(r, "limit", 50)
 	offset := route.GetIntQueryParam(r, "offset", 0)
 
-	batches, total, err := s.svc.SearchBatches(fmt.Sprintf("%%%v%%", name), limit, offset)
+	batches, total, err := s.svc.SearchBatches(r.Context(), fmt.Sprintf("%%%v%%", name), limit, offset)
 	if err != nil {
 		slog.Error("getting batches from service", logging.Err(err), slog.Group("query",
 			slog.Int("limit", limit),
@@ -116,7 +115,7 @@ func (s *Server) getBatchById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	batch, err := s.svc.GetBatchById(id)
+	batch, err := s.svc.GetBatchById(r.Context(), id)
 	if err != nil {
 		slog.Error("fetching batch by id", logging.Err(err), slog.String("id", id.String()))
 		http.Error(w, "failed to fetch batch by id", http.StatusInternalServerError)
@@ -159,7 +158,7 @@ func (s *Server) putBatchById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	batch, err := s.svc.UpdateBatch(batchId, d.Name)
+	batch, err := s.svc.UpdateBatch(r.Context(), batchId, d.Name)
 	if err != nil {
 		slog.Error("updating batch", []any{logging.Err(err), d.Slog()}...)
 		http.Error(w, "failed to successfully update batch", http.StatusInternalServerError)

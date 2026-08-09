@@ -18,9 +18,7 @@ func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId := getUserId(r)
-
-	ms, err := s.svc.CreateDevices(userId, b)
+	ms, err := s.svc.CreateDevices(r.Context(), b)
 	if err != nil {
 		slog.Error("creating devices", logging.Err(err))
 		http.Error(w, "error creating devices", http.StatusInternalServerError)
@@ -50,7 +48,7 @@ func (s *Server) postDevices(w http.ResponseWriter, r *http.Request) {
 func (s *Server) searchDevices(w http.ResponseWriter, r *http.Request) {
 	search := new(dto.SearchDTO).FromRequest(r)
 
-	devicesPage, err := s.svc.SearchDevices(*search)
+	devicesPage, err := s.svc.SearchDevices(r.Context(), *search)
 	if err != nil {
 		slog.Error("searching devices", []any{logging.Err(err), search.Slog()}...)
 		http.Error(w, "Failed to search devices", http.StatusInternalServerError)
@@ -92,7 +90,7 @@ func (s *Server) getDeviceById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	device, err := s.svc.GetDeviceById(id)
+	device, err := s.svc.GetDeviceById(r.Context(), id)
 	if err != nil {
 		slog.Error("fetching device by id", logging.Err(err), slog.String("id", id.String()))
 		http.Error(w, "failed to fetch device by id", http.StatusInternalServerError)
@@ -128,7 +126,7 @@ func (s *Server) deleteDeviceById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = s.svc.DeleteDevice(id); err != nil {
+	if err = s.svc.DeleteDevice(r.Context(), id); err != nil {
 		slog.Error("deleting device", logging.Err(err))
 		http.Error(w, "Failed to successfully delete device", http.StatusInternalServerError)
 		return
@@ -155,7 +153,7 @@ func (s *Server) updateDevice(w http.ResponseWriter, r *http.Request) {
 
 	id := r.Context().Value(IDKey).(uuid.UUID)
 
-	device, err := s.svc.UpdateDevice(id, deviceDto.ToUpdateDeviceParams(id))
+	device, err := s.svc.UpdateDevice(r.Context(), id, deviceDto.ToUpdateDeviceParams(id))
 	if err != nil {
 		slog.Error("failed to successfully update device", logging.Err(err))
 		http.Error(w, "Failed to successfully update device", http.StatusInternalServerError)

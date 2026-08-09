@@ -30,17 +30,28 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	//DeleteBatch
 	//
-	//  delete from "batch" where id = $1
-	DeleteBatch(ctx context.Context, id uuid.UUID) error
+	//  delete from "batch" where id = $1 and user_id = $2
+	DeleteBatch(ctx context.Context, arg DeleteBatchParams) error
 	//GetBatchById
 	//
-	//  select id, name, user_id, created, modified from "batch" where id = $1
-	GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error)
+	//  select id, name, user_id, created, modified from "batch" where id = $1 and user_id = $2
+	GetBatchById(ctx context.Context, arg GetBatchByIdParams) (Batch, error)
 	//GetDeviceById
 	//
 	//  select id, name, mac_address, user_id, created, modified from "device"
-	//  where id = $1
-	GetDeviceById(ctx context.Context, id uuid.UUID) (Device, error)
+	//  where id = $1 and user_id = $2
+	GetDeviceById(ctx context.Context, arg GetDeviceByIdParams) (Device, error)
+	//GetPermissions
+	//
+	//  select id, name from "permission"
+	GetPermissions(ctx context.Context) ([]Permission, error)
+	//GetRolesWithPermissions
+	//
+	//  select r.id, r.name, p.id, p.name
+	//  from "role" r
+	//  left join "role_permission" rp on r.id = rp.role_id
+	//  left join "permission" p on p.id = rp.permission_id
+	GetRolesWithPermissions(ctx context.Context) ([]GetRolesWithPermissionsRow, error)
 	//GetUserById
 	//
 	//  select id, username, created, modified
@@ -49,60 +60,66 @@ type Querier interface {
 	GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error)
 	//GetUserByUsername
 	//
-	//  select id, username, created, modified
+	//  select id, username, password, active, created, modified
 	//  from "user"
 	//  where username = $1
-	GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error)
-	//GetUserByUsernameWithPassword
+	GetUserByUsername(ctx context.Context, username string) (User, error)
+	//GetUserByUsernameWithPasswordAndRolesAndPermissions
 	//
-	//  select id, username, password, created, modified
-	//  from "user"
+	//  select u.id, u.username, u.password, u.active, u.created, u.modified, r.id, r.name, p.id, p.name
+	//  from "user" u
+	//  left join "user_role" ur on ur.user_id = u.id
+	//  left join "user_permission" up on up.user_id = u.id
+	//  left join "role" r on ur.role_id = r.id
+	//  left join "role_permission" rp on r.id = rp.role_id
+	//  left join "permission" p on up.permission_id = p.id or p.id = rp.permission_id
 	//  where username = $1
-	GetUserByUsernameWithPassword(ctx context.Context, username string) (GetUserByUsernameWithPasswordRow, error)
+	GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx context.Context, username string) ([]GetUserByUsernameWithPasswordAndRolesAndPermissionsRow, error)
 	//RemoveDeviceById
 	//
 	//  delete from "device"
-	//  where id = $1
-	RemoveDeviceById(ctx context.Context, id uuid.UUID) error
+	//  where id = $1 and user_id = $2
+	RemoveDeviceById(ctx context.Context, arg RemoveDeviceByIdParams) error
 	//SearchBatches
 	//
 	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
-	//  where "name" like $1::text
-	//  order by created
-	//  limit $3::integer
-	//  offset $2::integer
+	//  where user_id = $1
+	//      AND "name" LIKE $2::text
+	//  order by created desc
+	//  limit $4::integer
+	//  offset $3::integer
 	SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error)
 	//SearchDevices
 	//
 	//  select id, name, mac_address, user_id, created, modified, count(*) over() as total
 	//  from "device"
-	//  where "name" like $1::text
+	//  where "name" like $1::text and user_id = $2
 	//  order by
-	//    case when $2::text = 'name' and $3::bool then "device"."name" end asc nulls last,
-	//    case when $2::text = 'name' and $3::bool != true then "device"."name" end desc nulls last,
-	//    case when $2::text = 'created' and $3::bool then "device"."created" end asc nulls last,
-	//    case when $2::text = 'created' and $3::bool != true then "device"."created" end desc nulls last,
-	//    case when $2::text = 'modified' and $3::bool then "device"."modified" end asc nulls last,
-	//    case when $2::text = 'modified' and $3::bool != true then "device"."modified" end desc nulls last,
-	//    case when $2::text = 'id' and $3::bool then "device"."id" end asc nulls last,
-	//    case when $2::text = 'id' and $3::bool != true then "device"."id" end desc nulls last,
-	//    case when $2::text = 'user_id' and $3::bool then "device"."user_id" end asc nulls last,
-	//    case when $2::text = 'user_id' and $3::bool != true then "device"."user_id" end desc nulls last,
-	//    case when $2::text = 'mac_address' and $3::bool then "device"."mac_address" end asc nulls last,
-	//    case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last,
+	//    case when $3::text = 'name' and $4::bool then "device"."name" end asc nulls last,
+	//    case when $3::text = 'name' and $4::bool != true then "device"."name" end desc nulls last,
+	//    case when $3::text = 'created' and $4::bool then "device"."created" end asc nulls last,
+	//    case when $3::text = 'created' and $4::bool != true then "device"."created" end desc nulls last,
+	//    case when $3::text = 'modified' and $4::bool then "device"."modified" end asc nulls last,
+	//    case when $3::text = 'modified' and $4::bool != true then "device"."modified" end desc nulls last,
+	//    case when $3::text = 'id' and $4::bool then "device"."id" end asc nulls last,
+	//    case when $3::text = 'id' and $4::bool != true then "device"."id" end desc nulls last,
+	//    case when $3::text = 'user_id' and $4::bool then "device"."user_id" end asc nulls last,
+	//    case when $3::text = 'user_id' and $4::bool != true then "device"."user_id" end desc nulls last,
+	//    case when $3::text = 'mac_address' and $4::bool then "device"."mac_address" end asc nulls last,
+	//    case when $3::text = 'mac_address' and $4::bool != true then "device"."mac_address" end desc nulls last,
 	//    "device"."created" asc nulls last
-	//  limit $5
-	//  offset $4
+	//  limit $6
+	//  offset $5
 	SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error)
 	//UpdateBatch
 	//
-	//  update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+	//  update "batch" set "name" = $1, modified = current_timestamp where id = $2 and user_id = $3
 	//  returning id, name, user_id, created, modified
 	UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error)
 	//UpdateDevice
 	//
 	//  update "device" set "name" = $1::text, mac_address = $2, user_id = $3, modified = current_timestamp
-	//  where id = $4
+	//  where id = $4 and user_id = $3
 	//  returning id, name, mac_address, user_id, created, modified
 	UpdateDevice(ctx context.Context, arg UpdateDeviceParams) (Device, error)
 }

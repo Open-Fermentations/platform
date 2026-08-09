@@ -44,7 +44,7 @@ func New(env *env.Env) (Service, error) {
 		env.Database.User,
 		env.Database.Password,
 		env.Database.Host,
-		"5555", // TODO: change this to the actual value
+		env.Database.Port,
 		env.Database.DbName,
 		env.Database.Schema,
 	)
