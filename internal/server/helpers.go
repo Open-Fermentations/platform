@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/model"
 	"open-fermentations/internal/route"
 	"strings"
@@ -14,7 +15,7 @@ import (
 )
 
 func getUserId(r *http.Request) uuid.UUID {
-	id := r.Context().Value(ContextUserIdKey).(uuid.UUID)
+	id := r.Context().Value(constants.ContextUserIdKey).(uuid.UUID)
 
 	return id
 }

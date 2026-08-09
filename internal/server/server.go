@@ -33,12 +33,15 @@ func NewServer(ctx context.Context, env *env.Env) (*http.Server, error) {
 		slog.Error("failed setting up database service", logging.Err(err))
 		return nil, err
 	}
-	newServer := &Server{
+	newServer := (&Server{
+		ctx:      ctx,
 		env:      env,
 		db:       db,
 		svc:      service.New(ctx, env, db),
 		validate: validator.New(validator.WithRequiredStructEnabled()),
-	}
+	}).
+		withPermissions().
+		withRoles()
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", env.Port),

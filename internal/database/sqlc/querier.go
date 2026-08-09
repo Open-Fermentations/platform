@@ -53,7 +53,8 @@ type Querier interface {
 	//
 	//  select r.id, r.name, p.id, p.name
 	//  from "role" r
-	//  left join "permission" p on r.id = p.role_id
+	//  left join "role_permission" rp on r.id = rp.role_id
+	//  left join "permission" p on p.id = rp.permission_id
 	GetRolesWithPermissions(ctx context.Context) ([]GetRolesWithPermissionsRow, error)
 	//GetUserById
 	//

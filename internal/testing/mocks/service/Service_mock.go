@@ -5,6 +5,7 @@
 package mockservice
 
 import (
+	"context"
 	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/model"
@@ -41,8 +42,8 @@ func (_m *MockService) EXPECT() *MockService_Expecter {
 }
 
 // CreateBatches provides a mock function for the type MockService
-func (_mock *MockService) CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
-	ret := _mock.Called(userId, d)
+func (_mock *MockService) CreateBatches(ctx context.Context, d []dto.CreateBatchDTO) ([]model.Batch, error) {
+	ret := _mock.Called(ctx, d)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBatches")
@@ -50,18 +51,18 @@ func (_mock *MockService) CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO
 
 	var r0 []model.Batch
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateBatchDTO) ([]model.Batch, error)); ok {
-		return returnFunc(userId, d)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []dto.CreateBatchDTO) ([]model.Batch, error)); ok {
+		return returnFunc(ctx, d)
 	}
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateBatchDTO) []model.Batch); ok {
-		r0 = returnFunc(userId, d)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []dto.CreateBatchDTO) []model.Batch); ok {
+		r0 = returnFunc(ctx, d)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]model.Batch)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, []dto.CreateBatchDTO) error); ok {
-		r1 = returnFunc(userId, d)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, []dto.CreateBatchDTO) error); ok {
+		r1 = returnFunc(ctx, d)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -74,17 +75,17 @@ type MockService_CreateBatches_Call struct {
 }
 
 // CreateBatches is a helper method to define mock.On call
-//   - userId uuid.UUID
+//   - ctx context.Context
 //   - d []dto.CreateBatchDTO
-func (_e *MockService_Expecter) CreateBatches(userId any, d any) *MockService_CreateBatches_Call {
-	return &MockService_CreateBatches_Call{Call: _e.mock.On("CreateBatches", userId, d)}
+func (_e *MockService_Expecter) CreateBatches(ctx any, d any) *MockService_CreateBatches_Call {
+	return &MockService_CreateBatches_Call{Call: _e.mock.On("CreateBatches", ctx, d)}
 }
 
-func (_c *MockService_CreateBatches_Call) Run(run func(userId uuid.UUID, d []dto.CreateBatchDTO)) *MockService_CreateBatches_Call {
+func (_c *MockService_CreateBatches_Call) Run(run func(ctx context.Context, d []dto.CreateBatchDTO)) *MockService_CreateBatches_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
 		}
 		var arg1 []dto.CreateBatchDTO
 		if args[1] != nil {
@@ -103,7 +104,7 @@ func (_c *MockService_CreateBatches_Call) Return(batchs []model.Batch, err error
 	return _c
 }
 
-func (_c *MockService_CreateBatches_Call) RunAndReturn(run func(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)) *MockService_CreateBatches_Call {
+func (_c *MockService_CreateBatches_Call) RunAndReturn(run func(ctx context.Context, d []dto.CreateBatchDTO) ([]model.Batch, error)) *MockService_CreateBatches_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -403,8 +404,8 @@ func (_c *MockService_GetDeviceById_Call) RunAndReturn(run func(id uuid.UUID) (*
 }
 
 // Login provides a mock function for the type MockService
-func (_mock *MockService) Login(username string, password string) (*model.AuthenticatedUser, error) {
-	ret := _mock.Called(username, password)
+func (_mock *MockService) Login(ctx context.Context, username string, password string) (*model.AuthenticatedUser, error) {
+	ret := _mock.Called(ctx, username, password)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Login")
@@ -412,18 +413,18 @@ func (_mock *MockService) Login(username string, password string) (*model.Authen
 
 	var r0 *model.AuthenticatedUser
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string, string) (*model.AuthenticatedUser, error)); ok {
-		return returnFunc(username, password)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) (*model.AuthenticatedUser, error)); ok {
+		return returnFunc(ctx, username, password)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string, string) *model.AuthenticatedUser); ok {
-		r0 = returnFunc(username, password)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) *model.AuthenticatedUser); ok {
+		r0 = returnFunc(ctx, username, password)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.AuthenticatedUser)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = returnFunc(username, password)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = returnFunc(ctx, username, password)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -436,25 +437,31 @@ type MockService_Login_Call struct {
 }
 
 // Login is a helper method to define mock.On call
+//   - ctx context.Context
 //   - username string
 //   - password string
-func (_e *MockService_Expecter) Login(username any, password any) *MockService_Login_Call {
-	return &MockService_Login_Call{Call: _e.mock.On("Login", username, password)}
+func (_e *MockService_Expecter) Login(ctx any, username any, password any) *MockService_Login_Call {
+	return &MockService_Login_Call{Call: _e.mock.On("Login", ctx, username, password)}
 }
 
-func (_c *MockService_Login_Call) Run(run func(username string, password string)) *MockService_Login_Call {
+func (_c *MockService_Login_Call) Run(run func(ctx context.Context, username string, password string)) *MockService_Login_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
 		}
 		var arg1 string
 		if args[1] != nil {
 			arg1 = args[1].(string)
 		}
+		var arg2 string
+		if args[2] != nil {
+			arg2 = args[2].(string)
+		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -465,14 +472,14 @@ func (_c *MockService_Login_Call) Return(authenticatedUser *model.AuthenticatedU
 	return _c
 }
 
-func (_c *MockService_Login_Call) RunAndReturn(run func(username string, password string) (*model.AuthenticatedUser, error)) *MockService_Login_Call {
+func (_c *MockService_Login_Call) RunAndReturn(run func(ctx context.Context, username string, password string) (*model.AuthenticatedUser, error)) *MockService_Login_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // SearchBatches provides a mock function for the type MockService
-func (_mock *MockService) SearchBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
-	ret := _mock.Called(name, limit, offset)
+func (_mock *MockService) SearchBatches(ctx context.Context, name string, limit int, offset int) ([]model.Batch, int, error) {
+	ret := _mock.Called(ctx, name, limit, offset)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SearchBatches")
@@ -481,23 +488,23 @@ func (_mock *MockService) SearchBatches(name string, limit int, offset int) ([]m
 	var r0 []model.Batch
 	var r1 int
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) ([]model.Batch, int, error)); ok {
-		return returnFunc(name, limit, offset)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, int, int) ([]model.Batch, int, error)); ok {
+		return returnFunc(ctx, name, limit, offset)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string, int, int) []model.Batch); ok {
-		r0 = returnFunc(name, limit, offset)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, int, int) []model.Batch); ok {
+		r0 = returnFunc(ctx, name, limit, offset)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]model.Batch)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(string, int, int) int); ok {
-		r1 = returnFunc(name, limit, offset)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, int, int) int); ok {
+		r1 = returnFunc(ctx, name, limit, offset)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
-	if returnFunc, ok := ret.Get(2).(func(string, int, int) error); ok {
-		r2 = returnFunc(name, limit, offset)
+	if returnFunc, ok := ret.Get(2).(func(context.Context, string, int, int) error); ok {
+		r2 = returnFunc(ctx, name, limit, offset)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -510,31 +517,37 @@ type MockService_SearchBatches_Call struct {
 }
 
 // SearchBatches is a helper method to define mock.On call
+//   - ctx context.Context
 //   - name string
 //   - limit int
 //   - offset int
-func (_e *MockService_Expecter) SearchBatches(name any, limit any, offset any) *MockService_SearchBatches_Call {
-	return &MockService_SearchBatches_Call{Call: _e.mock.On("SearchBatches", name, limit, offset)}
+func (_e *MockService_Expecter) SearchBatches(ctx any, name any, limit any, offset any) *MockService_SearchBatches_Call {
+	return &MockService_SearchBatches_Call{Call: _e.mock.On("SearchBatches", ctx, name, limit, offset)}
 }
 
-func (_c *MockService_SearchBatches_Call) Run(run func(name string, limit int, offset int)) *MockService_SearchBatches_Call {
+func (_c *MockService_SearchBatches_Call) Run(run func(ctx context.Context, name string, limit int, offset int)) *MockService_SearchBatches_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(context.Context)
 		}
-		var arg1 int
+		var arg1 string
 		if args[1] != nil {
-			arg1 = args[1].(int)
+			arg1 = args[1].(string)
 		}
 		var arg2 int
 		if args[2] != nil {
 			arg2 = args[2].(int)
 		}
+		var arg3 int
+		if args[3] != nil {
+			arg3 = args[3].(int)
+		}
 		run(
 			arg0,
 			arg1,
 			arg2,
+			arg3,
 		)
 	})
 	return _c
@@ -545,7 +558,7 @@ func (_c *MockService_SearchBatches_Call) Return(batchs []model.Batch, n int, er
 	return _c
 }
 
-func (_c *MockService_SearchBatches_Call) RunAndReturn(run func(name string, limit int, offset int) ([]model.Batch, int, error)) *MockService_SearchBatches_Call {
+func (_c *MockService_SearchBatches_Call) RunAndReturn(run func(ctx context.Context, name string, limit int, offset int) ([]model.Batch, int, error)) *MockService_SearchBatches_Call {
 	_c.Call.Return(run)
 	return _c
 }

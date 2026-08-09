@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
 	"open-fermentations/internal/model"
@@ -30,7 +31,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := s.svc.Login(b.Username, b.Password)
+	user, err := s.svc.Login(r.Context(), b.Username, b.Password)
 	if err != nil {
 		var invalidCredentialError service.ErrInvalidCredentials
 		if errors.As(err, &invalidCredentialError) {
@@ -141,7 +142,7 @@ func addUserIdToContext(ctx context.Context, claims jwt.MapClaims) (context.Cont
 			return nil, err
 		}
 
-		return context.WithValue(ctx, ContextUserIdKey, id), nil
+		return context.WithValue(ctx, constants.ContextUserIdKey, id), nil
 	} else {
 		return nil, ErrJWTClaim{Key: JWTIdKey}
 	}
@@ -149,10 +150,8 @@ func addUserIdToContext(ctx context.Context, claims jwt.MapClaims) (context.Cont
 
 func (s *Server) addRolesToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
 	switch v := claims[JWTRolesKey].(type) {
-	case []string:
-		return context.WithValue(ctx, ContextRolesKey, v), nil
-	case []interface{}:
-		strRoles := make([]model.Role, len(v))
+	case []any:
+		roles := make([]model.Role, len(v))
 		for i, item := range v {
 			if strVal, ok := item.(string); ok {
 				var role model.Role
@@ -161,10 +160,10 @@ func (s *Server) addRolesToContext(ctx context.Context, claims jwt.MapClaims) (c
 						role = roleItem
 					}
 				}
-				strRoles[i] = role
+				roles[i] = role
 			}
 		}
-		return context.WithValue(ctx, ContextRolesKey, strRoles), nil
+		return context.WithValue(ctx, constants.ContextRolesKey, roles), nil
 	default:
 		return nil, ErrJWTClaim{Key: JWTRolesKey}
 	}
@@ -173,7 +172,7 @@ func (s *Server) addRolesToContext(ctx context.Context, claims jwt.MapClaims) (c
 func (s *Server) addPermissionsToContext(ctx context.Context, claims jwt.MapClaims) (context.Context, error) {
 	switch v := claims[JWTPermissionsKey].(type) {
 	case []string:
-		return context.WithValue(ctx, ContextPermissionsKey, v), nil
+		return context.WithValue(ctx, constants.ContextPermissionsKey, v), nil
 	case []interface{}:
 		strPermissions := make([]string, len(v))
 		for i, p := range v {
@@ -181,7 +180,7 @@ func (s *Server) addPermissionsToContext(ctx context.Context, claims jwt.MapClai
 				strPermissions[i] = strVal
 			}
 		}
-		return context.WithValue(ctx, ContextPermissionsKey, strPermissions), nil
+		return context.WithValue(ctx, constants.ContextPermissionsKey, strPermissions), nil
 	default:
 		return nil, ErrJWTClaim{Key: JWTPermissionsKey}
 	}

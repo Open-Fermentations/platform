@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/logging"
 	"open-fermentations/internal/route"
 	routefactory "open-fermentations/internal/route_factory"
@@ -27,7 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		route.LoggingMiddleware,
 	}
 
-	rf := routefactory.New(ContextPermissionsKey, ContextRolesKey)
+	rf := routefactory.New(constants.ContextPermissionsKey, constants.ContextRolesKey)
 
 	// Register routes
 	authenticatedRoutesWithPrefix := []*route.Route{

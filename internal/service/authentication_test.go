@@ -68,7 +68,7 @@ func Test_Login(t *testing.T) {
 				Once().
 				Return(nil, ErrMock)
 
-			usr, err := c.svc.Login(u, "")
+			usr, err := c.svc.Login(t.Context(), u, "")
 			assert.Nil(t, usr)
 			assert.ErrorIs(t, err, ErrMock)
 		}))
@@ -80,7 +80,7 @@ func Test_Login(t *testing.T) {
 				Once().
 				Return([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow{mockUser}, nil)
 
-			usr, err := c.svc.Login(mockUser.User.Username, "some incorrect password")
+			usr, err := c.svc.Login(t.Context(), mockUser.User.Username, "some incorrect password")
 			assert.Nil(t, usr)
 			var invalidCredentialsErr ErrInvalidCredentials
 			assert.ErrorAs(t, err, &invalidCredentialsErr)
@@ -94,7 +94,7 @@ func Test_Login(t *testing.T) {
 				Once().
 				Return([]sqlc.GetUserByUsernameWithPasswordAndRolesAndPermissionsRow{mockUser}, nil)
 
-			usr, err := c.svc.Login(mockUser.User.Username, "admin")
+			usr, err := c.svc.Login(t.Context(), mockUser.User.Username, "admin")
 			assert.Nil(t, err)
 			assert.EqualValues(t, mockUser.User.Username, usr.Username)
 		}))

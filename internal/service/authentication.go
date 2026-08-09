@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"open-fermentations/internal/model"
 
@@ -9,8 +10,8 @@ import (
 )
 
 // Login implements [Service].
-func (s service) Login(username string, password string) (*model.AuthenticatedUser, error) {
-	userRolePermissions, err := s.db.Querier().GetUserByUsernameWithPasswordAndRolesAndPermissions(s.ctx, username)
+func (s service) Login(ctx context.Context, username string, password string) (*model.AuthenticatedUser, error) {
+	userRolePermissions, err := s.db.Querier().GetUserByUsernameWithPasswordAndRolesAndPermissions(ctx, username)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil

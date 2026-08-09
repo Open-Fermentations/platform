@@ -12,7 +12,8 @@ import (
 const getRolesWithPermissions = `-- name: GetRolesWithPermissions :many
 select r.id, r.name, p.id, p.name
 from "role" r
-left join "permission" p on r.id = p.role_id
+left join "role_permission" rp on r.id = rp.role_id
+left join "permission" p on p.id = rp.permission_id
 `
 
 type GetRolesWithPermissionsRow struct {
@@ -24,7 +25,8 @@ type GetRolesWithPermissionsRow struct {
 //
 //	select r.id, r.name, p.id, p.name
 //	from "role" r
-//	left join "permission" p on r.id = p.role_id
+//	left join "role_permission" rp on r.id = rp.role_id
+//	left join "permission" p on p.id = rp.permission_id
 func (q *Queries) GetRolesWithPermissions(ctx context.Context) ([]GetRolesWithPermissionsRow, error) {
 	rows, err := q.db.Query(ctx, getRolesWithPermissions)
 	if err != nil {

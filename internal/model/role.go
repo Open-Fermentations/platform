@@ -24,35 +24,38 @@ func (r *Role) WithPermissions(ps []Permission) *Role {
 }
 
 func FromGetRolesWithPermissionsToRoles(rps []sqlc.GetRolesWithPermissionsRow) []Role {
-	roles := []Role{}
+	roles := []*Role{}
 	for _, rp := range rps {
 		var role *Role
-		roleIndex := -1
-		for i, r := range roles {
+		for _, r := range roles {
 			if r.ID == rp.Role.ID {
-				role = &r
-				roleIndex = i
+				role = r
 				break
 			}
 		}
 
 		if role == nil {
-			role = &Role{
-				ID:   rp.Role.ID,
-				Name: rp.Role.Name,
-			}
+			role = &Role{ID: rp.Role.ID, Name: rp.Role.Name, Permissions: []Permission{}}
+			roles = append(roles, role)
+		}
 
-			if rp.Permission.ID != uuid.Nil {
-				role.Permissions = []Permission{Permission{ID: rp.Permission.ID, Name: rp.Permission.Name}}
+		if rp.Permission.ID != uuid.Nil {
+			var permission *Permission
+			for _, p := range role.Permissions {
+				if p.ID == rp.Permission.ID {
+					permission = &p
+				}
 			}
-
-			roles = append(roles, *role)
-		} else {
-			if rp.Permission.ID != uuid.Nil {
-				roles[roleIndex].Permissions = []Permission{Permission{ID: rp.Permission.ID, Name: rp.Permission.Name}}
+			if permission == nil {
+				role.Permissions = append(role.Permissions, Permission{ID: rp.Permission.ID, Name: rp.Permission.Name})
 			}
 		}
 	}
 
-	return roles
+	result := make([]Role, len(roles))
+	for i, r := range roles {
+		result[i] = *r
+	}
+
+	return result
 }

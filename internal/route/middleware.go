@@ -72,12 +72,13 @@ func (r *Route) PermissionsMiddleware(permissions []string) Middleware {
 			for _, permission := range permissions {
 				if slices.Contains(userPermissions, permission) == false && slices.ContainsFunc(roles, func(r model.Role) bool {
 					return slices.ContainsFunc(r.Permissions, func(p model.Permission) bool { return p.Name == permission })
-				}) {
+				}) == false {
 					slog.Error("Unauthorised for user", slog.String("permission", permission))
 					http.Error(w, "Forbidden", http.StatusForbidden)
 					return
 				}
 			}
+			next.ServeHTTP(w, req)
 		})
 	}
 }

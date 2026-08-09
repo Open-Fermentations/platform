@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/env"
 	"open-fermentations/internal/model"
@@ -15,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -36,7 +38,7 @@ func TestLoginHandler(t *testing.T) {
 				Key:      "some-key",
 				Duration: time.Second,
 			}}
-			c.mSvc.EXPECT().Login(mock.Anything, mock.Anything).
+			c.mSvc.EXPECT().Login(mock.Anything, mock.Anything, mock.Anything).
 				Return(&model.AuthenticatedUser{User: model.User{Username: "admin"}}, nil)
 			server := httptest.NewServer(http.HandlerFunc(c.s.loginHandler))
 			defer server.Close()
@@ -177,4 +179,46 @@ func Test_authenticationMiddleware(t *testing.T) {
 		assert.EqualValues(t, http.StatusUnauthorized, resp.StatusCode)
 		assert.EqualValues(t, Unauthorised, strings.Trim(string(b), "\n"))
 	}))
+}
+
+func Test_addRolesToContext(t *testing.T) {
+	t.Run("with no roles in claims, should return err", func(t *testing.T) {
+		claims := jwt.MapClaims{}
+
+		s := Server{}
+
+		_, err := s.addRolesToContext(t.Context(), claims)
+		assert.ErrorIs(t, err, ErrJWTClaim{Key: JWTRolesKey})
+	})
+
+	t.Run("with an empty roles array in claims, should add empty roles to context", func(t *testing.T) {
+		claims := jwt.MapClaims{
+			JWTRolesKey: []any{},
+		}
+
+		s := Server{}
+
+		ctx, err := s.addRolesToContext(t.Context(), claims)
+		assert.NoError(t, err)
+
+		val := ctx.Value(constants.ContextRolesKey)
+		assert.EqualValues(t, []model.Role{}, val)
+	})
+
+	t.Run("with an existing role, should return role", func(t *testing.T) {
+		role := model.Role{Name: "admin"}
+		claims := jwt.MapClaims{
+			JWTRolesKey: []any{role.Name},
+		}
+
+		s := Server{
+			roles: []model.Role{role, {Name: "someRoleThatShouldNotBeIncluded"}},
+		}
+
+		ctx, err := s.addRolesToContext(t.Context(), claims)
+		assert.NoError(t, err)
+
+		val := ctx.Value(constants.ContextRolesKey).([]model.Role)
+		assert.EqualValues(t, []model.Role{role}, val)
+	})
 }
