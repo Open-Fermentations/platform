@@ -1,8 +1,10 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/model"
@@ -12,8 +14,9 @@ import (
 )
 
 // CreateDevices implements [Service].
-func (s service) CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error) {
-	user, err := s.db.Querier().GetUserById(s.ctx, userId)
+func (s service) CreateDevices(ctx context.Context, d []dto.CreateDeviceDTO) ([]model.Device, error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	user, err := s.db.Querier().GetUserById(ctx, userId)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrUserDoesNotExist{ID: userId}
@@ -24,7 +27,7 @@ func (s service) CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]mod
 	devices := []model.Device{}
 	errs := []error{}
 	for _, dt := range d {
-		m, err := s.db.Querier().CreateDevice(s.ctx, dt.ToCreateDeviceParams(user.ID))
+		m, err := s.db.Querier().CreateDevice(ctx, dt.ToCreateDeviceParams(user.ID))
 		if err != nil {
 			errs = append(errs, err)
 			continue
@@ -41,13 +44,15 @@ func (s service) CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]mod
 }
 
 // SearchDevices implements [Service].
-func (s service) SearchDevices(search dto.SearchDTO) (*dto.PageDTO[model.Device], error) {
-	devices, err := s.db.Querier().SearchDevices(s.ctx, sqlc.SearchDevicesParams{
+func (s service) SearchDevices(ctx context.Context, search dto.SearchDTO) (*dto.PageDTO[model.Device], error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	devices, err := s.db.Querier().SearchDevices(ctx, sqlc.SearchDevicesParams{
 		Search:    fmt.Sprintf("%%%v%%", search.Search),
 		Limitval:  int32(search.Limit),
 		Offsetval: int32(search.Offset),
 		OrderCol:  search.OrderBy,
 		Asc:       search.Asc,
+		UserID:    userId,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -77,8 +82,12 @@ func (s service) SearchDevices(search dto.SearchDTO) (*dto.PageDTO[model.Device]
 }
 
 // GetDeviceById implements [Service].
-func (s service) GetDeviceById(id uuid.UUID) (*model.Device, error) {
-	device, err := s.db.Querier().GetDeviceById(s.ctx, id)
+func (s service) GetDeviceById(ctx context.Context, id uuid.UUID) (*model.Device, error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	device, err := s.db.Querier().GetDeviceById(ctx, sqlc.GetDeviceByIdParams{
+		ID:     id,
+		UserID: userId,
+	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -90,13 +99,19 @@ func (s service) GetDeviceById(id uuid.UUID) (*model.Device, error) {
 }
 
 // DeleteDevice implements [Service].
-func (s service) DeleteDevice(id uuid.UUID) error {
-	return s.db.Querier().RemoveDeviceById(s.ctx, id)
+func (s service) DeleteDevice(ctx context.Context, id uuid.UUID) error {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	return s.db.Querier().RemoveDeviceById(ctx, sqlc.RemoveDeviceByIdParams{
+		ID:     id,
+		UserID: userId,
+	})
 }
 
 // UpdateDevice implements [Service].
-func (s service) UpdateDevice(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error) {
-	device, err := s.db.Querier().UpdateDevice(s.ctx, update)
+func (s service) UpdateDevice(ctx context.Context, id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	update.UserID = userId
+	device, err := s.db.Querier().UpdateDevice(ctx, update)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil

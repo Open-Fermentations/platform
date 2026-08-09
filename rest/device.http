@@ -1,4 +1,4 @@
-@id=7cc0046c-0946-4e8d-9c82-d675ba9121b2
+@id=e4e2668c-9091-4a49-a6d8-cb82629c50df
 ### Create devices
 POST {{url}}/api/device
 Content-Type: application/json
@@ -23,6 +23,5 @@ Content-Type: application/json
 
 {
   "name": "some new name",
-  "macAddress": "3B-FB-19-6A-92-63",
-  "userId": "1d48244c-9d22-4da4-90f3-50c28898bf87"
+  "macAddress": "3B-FB-19-6A-92-63"
 }

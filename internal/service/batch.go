@@ -47,7 +47,7 @@ func (s service) DeleteBatch(ctx context.Context, id uuid.UUID) error {
 	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
 	return s.db.Querier().DeleteBatch(s.ctx, sqlc.DeleteBatchParams{
 		ID:     id,
-		Userid: userId,
+		UserID: userId,
 	})
 }
 
@@ -58,7 +58,7 @@ func (s service) SearchBatches(ctx context.Context, name string, limit int, offs
 		Name:      name,
 		Limitval:  int32(limit),
 		Offsetval: int32(offset),
-		Userid:    userId,
+		UserID:    userId,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -85,7 +85,7 @@ func (s service) GetBatchById(ctx context.Context, id uuid.UUID) (*model.Batch, 
 	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
 	batch, err := s.db.Querier().GetBatchById(s.ctx, sqlc.GetBatchByIdParams{
 		ID:     id,
-		Userid: userId,
+		UserID: userId,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -103,7 +103,7 @@ func (s service) UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*m
 	batch, err := s.db.Querier().UpdateBatch(s.ctx, sqlc.UpdateBatchParams{
 		ID:     id,
 		Name:   name,
-		Userid: userId,
+		UserID: userId,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

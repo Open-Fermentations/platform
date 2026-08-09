@@ -110,8 +110,8 @@ func (_c *MockService_CreateBatches_Call) RunAndReturn(run func(ctx context.Cont
 }
 
 // CreateDevices provides a mock function for the type MockService
-func (_mock *MockService) CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error) {
-	ret := _mock.Called(userId, d)
+func (_mock *MockService) CreateDevices(ctx context.Context, d []dto.CreateDeviceDTO) ([]model.Device, error) {
+	ret := _mock.Called(ctx, d)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateDevices")
@@ -119,18 +119,18 @@ func (_mock *MockService) CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDT
 
 	var r0 []model.Device
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateDeviceDTO) ([]model.Device, error)); ok {
-		return returnFunc(userId, d)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []dto.CreateDeviceDTO) ([]model.Device, error)); ok {
+		return returnFunc(ctx, d)
 	}
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, []dto.CreateDeviceDTO) []model.Device); ok {
-		r0 = returnFunc(userId, d)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []dto.CreateDeviceDTO) []model.Device); ok {
+		r0 = returnFunc(ctx, d)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]model.Device)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, []dto.CreateDeviceDTO) error); ok {
-		r1 = returnFunc(userId, d)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, []dto.CreateDeviceDTO) error); ok {
+		r1 = returnFunc(ctx, d)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -143,17 +143,17 @@ type MockService_CreateDevices_Call struct {
 }
 
 // CreateDevices is a helper method to define mock.On call
-//   - userId uuid.UUID
+//   - ctx context.Context
 //   - d []dto.CreateDeviceDTO
-func (_e *MockService_Expecter) CreateDevices(userId any, d any) *MockService_CreateDevices_Call {
-	return &MockService_CreateDevices_Call{Call: _e.mock.On("CreateDevices", userId, d)}
+func (_e *MockService_Expecter) CreateDevices(ctx any, d any) *MockService_CreateDevices_Call {
+	return &MockService_CreateDevices_Call{Call: _e.mock.On("CreateDevices", ctx, d)}
 }
 
-func (_c *MockService_CreateDevices_Call) Run(run func(userId uuid.UUID, d []dto.CreateDeviceDTO)) *MockService_CreateDevices_Call {
+func (_c *MockService_CreateDevices_Call) Run(run func(ctx context.Context, d []dto.CreateDeviceDTO)) *MockService_CreateDevices_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
 		}
 		var arg1 []dto.CreateDeviceDTO
 		if args[1] != nil {
@@ -172,7 +172,7 @@ func (_c *MockService_CreateDevices_Call) Return(devices []model.Device, err err
 	return _c
 }
 
-func (_c *MockService_CreateDevices_Call) RunAndReturn(run func(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)) *MockService_CreateDevices_Call {
+func (_c *MockService_CreateDevices_Call) RunAndReturn(run func(ctx context.Context, d []dto.CreateDeviceDTO) ([]model.Device, error)) *MockService_CreateDevices_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -235,16 +235,16 @@ func (_c *MockService_DeleteBatch_Call) RunAndReturn(run func(ctx context.Contex
 }
 
 // DeleteDevice provides a mock function for the type MockService
-func (_mock *MockService) DeleteDevice(id uuid.UUID) error {
-	ret := _mock.Called(id)
+func (_mock *MockService) DeleteDevice(ctx context.Context, id uuid.UUID) error {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteDevice")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) error); ok {
-		r0 = returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
+		r0 = returnFunc(ctx, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -257,19 +257,25 @@ type MockService_DeleteDevice_Call struct {
 }
 
 // DeleteDevice is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockService_Expecter) DeleteDevice(id any) *MockService_DeleteDevice_Call {
-	return &MockService_DeleteDevice_Call{Call: _e.mock.On("DeleteDevice", id)}
+func (_e *MockService_Expecter) DeleteDevice(ctx any, id any) *MockService_DeleteDevice_Call {
+	return &MockService_DeleteDevice_Call{Call: _e.mock.On("DeleteDevice", ctx, id)}
 }
 
-func (_c *MockService_DeleteDevice_Call) Run(run func(id uuid.UUID)) *MockService_DeleteDevice_Call {
+func (_c *MockService_DeleteDevice_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockService_DeleteDevice_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -280,7 +286,7 @@ func (_c *MockService_DeleteDevice_Call) Return(err error) *MockService_DeleteDe
 	return _c
 }
 
-func (_c *MockService_DeleteDevice_Call) RunAndReturn(run func(id uuid.UUID) error) *MockService_DeleteDevice_Call {
+func (_c *MockService_DeleteDevice_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockService_DeleteDevice_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -354,8 +360,8 @@ func (_c *MockService_GetBatchById_Call) RunAndReturn(run func(ctx context.Conte
 }
 
 // GetDeviceById provides a mock function for the type MockService
-func (_mock *MockService) GetDeviceById(id uuid.UUID) (*model.Device, error) {
-	ret := _mock.Called(id)
+func (_mock *MockService) GetDeviceById(ctx context.Context, id uuid.UUID) (*model.Device, error) {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetDeviceById")
@@ -363,18 +369,18 @@ func (_mock *MockService) GetDeviceById(id uuid.UUID) (*model.Device, error) {
 
 	var r0 *model.Device
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) (*model.Device, error)); ok {
-		return returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (*model.Device, error)); ok {
+		return returnFunc(ctx, id)
 	}
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) *model.Device); ok {
-		r0 = returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) *model.Device); ok {
+		r0 = returnFunc(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.Device)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(uuid.UUID) error); ok {
-		r1 = returnFunc(id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = returnFunc(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -387,19 +393,25 @@ type MockService_GetDeviceById_Call struct {
 }
 
 // GetDeviceById is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockService_Expecter) GetDeviceById(id any) *MockService_GetDeviceById_Call {
-	return &MockService_GetDeviceById_Call{Call: _e.mock.On("GetDeviceById", id)}
+func (_e *MockService_Expecter) GetDeviceById(ctx any, id any) *MockService_GetDeviceById_Call {
+	return &MockService_GetDeviceById_Call{Call: _e.mock.On("GetDeviceById", ctx, id)}
 }
 
-func (_c *MockService_GetDeviceById_Call) Run(run func(id uuid.UUID)) *MockService_GetDeviceById_Call {
+func (_c *MockService_GetDeviceById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockService_GetDeviceById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -410,7 +422,7 @@ func (_c *MockService_GetDeviceById_Call) Return(device *model.Device, err error
 	return _c
 }
 
-func (_c *MockService_GetDeviceById_Call) RunAndReturn(run func(id uuid.UUID) (*model.Device, error)) *MockService_GetDeviceById_Call {
+func (_c *MockService_GetDeviceById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*model.Device, error)) *MockService_GetDeviceById_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -576,8 +588,8 @@ func (_c *MockService_SearchBatches_Call) RunAndReturn(run func(ctx context.Cont
 }
 
 // SearchDevices provides a mock function for the type MockService
-func (_mock *MockService) SearchDevices(searchDTO dto.SearchDTO) (*dto.PageDTO[model.Device], error) {
-	ret := _mock.Called(searchDTO)
+func (_mock *MockService) SearchDevices(ctx context.Context, search dto.SearchDTO) (*dto.PageDTO[model.Device], error) {
+	ret := _mock.Called(ctx, search)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SearchDevices")
@@ -585,18 +597,18 @@ func (_mock *MockService) SearchDevices(searchDTO dto.SearchDTO) (*dto.PageDTO[m
 
 	var r0 *dto.PageDTO[model.Device]
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(dto.SearchDTO) (*dto.PageDTO[model.Device], error)); ok {
-		return returnFunc(searchDTO)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, dto.SearchDTO) (*dto.PageDTO[model.Device], error)); ok {
+		return returnFunc(ctx, search)
 	}
-	if returnFunc, ok := ret.Get(0).(func(dto.SearchDTO) *dto.PageDTO[model.Device]); ok {
-		r0 = returnFunc(searchDTO)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, dto.SearchDTO) *dto.PageDTO[model.Device]); ok {
+		r0 = returnFunc(ctx, search)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*dto.PageDTO[model.Device])
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(dto.SearchDTO) error); ok {
-		r1 = returnFunc(searchDTO)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, dto.SearchDTO) error); ok {
+		r1 = returnFunc(ctx, search)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -609,19 +621,25 @@ type MockService_SearchDevices_Call struct {
 }
 
 // SearchDevices is a helper method to define mock.On call
-//   - searchDTO dto.SearchDTO
-func (_e *MockService_Expecter) SearchDevices(searchDTO any) *MockService_SearchDevices_Call {
-	return &MockService_SearchDevices_Call{Call: _e.mock.On("SearchDevices", searchDTO)}
+//   - ctx context.Context
+//   - search dto.SearchDTO
+func (_e *MockService_Expecter) SearchDevices(ctx any, search any) *MockService_SearchDevices_Call {
+	return &MockService_SearchDevices_Call{Call: _e.mock.On("SearchDevices", ctx, search)}
 }
 
-func (_c *MockService_SearchDevices_Call) Run(run func(searchDTO dto.SearchDTO)) *MockService_SearchDevices_Call {
+func (_c *MockService_SearchDevices_Call) Run(run func(ctx context.Context, search dto.SearchDTO)) *MockService_SearchDevices_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 dto.SearchDTO
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(dto.SearchDTO)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 dto.SearchDTO
+		if args[1] != nil {
+			arg1 = args[1].(dto.SearchDTO)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -632,7 +650,7 @@ func (_c *MockService_SearchDevices_Call) Return(pageDTO *dto.PageDTO[model.Devi
 	return _c
 }
 
-func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(searchDTO dto.SearchDTO) (*dto.PageDTO[model.Device], error)) *MockService_SearchDevices_Call {
+func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(ctx context.Context, search dto.SearchDTO) (*dto.PageDTO[model.Device], error)) *MockService_SearchDevices_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -712,8 +730,8 @@ func (_c *MockService_UpdateBatch_Call) RunAndReturn(run func(ctx context.Contex
 }
 
 // UpdateDevice provides a mock function for the type MockService
-func (_mock *MockService) UpdateDevice(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error) {
-	ret := _mock.Called(id, update)
+func (_mock *MockService) UpdateDevice(ctx context.Context, id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error) {
+	ret := _mock.Called(ctx, id, update)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateDevice")
@@ -721,18 +739,18 @@ func (_mock *MockService) UpdateDevice(id uuid.UUID, update sqlc.UpdateDevicePar
 
 	var r0 *model.Device
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, sqlc.UpdateDeviceParams) (*model.Device, error)); ok {
-		return returnFunc(id, update)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, sqlc.UpdateDeviceParams) (*model.Device, error)); ok {
+		return returnFunc(ctx, id, update)
 	}
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, sqlc.UpdateDeviceParams) *model.Device); ok {
-		r0 = returnFunc(id, update)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, sqlc.UpdateDeviceParams) *model.Device); ok {
+		r0 = returnFunc(ctx, id, update)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.Device)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, sqlc.UpdateDeviceParams) error); ok {
-		r1 = returnFunc(id, update)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID, sqlc.UpdateDeviceParams) error); ok {
+		r1 = returnFunc(ctx, id, update)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -745,25 +763,31 @@ type MockService_UpdateDevice_Call struct {
 }
 
 // UpdateDevice is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id uuid.UUID
 //   - update sqlc.UpdateDeviceParams
-func (_e *MockService_Expecter) UpdateDevice(id any, update any) *MockService_UpdateDevice_Call {
-	return &MockService_UpdateDevice_Call{Call: _e.mock.On("UpdateDevice", id, update)}
+func (_e *MockService_Expecter) UpdateDevice(ctx any, id any, update any) *MockService_UpdateDevice_Call {
+	return &MockService_UpdateDevice_Call{Call: _e.mock.On("UpdateDevice", ctx, id, update)}
 }
 
-func (_c *MockService_UpdateDevice_Call) Run(run func(id uuid.UUID, update sqlc.UpdateDeviceParams)) *MockService_UpdateDevice_Call {
+func (_c *MockService_UpdateDevice_Call) Run(run func(ctx context.Context, id uuid.UUID, update sqlc.UpdateDeviceParams)) *MockService_UpdateDevice_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
 		}
-		var arg1 sqlc.UpdateDeviceParams
+		var arg1 uuid.UUID
 		if args[1] != nil {
-			arg1 = args[1].(sqlc.UpdateDeviceParams)
+			arg1 = args[1].(uuid.UUID)
+		}
+		var arg2 sqlc.UpdateDeviceParams
+		if args[2] != nil {
+			arg2 = args[2].(sqlc.UpdateDeviceParams)
 		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -774,7 +798,7 @@ func (_c *MockService_UpdateDevice_Call) Return(device *model.Device, err error)
 	return _c
 }
 
-func (_c *MockService_UpdateDevice_Call) RunAndReturn(run func(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)) *MockService_UpdateDevice_Call {
+func (_c *MockService_UpdateDevice_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)) *MockService_UpdateDevice_Call {
 	_c.Call.Return(run)
 	return _c
 }

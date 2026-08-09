@@ -47,14 +47,14 @@ delete from "batch" where id = $1 and user_id = $2
 
 type DeleteBatchParams struct {
 	ID     uuid.UUID
-	Userid uuid.UUID
+	UserID uuid.UUID
 }
 
 // DeleteBatch
 //
 //	delete from "batch" where id = $1 and user_id = $2
 func (q *Queries) DeleteBatch(ctx context.Context, arg DeleteBatchParams) error {
-	_, err := q.db.Exec(ctx, deleteBatch, arg.ID, arg.Userid)
+	_, err := q.db.Exec(ctx, deleteBatch, arg.ID, arg.UserID)
 	return err
 }
 
@@ -64,14 +64,14 @@ select id, name, user_id, created, modified from "batch" where id = $1 and user_
 
 type GetBatchByIdParams struct {
 	ID     uuid.UUID
-	Userid uuid.UUID
+	UserID uuid.UUID
 }
 
 // GetBatchById
 //
 //	select id, name, user_id, created, modified from "batch" where id = $1 and user_id = $2
 func (q *Queries) GetBatchById(ctx context.Context, arg GetBatchByIdParams) (Batch, error) {
-	row := q.db.QueryRow(ctx, getBatchById, arg.ID, arg.Userid)
+	row := q.db.QueryRow(ctx, getBatchById, arg.ID, arg.UserID)
 	var i Batch
 	err := row.Scan(
 		&i.ID,
@@ -93,7 +93,7 @@ offset $3::integer
 `
 
 type SearchBatchesParams struct {
-	Userid    uuid.UUID
+	UserID    uuid.UUID
 	Name      string
 	Offsetval int32
 	Limitval  int32
@@ -118,7 +118,7 @@ type SearchBatchesRow struct {
 //	offset $3::integer
 func (q *Queries) SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error) {
 	rows, err := q.db.Query(ctx, searchBatches,
-		arg.Userid,
+		arg.UserID,
 		arg.Name,
 		arg.Offsetval,
 		arg.Limitval,
@@ -156,7 +156,7 @@ returning id, name, user_id, created, modified
 type UpdateBatchParams struct {
 	Name   string
 	ID     uuid.UUID
-	Userid uuid.UUID
+	UserID uuid.UUID
 }
 
 // UpdateBatch
@@ -164,7 +164,7 @@ type UpdateBatchParams struct {
 //	update "batch" set "name" = $1, modified = current_timestamp where id = $2 and user_id = $3
 //	returning id, name, user_id, created, modified
 func (q *Queries) UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error) {
-	row := q.db.QueryRow(ctx, updateBatch, arg.Name, arg.ID, arg.Userid)
+	row := q.db.QueryRow(ctx, updateBatch, arg.Name, arg.ID, arg.UserID)
 	var i Batch
 	err := row.Scan(
 		&i.ID,

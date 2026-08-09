@@ -352,8 +352,8 @@ func (_c *MockQuerier_GetBatchById_Call) RunAndReturn(run func(ctx context.Conte
 }
 
 // GetDeviceById provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetDeviceById(ctx context.Context, id uuid.UUID) (sqlc.Device, error) {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockQuerier) GetDeviceById(ctx context.Context, arg sqlc.GetDeviceByIdParams) (sqlc.Device, error) {
+	ret := _mock.Called(ctx, arg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetDeviceById")
@@ -361,16 +361,16 @@ func (_mock *MockQuerier) GetDeviceById(ctx context.Context, id uuid.UUID) (sqlc
 
 	var r0 sqlc.Device
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (sqlc.Device, error)); ok {
-		return returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.GetDeviceByIdParams) (sqlc.Device, error)); ok {
+		return returnFunc(ctx, arg)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) sqlc.Device); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.GetDeviceByIdParams) sqlc.Device); ok {
+		r0 = returnFunc(ctx, arg)
 	} else {
 		r0 = ret.Get(0).(sqlc.Device)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, sqlc.GetDeviceByIdParams) error); ok {
+		r1 = returnFunc(ctx, arg)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -384,20 +384,20 @@ type MockQuerier_GetDeviceById_Call struct {
 
 // GetDeviceById is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockQuerier_Expecter) GetDeviceById(ctx any, id any) *MockQuerier_GetDeviceById_Call {
-	return &MockQuerier_GetDeviceById_Call{Call: _e.mock.On("GetDeviceById", ctx, id)}
+//   - arg sqlc.GetDeviceByIdParams
+func (_e *MockQuerier_Expecter) GetDeviceById(ctx any, arg any) *MockQuerier_GetDeviceById_Call {
+	return &MockQuerier_GetDeviceById_Call{Call: _e.mock.On("GetDeviceById", ctx, arg)}
 }
 
-func (_c *MockQuerier_GetDeviceById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_GetDeviceById_Call {
+func (_c *MockQuerier_GetDeviceById_Call) Run(run func(ctx context.Context, arg sqlc.GetDeviceByIdParams)) *MockQuerier_GetDeviceById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 uuid.UUID
+		var arg1 sqlc.GetDeviceByIdParams
 		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
+			arg1 = args[1].(sqlc.GetDeviceByIdParams)
 		}
 		run(
 			arg0,
@@ -412,7 +412,7 @@ func (_c *MockQuerier_GetDeviceById_Call) Return(device sqlc.Device, err error) 
 	return _c
 }
 
-func (_c *MockQuerier_GetDeviceById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (sqlc.Device, error)) *MockQuerier_GetDeviceById_Call {
+func (_c *MockQuerier_GetDeviceById_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.GetDeviceByIdParams) (sqlc.Device, error)) *MockQuerier_GetDeviceById_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -742,16 +742,16 @@ func (_c *MockQuerier_GetUserByUsernameWithPasswordAndRolesAndPermissions_Call) 
 }
 
 // RemoveDeviceById provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) RemoveDeviceById(ctx context.Context, id uuid.UUID) error {
-	ret := _mock.Called(ctx, id)
+func (_mock *MockQuerier) RemoveDeviceById(ctx context.Context, arg sqlc.RemoveDeviceByIdParams) error {
+	ret := _mock.Called(ctx, arg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for RemoveDeviceById")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
-		r0 = returnFunc(ctx, id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.RemoveDeviceByIdParams) error); ok {
+		r0 = returnFunc(ctx, arg)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -765,20 +765,20 @@ type MockQuerier_RemoveDeviceById_Call struct {
 
 // RemoveDeviceById is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockQuerier_Expecter) RemoveDeviceById(ctx any, id any) *MockQuerier_RemoveDeviceById_Call {
-	return &MockQuerier_RemoveDeviceById_Call{Call: _e.mock.On("RemoveDeviceById", ctx, id)}
+//   - arg sqlc.RemoveDeviceByIdParams
+func (_e *MockQuerier_Expecter) RemoveDeviceById(ctx any, arg any) *MockQuerier_RemoveDeviceById_Call {
+	return &MockQuerier_RemoveDeviceById_Call{Call: _e.mock.On("RemoveDeviceById", ctx, arg)}
 }
 
-func (_c *MockQuerier_RemoveDeviceById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_RemoveDeviceById_Call {
+func (_c *MockQuerier_RemoveDeviceById_Call) Run(run func(ctx context.Context, arg sqlc.RemoveDeviceByIdParams)) *MockQuerier_RemoveDeviceById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 uuid.UUID
+		var arg1 sqlc.RemoveDeviceByIdParams
 		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
+			arg1 = args[1].(sqlc.RemoveDeviceByIdParams)
 		}
 		run(
 			arg0,
@@ -793,7 +793,7 @@ func (_c *MockQuerier_RemoveDeviceById_Call) Return(err error) *MockQuerier_Remo
 	return _c
 }
 
-func (_c *MockQuerier_RemoveDeviceById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockQuerier_RemoveDeviceById_Call {
+func (_c *MockQuerier_RemoveDeviceById_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.RemoveDeviceByIdParams) error) *MockQuerier_RemoveDeviceById_Call {
 	_c.Call.Return(run)
 	return _c
 }

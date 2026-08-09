@@ -18,7 +18,7 @@ func Test_FromGetRolesWithPermissionsToRoles(t *testing.T) {
 		}
 
 		actual := FromGetRolesWithPermissionsToRoles(rps)
-		assert.EqualValues(t, []Role{{Name: r.Name}}, actual)
+		assert.EqualValues(t, []Role{{Name: r.Name, Permissions: []Permission{}}}, actual)
 	})
 
 	t.Run("with roles and permissions, should construct the roles and permissions", func(t *testing.T) {

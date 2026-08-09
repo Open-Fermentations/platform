@@ -45,15 +45,20 @@ func (q *Queries) CreateDevice(ctx context.Context, arg CreateDeviceParams) (Dev
 
 const getDeviceById = `-- name: GetDeviceById :one
 select id, name, mac_address, user_id, created, modified from "device"
-where id = $1
+where id = $1 and user_id = $2
 `
+
+type GetDeviceByIdParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
 
 // GetDeviceById
 //
 //	select id, name, mac_address, user_id, created, modified from "device"
-//	where id = $1
-func (q *Queries) GetDeviceById(ctx context.Context, id uuid.UUID) (Device, error) {
-	row := q.db.QueryRow(ctx, getDeviceById, id)
+//	where id = $1 and user_id = $2
+func (q *Queries) GetDeviceById(ctx context.Context, arg GetDeviceByIdParams) (Device, error) {
+	row := q.db.QueryRow(ctx, getDeviceById, arg.ID, arg.UserID)
 	var i Device
 	err := row.Scan(
 		&i.ID,
@@ -68,42 +73,48 @@ func (q *Queries) GetDeviceById(ctx context.Context, id uuid.UUID) (Device, erro
 
 const removeDeviceById = `-- name: RemoveDeviceById :exec
 delete from "device"
-where id = $1
+where id = $1 and user_id = $2
 `
+
+type RemoveDeviceByIdParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
 
 // RemoveDeviceById
 //
 //	delete from "device"
-//	where id = $1
-func (q *Queries) RemoveDeviceById(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, removeDeviceById, id)
+//	where id = $1 and user_id = $2
+func (q *Queries) RemoveDeviceById(ctx context.Context, arg RemoveDeviceByIdParams) error {
+	_, err := q.db.Exec(ctx, removeDeviceById, arg.ID, arg.UserID)
 	return err
 }
 
 const searchDevices = `-- name: SearchDevices :many
 select id, name, mac_address, user_id, created, modified, count(*) over() as total
 from "device"
-where "name" like $1::text
+where "name" like $1::text and user_id = $2
 order by
-  case when $2::text = 'name' and $3::bool then "device"."name" end asc nulls last,
-  case when $2::text = 'name' and $3::bool != true then "device"."name" end desc nulls last,
-  case when $2::text = 'created' and $3::bool then "device"."created" end asc nulls last,
-  case when $2::text = 'created' and $3::bool != true then "device"."created" end desc nulls last,
-  case when $2::text = 'modified' and $3::bool then "device"."modified" end asc nulls last,
-  case when $2::text = 'modified' and $3::bool != true then "device"."modified" end desc nulls last,
-  case when $2::text = 'id' and $3::bool then "device"."id" end asc nulls last,
-  case when $2::text = 'id' and $3::bool != true then "device"."id" end desc nulls last,
-  case when $2::text = 'user_id' and $3::bool then "device"."user_id" end asc nulls last,
-  case when $2::text = 'user_id' and $3::bool != true then "device"."user_id" end desc nulls last,
-  case when $2::text = 'mac_address' and $3::bool then "device"."mac_address" end asc nulls last,
-  case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last,
+  case when $3::text = 'name' and $4::bool then "device"."name" end asc nulls last,
+  case when $3::text = 'name' and $4::bool != true then "device"."name" end desc nulls last,
+  case when $3::text = 'created' and $4::bool then "device"."created" end asc nulls last,
+  case when $3::text = 'created' and $4::bool != true then "device"."created" end desc nulls last,
+  case when $3::text = 'modified' and $4::bool then "device"."modified" end asc nulls last,
+  case when $3::text = 'modified' and $4::bool != true then "device"."modified" end desc nulls last,
+  case when $3::text = 'id' and $4::bool then "device"."id" end asc nulls last,
+  case when $3::text = 'id' and $4::bool != true then "device"."id" end desc nulls last,
+  case when $3::text = 'user_id' and $4::bool then "device"."user_id" end asc nulls last,
+  case when $3::text = 'user_id' and $4::bool != true then "device"."user_id" end desc nulls last,
+  case when $3::text = 'mac_address' and $4::bool then "device"."mac_address" end asc nulls last,
+  case when $3::text = 'mac_address' and $4::bool != true then "device"."mac_address" end desc nulls last,
   "device"."created" asc nulls last
-limit $5
-offset $4
+limit $6
+offset $5
 `
 
 type SearchDevicesParams struct {
 	Search    string
+	UserID    uuid.UUID
 	OrderCol  string
 	Asc       bool
 	Offsetval int32
@@ -124,26 +135,27 @@ type SearchDevicesRow struct {
 //
 //	select id, name, mac_address, user_id, created, modified, count(*) over() as total
 //	from "device"
-//	where "name" like $1::text
+//	where "name" like $1::text and user_id = $2
 //	order by
-//	  case when $2::text = 'name' and $3::bool then "device"."name" end asc nulls last,
-//	  case when $2::text = 'name' and $3::bool != true then "device"."name" end desc nulls last,
-//	  case when $2::text = 'created' and $3::bool then "device"."created" end asc nulls last,
-//	  case when $2::text = 'created' and $3::bool != true then "device"."created" end desc nulls last,
-//	  case when $2::text = 'modified' and $3::bool then "device"."modified" end asc nulls last,
-//	  case when $2::text = 'modified' and $3::bool != true then "device"."modified" end desc nulls last,
-//	  case when $2::text = 'id' and $3::bool then "device"."id" end asc nulls last,
-//	  case when $2::text = 'id' and $3::bool != true then "device"."id" end desc nulls last,
-//	  case when $2::text = 'user_id' and $3::bool then "device"."user_id" end asc nulls last,
-//	  case when $2::text = 'user_id' and $3::bool != true then "device"."user_id" end desc nulls last,
-//	  case when $2::text = 'mac_address' and $3::bool then "device"."mac_address" end asc nulls last,
-//	  case when $2::text = 'mac_address' and $3::bool != true then "device"."mac_address" end desc nulls last,
+//	  case when $3::text = 'name' and $4::bool then "device"."name" end asc nulls last,
+//	  case when $3::text = 'name' and $4::bool != true then "device"."name" end desc nulls last,
+//	  case when $3::text = 'created' and $4::bool then "device"."created" end asc nulls last,
+//	  case when $3::text = 'created' and $4::bool != true then "device"."created" end desc nulls last,
+//	  case when $3::text = 'modified' and $4::bool then "device"."modified" end asc nulls last,
+//	  case when $3::text = 'modified' and $4::bool != true then "device"."modified" end desc nulls last,
+//	  case when $3::text = 'id' and $4::bool then "device"."id" end asc nulls last,
+//	  case when $3::text = 'id' and $4::bool != true then "device"."id" end desc nulls last,
+//	  case when $3::text = 'user_id' and $4::bool then "device"."user_id" end asc nulls last,
+//	  case when $3::text = 'user_id' and $4::bool != true then "device"."user_id" end desc nulls last,
+//	  case when $3::text = 'mac_address' and $4::bool then "device"."mac_address" end asc nulls last,
+//	  case when $3::text = 'mac_address' and $4::bool != true then "device"."mac_address" end desc nulls last,
 //	  "device"."created" asc nulls last
-//	limit $5
-//	offset $4
+//	limit $6
+//	offset $5
 func (q *Queries) SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error) {
 	rows, err := q.db.Query(ctx, searchDevices,
 		arg.Search,
+		arg.UserID,
 		arg.OrderCol,
 		arg.Asc,
 		arg.Offsetval,
@@ -177,7 +189,7 @@ func (q *Queries) SearchDevices(ctx context.Context, arg SearchDevicesParams) ([
 
 const updateDevice = `-- name: UpdateDevice :one
 update "device" set "name" = $1::text, mac_address = $2, user_id = $3, modified = current_timestamp
-where id = $4
+where id = $4 and user_id = $3
 returning id, name, mac_address, user_id, created, modified
 `
 
@@ -191,7 +203,7 @@ type UpdateDeviceParams struct {
 // UpdateDevice
 //
 //	update "device" set "name" = $1::text, mac_address = $2, user_id = $3, modified = current_timestamp
-//	where id = $4
+//	where id = $4 and user_id = $3
 //	returning id, name, mac_address, user_id, created, modified
 func (q *Queries) UpdateDevice(ctx context.Context, arg UpdateDeviceParams) (Device, error) {
 	row := q.db.QueryRow(ctx, updateDevice,

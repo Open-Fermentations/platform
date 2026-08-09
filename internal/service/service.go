@@ -21,11 +21,11 @@ type Service interface {
 	GetBatchById(ctx context.Context, id uuid.UUID) (*model.Batch, error)
 	UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*model.Batch, error)
 
-	CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)
-	SearchDevices(dto.SearchDTO) (*dto.PageDTO[model.Device], error)
-	GetDeviceById(id uuid.UUID) (*model.Device, error)
-	DeleteDevice(id uuid.UUID) error
-	UpdateDevice(id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)
+	CreateDevices(ctx context.Context, d []dto.CreateDeviceDTO) ([]model.Device, error)
+	SearchDevices(ctx context.Context, search dto.SearchDTO) (*dto.PageDTO[model.Device], error)
+	GetDeviceById(ctx context.Context, id uuid.UUID) (*model.Device, error)
+	DeleteDevice(ctx context.Context, id uuid.UUID) error
+	UpdateDevice(ctx context.Context, id uuid.UUID, update sqlc.UpdateDeviceParams) (*model.Device, error)
 }
 
 type service struct {
