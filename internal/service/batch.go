@@ -1,7 +1,9 @@
 package service
 
 import (
+	"context"
 	"errors"
+	"open-fermentations/internal/constants"
 	"open-fermentations/internal/database/sqlc"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/model"
@@ -11,7 +13,8 @@ import (
 )
 
 // CreateBatches implements [Service].
-func (s service) CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error) {
+func (s service) CreateBatches(ctx context.Context, d []dto.CreateBatchDTO) ([]model.Batch, error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
 	u, err := s.db.Querier().GetUserById(s.ctx, userId)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -23,7 +26,7 @@ func (s service) CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]mode
 	batches := []model.Batch{}
 	errs := []error{}
 	for _, dt := range d {
-		b, err := s.db.Querier().CreateBatch(s.ctx, *dt.ToCreateBatchParams(u.ID))
+		b, err := s.db.Querier().CreateBatch(ctx, *dt.ToCreateBatchParams(u.ID))
 		if err != nil {
 			errs = append(errs, err)
 			continue
@@ -40,16 +43,22 @@ func (s service) CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]mode
 }
 
 // DeleteBatch implements [Service].
-func (s service) DeleteBatch(id uuid.UUID) error {
-	return s.db.Querier().DeleteBatch(s.ctx, id)
+func (s service) DeleteBatch(ctx context.Context, id uuid.UUID) error {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	return s.db.Querier().DeleteBatch(s.ctx, sqlc.DeleteBatchParams{
+		ID:     id,
+		Userid: userId,
+	})
 }
 
 // SearchBatches implements [Service].
-func (s service) SearchBatches(name string, limit int, offset int) ([]model.Batch, int, error) {
-	batches, err := s.db.Querier().SearchBatches(s.ctx, sqlc.SearchBatchesParams{
+func (s service) SearchBatches(ctx context.Context, name string, limit int, offset int) ([]model.Batch, int, error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	batches, err := s.db.Querier().SearchBatches(ctx, sqlc.SearchBatchesParams{
 		Name:      name,
 		Limitval:  int32(limit),
 		Offsetval: int32(offset),
+		Userid:    userId,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -72,8 +81,12 @@ func (s service) SearchBatches(name string, limit int, offset int) ([]model.Batc
 }
 
 // GetBatchById implements [Service].
-func (s service) GetBatchById(id uuid.UUID) (*model.Batch, error) {
-	batch, err := s.db.Querier().GetBatchById(s.ctx, id)
+func (s service) GetBatchById(ctx context.Context, id uuid.UUID) (*model.Batch, error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
+	batch, err := s.db.Querier().GetBatchById(s.ctx, sqlc.GetBatchByIdParams{
+		ID:     id,
+		Userid: userId,
+	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -85,10 +98,12 @@ func (s service) GetBatchById(id uuid.UUID) (*model.Batch, error) {
 }
 
 // UpdateBatch implements [Service].
-func (s service) UpdateBatch(id uuid.UUID, name string) (*model.Batch, error) {
+func (s service) UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*model.Batch, error) {
+	userId := ctx.Value(constants.ContextUserIdKey).(uuid.UUID)
 	batch, err := s.db.Querier().UpdateBatch(s.ctx, sqlc.UpdateBatchParams{
-		ID:   id,
-		Name: name,
+		ID:     id,
+		Name:   name,
+		Userid: userId,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

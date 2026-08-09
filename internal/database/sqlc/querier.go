@@ -30,16 +30,12 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	//DeleteBatch
 	//
-	//  delete from "batch" where id = $1
-	DeleteBatch(ctx context.Context, id uuid.UUID) error
-	//DeleteBatchByUserId
-	//
 	//  delete from "batch" where id = $1 and user_id = $2
-	DeleteBatchByUserId(ctx context.Context, arg DeleteBatchByUserIdParams) error
+	DeleteBatch(ctx context.Context, arg DeleteBatchParams) error
 	//GetBatchById
 	//
-	//  select id, name, user_id, created, modified from "batch" where id = $1
-	GetBatchById(ctx context.Context, id uuid.UUID) (Batch, error)
+	//  select id, name, user_id, created, modified from "batch" where id = $1 and user_id = $2
+	GetBatchById(ctx context.Context, arg GetBatchByIdParams) (Batch, error)
 	//GetDeviceById
 	//
 	//  select id, name, mac_address, user_id, created, modified from "device"
@@ -87,10 +83,11 @@ type Querier interface {
 	//SearchBatches
 	//
 	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
-	//  where "name" like $1::text
-	//  order by created
-	//  limit $3::integer
-	//  offset $2::integer
+	//  where user_id = $1
+	//      AND "name" LIKE $2::text
+	//  order by created desc
+	//  limit $4::integer
+	//  offset $3::integer
 	SearchBatches(ctx context.Context, arg SearchBatchesParams) ([]SearchBatchesRow, error)
 	//SearchDevices
 	//
@@ -116,7 +113,7 @@ type Querier interface {
 	SearchDevices(ctx context.Context, arg SearchDevicesParams) ([]SearchDevicesRow, error)
 	//UpdateBatch
 	//
-	//  update "batch" set "name" = $2, modifie = current_timestamp where id = $1
+	//  update "batch" set "name" = $1, modified = current_timestamp where id = $2 and user_id = $3
 	//  returning id, name, user_id, created, modified
 	UpdateBatch(ctx context.Context, arg UpdateBatchParams) (Batch, error)
 	//UpdateDevice

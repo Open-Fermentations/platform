@@ -13,13 +13,13 @@ import (
 )
 
 type Service interface {
-	Login(username string, password string) (*model.AuthenticatedUser, error)
+	Login(ctx context.Context, username string, password string) (*model.AuthenticatedUser, error)
 
-	CreateBatches(userId uuid.UUID, d []dto.CreateBatchDTO) ([]model.Batch, error)
-	DeleteBatch(id uuid.UUID) error
-	SearchBatches(name string, limit, offset int) ([]model.Batch, int, error)
-	GetBatchById(id uuid.UUID) (*model.Batch, error)
-	UpdateBatch(id uuid.UUID, name string) (*model.Batch, error)
+	CreateBatches(ctx context.Context, d []dto.CreateBatchDTO) ([]model.Batch, error)
+	DeleteBatch(ctx context.Context, id uuid.UUID) error
+	SearchBatches(ctx context.Context, name string, limit, offset int) ([]model.Batch, int, error)
+	GetBatchById(ctx context.Context, id uuid.UUID) (*model.Batch, error)
+	UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*model.Batch, error)
 
 	CreateDevices(userId uuid.UUID, d []dto.CreateDeviceDTO) ([]model.Device, error)
 	SearchDevices(dto.SearchDTO) (*dto.PageDTO[model.Device], error)

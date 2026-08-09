@@ -178,16 +178,16 @@ func (_c *MockService_CreateDevices_Call) RunAndReturn(run func(userId uuid.UUID
 }
 
 // DeleteBatch provides a mock function for the type MockService
-func (_mock *MockService) DeleteBatch(id uuid.UUID) error {
-	ret := _mock.Called(id)
+func (_mock *MockService) DeleteBatch(ctx context.Context, id uuid.UUID) error {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBatch")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) error); ok {
-		r0 = returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
+		r0 = returnFunc(ctx, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -200,19 +200,25 @@ type MockService_DeleteBatch_Call struct {
 }
 
 // DeleteBatch is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockService_Expecter) DeleteBatch(id any) *MockService_DeleteBatch_Call {
-	return &MockService_DeleteBatch_Call{Call: _e.mock.On("DeleteBatch", id)}
+func (_e *MockService_Expecter) DeleteBatch(ctx any, id any) *MockService_DeleteBatch_Call {
+	return &MockService_DeleteBatch_Call{Call: _e.mock.On("DeleteBatch", ctx, id)}
 }
 
-func (_c *MockService_DeleteBatch_Call) Run(run func(id uuid.UUID)) *MockService_DeleteBatch_Call {
+func (_c *MockService_DeleteBatch_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockService_DeleteBatch_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -223,7 +229,7 @@ func (_c *MockService_DeleteBatch_Call) Return(err error) *MockService_DeleteBat
 	return _c
 }
 
-func (_c *MockService_DeleteBatch_Call) RunAndReturn(run func(id uuid.UUID) error) *MockService_DeleteBatch_Call {
+func (_c *MockService_DeleteBatch_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockService_DeleteBatch_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -280,8 +286,8 @@ func (_c *MockService_DeleteDevice_Call) RunAndReturn(run func(id uuid.UUID) err
 }
 
 // GetBatchById provides a mock function for the type MockService
-func (_mock *MockService) GetBatchById(id uuid.UUID) (*model.Batch, error) {
-	ret := _mock.Called(id)
+func (_mock *MockService) GetBatchById(ctx context.Context, id uuid.UUID) (*model.Batch, error) {
+	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBatchById")
@@ -289,18 +295,18 @@ func (_mock *MockService) GetBatchById(id uuid.UUID) (*model.Batch, error) {
 
 	var r0 *model.Batch
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) (*model.Batch, error)); ok {
-		return returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (*model.Batch, error)); ok {
+		return returnFunc(ctx, id)
 	}
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) *model.Batch); ok {
-		r0 = returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) *model.Batch); ok {
+		r0 = returnFunc(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.Batch)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(uuid.UUID) error); ok {
-		r1 = returnFunc(id)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = returnFunc(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -313,19 +319,25 @@ type MockService_GetBatchById_Call struct {
 }
 
 // GetBatchById is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockService_Expecter) GetBatchById(id any) *MockService_GetBatchById_Call {
-	return &MockService_GetBatchById_Call{Call: _e.mock.On("GetBatchById", id)}
+func (_e *MockService_Expecter) GetBatchById(ctx any, id any) *MockService_GetBatchById_Call {
+	return &MockService_GetBatchById_Call{Call: _e.mock.On("GetBatchById", ctx, id)}
 }
 
-func (_c *MockService_GetBatchById_Call) Run(run func(id uuid.UUID)) *MockService_GetBatchById_Call {
+func (_c *MockService_GetBatchById_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockService_GetBatchById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -336,7 +348,7 @@ func (_c *MockService_GetBatchById_Call) Return(batch *model.Batch, err error) *
 	return _c
 }
 
-func (_c *MockService_GetBatchById_Call) RunAndReturn(run func(id uuid.UUID) (*model.Batch, error)) *MockService_GetBatchById_Call {
+func (_c *MockService_GetBatchById_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*model.Batch, error)) *MockService_GetBatchById_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -626,8 +638,8 @@ func (_c *MockService_SearchDevices_Call) RunAndReturn(run func(searchDTO dto.Se
 }
 
 // UpdateBatch provides a mock function for the type MockService
-func (_mock *MockService) UpdateBatch(id uuid.UUID, name string) (*model.Batch, error) {
-	ret := _mock.Called(id, name)
+func (_mock *MockService) UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*model.Batch, error) {
+	ret := _mock.Called(ctx, id, name)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateBatch")
@@ -635,18 +647,18 @@ func (_mock *MockService) UpdateBatch(id uuid.UUID, name string) (*model.Batch, 
 
 	var r0 *model.Batch
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, string) (*model.Batch, error)); ok {
-		return returnFunc(id, name)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, string) (*model.Batch, error)); ok {
+		return returnFunc(ctx, id, name)
 	}
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID, string) *model.Batch); ok {
-		r0 = returnFunc(id, name)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, string) *model.Batch); ok {
+		r0 = returnFunc(ctx, id, name)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.Batch)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(uuid.UUID, string) error); ok {
-		r1 = returnFunc(id, name)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID, string) error); ok {
+		r1 = returnFunc(ctx, id, name)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -659,25 +671,31 @@ type MockService_UpdateBatch_Call struct {
 }
 
 // UpdateBatch is a helper method to define mock.On call
+//   - ctx context.Context
 //   - id uuid.UUID
 //   - name string
-func (_e *MockService_Expecter) UpdateBatch(id any, name any) *MockService_UpdateBatch_Call {
-	return &MockService_UpdateBatch_Call{Call: _e.mock.On("UpdateBatch", id, name)}
+func (_e *MockService_Expecter) UpdateBatch(ctx any, id any, name any) *MockService_UpdateBatch_Call {
+	return &MockService_UpdateBatch_Call{Call: _e.mock.On("UpdateBatch", ctx, id, name)}
 }
 
-func (_c *MockService_UpdateBatch_Call) Run(run func(id uuid.UUID, name string)) *MockService_UpdateBatch_Call {
+func (_c *MockService_UpdateBatch_Call) Run(run func(ctx context.Context, id uuid.UUID, name string)) *MockService_UpdateBatch_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 uuid.UUID
+		var arg0 context.Context
 		if args[0] != nil {
-			arg0 = args[0].(uuid.UUID)
+			arg0 = args[0].(context.Context)
 		}
-		var arg1 string
+		var arg1 uuid.UUID
 		if args[1] != nil {
-			arg1 = args[1].(string)
+			arg1 = args[1].(uuid.UUID)
+		}
+		var arg2 string
+		if args[2] != nil {
+			arg2 = args[2].(string)
 		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -688,7 +706,7 @@ func (_c *MockService_UpdateBatch_Call) Return(batch *model.Batch, err error) *M
 	return _c
 }
 
-func (_c *MockService_UpdateBatch_Call) RunAndReturn(run func(id uuid.UUID, name string) (*model.Batch, error)) *MockService_UpdateBatch_Call {
+func (_c *MockService_UpdateBatch_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, name string) (*model.Batch, error)) *MockService_UpdateBatch_Call {
 	_c.Call.Return(run)
 	return _c
 }
