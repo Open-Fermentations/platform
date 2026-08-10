@@ -11,6 +11,7 @@ const (
 	FailedParsingPathId = "Failed to parse path id"
 	FailedParsingLimit  = "Failed to parse limit"
 	FailedParsingOffset = "Failed to parse offset"
+	InternalServerError = "Internal server error"
 )
 
 const (

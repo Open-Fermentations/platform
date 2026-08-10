@@ -160,7 +160,6 @@ begin;
     constraint fk_reading_device
       foreign key(device_id)
       references "device"(id)
-      on delete cascade
   );
 
   create table "batch_reading"

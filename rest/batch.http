@@ -27,3 +27,6 @@ Content-Type: application/json
 
 ### Add device to batch
 PUT {{url}}/api/batch/{{id}}/device/{{deviceId}}
+
+### Remove device from batch
+DELETE {{url}}/api/batch/{{id}}/device/{{deviceId}}

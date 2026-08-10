@@ -44,6 +44,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			WithJsonBody(),
 		rf.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
 		rf.New(http.MethodPut, fmt.Sprintf("/batch/{%v}/device/{%v}", IDKey, IDKey2), http.HandlerFunc(s.addDeviceToBatch)),
+		rf.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}/device/{%v}", IDKey, IDKey2), http.HandlerFunc(s.removeDeviceFromBatch)),
 
 		rf.New(http.MethodPost, "/device", http.HandlerFunc(s.postDevices)).WithJsonBody(),
 		rf.New(http.MethodGet, "/device", http.HandlerFunc(s.searchDevices)),

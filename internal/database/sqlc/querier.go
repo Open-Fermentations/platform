@@ -85,6 +85,11 @@ type Querier interface {
 	//  delete from "device"
 	//  where id = $1 and user_id = $2
 	RemoveDeviceById(ctx context.Context, arg RemoveDeviceByIdParams) error
+	//RemoveDeviceFromBatch
+	//
+	//  delete from "batch_device"
+	//  where "batch_id" = $1 and "device_id" = $2
+	RemoveDeviceFromBatch(ctx context.Context, arg RemoveDeviceFromBatchParams) error
 	//SearchBatches
 	//
 	//  select id, name, user_id, created, modified, count(id) over() as total from "batch"
