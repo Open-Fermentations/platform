@@ -1,4 +1,4 @@
-package server
+package constants
 
 const (
 	Role_Admin = "admin"

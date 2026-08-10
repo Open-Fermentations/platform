@@ -36,13 +36,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 		rf.New(http.MethodPost, "/batch", http.HandlerFunc(s.postBatch)).
 			WithJsonBody().
-			WithPermissions(Permission_CreateBatch),
+			WithPermissions(constants.Permission_CreateBatch),
 		rf.New(http.MethodGet, "/batch", http.HandlerFunc(s.searchBatches)).
-			WithPermissions(Permission_ReadBatch),
+			WithPermissions(constants.Permission_ReadBatch),
 		rf.New(http.MethodGet, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.getBatchById)),
 		rf.New(http.MethodPut, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.putBatchById)).
 			WithJsonBody(),
 		rf.New(http.MethodDelete, fmt.Sprintf("/batch/{%v}", IDKey), http.HandlerFunc(s.deleteBatch)),
+		rf.New(http.MethodPut, fmt.Sprintf("/batch/{%v}/device/{%v}", IDKey, IDKey2), http.HandlerFunc(s.addDeviceToBatch)),
 
 		rf.New(http.MethodPost, "/device", http.HandlerFunc(s.postDevices)).WithJsonBody(),
 		rf.New(http.MethodGet, "/device", http.HandlerFunc(s.searchDevices)),

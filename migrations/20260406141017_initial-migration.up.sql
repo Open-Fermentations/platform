@@ -38,10 +38,12 @@ begin;
     permission_id uuid not null,
     constraint fk_role_permission_role
       foreign key(role_id)
-      references "role"(id),
+      references "role"(id)
+      on delete cascade,
     constraint fk_role_permission_permission
       foreign key(permission_id)
       references "permission"(id)
+      on delete cascade
   );
 
   -- TODO: add constraint for unique role_id and permission_id
@@ -53,10 +55,12 @@ begin;
     role_id uuid not null,
     constraint fk_user_role_user
       foreign key(user_id)
-      references "user"(id),
+      references "user"(id)
+      on delete cascade,
     constraint fk_user_role_role
       foreign key(role_id)
       references "role"(id)
+      on delete cascade
   );
 
   -- TODO: add constraint for unique user_id and role_id
@@ -68,10 +72,12 @@ begin;
     permission_id uuid not null,
     constraint fk_user_permission_user
       foreign key(user_id)
-      references "user"(id),
+      references "user"(id)
+      on delete cascade,
     constraint fk_user_permission_permission
       foreign key(permission_id)
       references "permission"(id)
+      on delete cascade
   );
 
   -- TODO: create constraint for unique user_id and permission_id
@@ -86,6 +92,7 @@ begin;
     constraint fk_batch_user
       foreign key(user_id)
       references "user"(id)
+      on delete cascade
   );
 
   create type reading_type_enum as enum
@@ -95,16 +102,34 @@ begin;
   (
     id uuid primary key default uuid_generate_v4(),
     "name" varchar not null,
-    mac_address bytea not null,
+    mac_address macaddr8 not null,
     user_id uuid not null,
     created timestamptz default current_timestamp not null,
     modified timestamptz default current_timestamp not null,
     constraint fk_device_user
       foreign key(user_id)
       references "user"(id)
+      on delete cascade
   );
 
   create unique index unique_mac_address_constraint on "device"(mac_address);
+
+  create table "batch_device"
+  (
+    id uuid primary key default uuid_generate_v4(),
+    batch_id uuid not null,
+    device_id uuid not null,
+    created timestamptz default current_timestamp not null,
+    modified timestamptz default current_timestamp not null,
+    constraint fk_batch_device_batch
+      foreign key(batch_id)
+      references "batch"(id)
+      on delete cascade,
+    constraint fk_batch_device_device
+      foreign key(device_id)
+      references "device"(id)
+      on delete cascade
+  );
 
   create table "device_capability"
   (
@@ -116,23 +141,26 @@ begin;
     constraint fk_device_capability_device
       foreign key(device_id)
       references "device"(id)
+      on delete cascade
   );
 
   create table "reading"
   (
     id uuid primary key default uuid_generate_v4(),
     reading_type reading_type_enum not null,
-    "value" real not null,
+    "value" double precision not null,
     device_id uuid not null,
     user_id uuid not null,
     created timestamptz default current_timestamp not null,
     modified timestamptz default current_timestamp not null,
     constraint fk_reading_user
       foreign key(user_id)
-      references "user"(id),
+      references "user"(id)
+      on delete cascade,
     constraint fk_reading_device
       foreign key(device_id)
       references "device"(id)
+      on delete cascade
   );
 
   create table "batch_reading"
@@ -140,11 +168,21 @@ begin;
     id uuid primary key default uuid_generate_v4(),
     batch_id uuid not null,
     user_id uuid not null,
+    reading_id uuid not null,
     created timestamptz default current_timestamp not null,
     modified timestamptz default current_timestamp not null,
     constraint fk_batch_reading_user
       foreign key(user_id)
       references "user"(id)
+      on delete cascade,
+    constraint fk_batch_reading_batch
+      foreign key(batch_id)
+      references "batch"(id)
+      on delete cascade,
+    constraint fk_batch_reading_reading
+      foreign key(reading_id)
+      references "reading"(id)
+      on delete cascade
   );
 
 commit;

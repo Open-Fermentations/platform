@@ -1,4 +1,4 @@
-package server
+package constants
 
 const (
 	Permission_CreateUser     = "create_user"

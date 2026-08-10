@@ -14,5 +14,6 @@ const (
 )
 
 const (
-	IDKey = "id"
+	IDKey  = "id"
+	IDKey2 = "id2"
 )

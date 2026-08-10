@@ -19,3 +19,6 @@ sql:
             go_type:
               import: "time"
               type: "Time"
+          - db_type: "macaddr8"
+            go_type:
+              type: "string"

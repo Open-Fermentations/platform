@@ -65,18 +65,27 @@ type Batch struct {
 	Modified time.Time
 }
 
-type BatchReading struct {
+type BatchDevice struct {
 	ID       uuid.UUID
 	BatchID  uuid.UUID
-	UserID   uuid.UUID
+	DeviceID uuid.UUID
 	Created  time.Time
 	Modified time.Time
+}
+
+type BatchReading struct {
+	ID        uuid.UUID
+	BatchID   uuid.UUID
+	UserID    uuid.UUID
+	ReadingID uuid.UUID
+	Created   time.Time
+	Modified  time.Time
 }
 
 type Device struct {
 	ID         uuid.UUID
 	Name       string
-	MacAddress []byte
+	MacAddress string
 	UserID     uuid.UUID
 	Created    time.Time
 	Modified   time.Time
@@ -98,7 +107,7 @@ type Permission struct {
 type Reading struct {
 	ID          uuid.UUID
 	ReadingType ReadingTypeEnum
-	Value       float32
+	Value       float64
 	DeviceID    uuid.UUID
 	UserID      uuid.UUID
 	Created     time.Time
