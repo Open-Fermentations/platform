@@ -149,3 +149,28 @@ func (s service) AddDeviceToBatch(ctx context.Context, id uuid.UUID, deviceId uu
 
 	return &batchDeviceModel, nil
 }
+
+// RemoveDeviceFromBatch implements [Service].
+func (s service) RemoveDeviceFromBatch(ctx context.Context, id uuid.UUID, deviceId uuid.UUID) error {
+	var err error
+	_, err = s.GetBatchById(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotFound{ID: id, Name: "batch id"}
+		}
+		return err
+	}
+
+	_, err = s.GetDeviceById(ctx, deviceId)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotFound{ID: id, Name: "device id"}
+		}
+		return err
+	}
+
+	return s.db.Querier().RemoveDeviceFromBatch(ctx, sqlc.RemoveDeviceFromBatchParams{
+		BatchID:  id,
+		DeviceID: deviceId,
+	})
+}

@@ -21,6 +21,7 @@ type Service interface {
 	GetBatchById(ctx context.Context, id uuid.UUID) (*model.Batch, error)
 	UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*model.Batch, error)
 	AddDeviceToBatch(ctx context.Context, id, deviceId uuid.UUID) (*model.BatchDevice, error)
+	RemoveDeviceFromBatch(ctx context.Context, id, deviceId uuid.UUID) error
 
 	CreateDevices(ctx context.Context, d []dto.CreateDeviceDTO) ([]model.Device, error)
 	SearchDevices(ctx context.Context, search dto.SearchDTO) (*dto.PageDTO[model.Device], error)

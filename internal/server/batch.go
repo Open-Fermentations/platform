@@ -230,3 +230,30 @@ func (s *Server) addDeviceToBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) removeDeviceFromBatch(w http.ResponseWriter, r *http.Request) {
+	batchIdRaw := r.PathValue(IDKey)
+	deviceIdRaw := r.PathValue(IDKey2)
+
+	batchId, err := uuid.Parse(batchIdRaw)
+	if err != nil {
+		slog.Error("removing device from batch parsing batch id", logging.Err(err), slog.String("batchId", batchIdRaw))
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
+		return
+	}
+
+	deviceId, err := uuid.Parse(deviceIdRaw)
+	if err != nil {
+		slog.Error("removing device from batch parsing device id", logging.Err(err), slog.String("deviceId", deviceIdRaw))
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
+		return
+	}
+
+	if err := s.svc.RemoveDeviceFromBatch(r.Context(), batchId, deviceId); err != nil {
+		slog.Error("removing device from batch", logging.Err(err), slog.String("batchId", batchIdRaw), slog.String("deviceId", deviceIdRaw))
+		http.Error(w, InternalServerError, http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

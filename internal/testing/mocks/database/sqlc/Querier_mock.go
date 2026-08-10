@@ -864,6 +864,63 @@ func (_c *MockQuerier_RemoveDeviceById_Call) RunAndReturn(run func(ctx context.C
 	return _c
 }
 
+// RemoveDeviceFromBatch provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) RemoveDeviceFromBatch(ctx context.Context, arg sqlc.RemoveDeviceFromBatchParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for RemoveDeviceFromBatch")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, sqlc.RemoveDeviceFromBatchParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_RemoveDeviceFromBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RemoveDeviceFromBatch'
+type MockQuerier_RemoveDeviceFromBatch_Call struct {
+	*mock.Call
+}
+
+// RemoveDeviceFromBatch is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg sqlc.RemoveDeviceFromBatchParams
+func (_e *MockQuerier_Expecter) RemoveDeviceFromBatch(ctx any, arg any) *MockQuerier_RemoveDeviceFromBatch_Call {
+	return &MockQuerier_RemoveDeviceFromBatch_Call{Call: _e.mock.On("RemoveDeviceFromBatch", ctx, arg)}
+}
+
+func (_c *MockQuerier_RemoveDeviceFromBatch_Call) Run(run func(ctx context.Context, arg sqlc.RemoveDeviceFromBatchParams)) *MockQuerier_RemoveDeviceFromBatch_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 sqlc.RemoveDeviceFromBatchParams
+		if args[1] != nil {
+			arg1 = args[1].(sqlc.RemoveDeviceFromBatchParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_RemoveDeviceFromBatch_Call) Return(err error) *MockQuerier_RemoveDeviceFromBatch_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_RemoveDeviceFromBatch_Call) RunAndReturn(run func(ctx context.Context, arg sqlc.RemoveDeviceFromBatchParams) error) *MockQuerier_RemoveDeviceFromBatch_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // SearchBatches provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) SearchBatches(ctx context.Context, arg sqlc.SearchBatchesParams) ([]sqlc.SearchBatchesRow, error) {
 	ret := _mock.Called(ctx, arg)

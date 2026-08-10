@@ -37,3 +37,22 @@ func (q *Queries) AddDeviceToBatch(ctx context.Context, arg AddDeviceToBatchPara
 	)
 	return i, err
 }
+
+const removeDeviceFromBatch = `-- name: RemoveDeviceFromBatch :exec
+delete from "batch_device"
+where "batch_id" = $1 and "device_id" = $2
+`
+
+type RemoveDeviceFromBatchParams struct {
+	BatchID  uuid.UUID
+	DeviceID uuid.UUID
+}
+
+// RemoveDeviceFromBatch
+//
+//	delete from "batch_device"
+//	where "batch_id" = $1 and "device_id" = $2
+func (q *Queries) RemoveDeviceFromBatch(ctx context.Context, arg RemoveDeviceFromBatchParams) error {
+	_, err := q.db.Exec(ctx, removeDeviceFromBatch, arg.BatchID, arg.DeviceID)
+	return err
+}
