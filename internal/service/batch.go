@@ -114,3 +114,38 @@ func (s service) UpdateBatch(ctx context.Context, id uuid.UUID, name string) (*m
 
 	return new(model.Batch).FromModel(batch), nil
 }
+
+// AddDeviceToBatch implements [Service].
+func (s service) AddDeviceToBatch(ctx context.Context, id uuid.UUID, deviceId uuid.UUID) (*model.BatchDevice, error) {
+	batch, err := s.GetBatchById(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound{ID: id, Name: "batch id"}
+		}
+		return nil, err
+	}
+
+	device, err := s.GetDeviceById(ctx, deviceId)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound{ID: id, Name: "device id"}
+		}
+		return nil, err
+	}
+
+	batchDevice, err := s.db.Querier().AddDeviceToBatch(ctx, sqlc.AddDeviceToBatchParams{
+		BatchID:  id,
+		DeviceID: deviceId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	batchDeviceModel := model.BatchDevice{
+		ID:     batchDevice.ID,
+		Batch:  *batch,
+		Device: *device,
+	}
+
+	return &batchDeviceModel, nil
+}

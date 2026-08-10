@@ -11,6 +11,11 @@ import (
 )
 
 type Querier interface {
+	//AddDeviceToBatch
+	//
+	//  insert into "batch_device" ("batch_id", "device_id") values ($1, $2)
+	//  returning id, batch_id, device_id, created, modified
+	AddDeviceToBatch(ctx context.Context, arg AddDeviceToBatchParams) (BatchDevice, error)
 	//CreateBatch
 	//
 	//  insert into "batch" ("name", user_id)

@@ -18,7 +18,7 @@ type CreateDeviceDTO struct {
 func (d *CreateDeviceDTO) ToCreateDeviceParams(userId uuid.UUID) sqlc.CreateDeviceParams {
 	return sqlc.CreateDeviceParams{
 		Name:       d.Name,
-		MacAddress: []byte(d.MacAddress),
+		MacAddress: d.MacAddress,
 		UserID:     userId,
 	}
 }
@@ -73,7 +73,7 @@ func (d UpdateDeviceDTO) Slog() []any {
 func (d *UpdateDeviceDTO) ToUpdateDeviceParams(id uuid.UUID) sqlc.UpdateDeviceParams {
 	u := sqlc.UpdateDeviceParams{}
 	u.Name = d.Name
-	u.Macaddress = []byte(d.MacAddress)
+	u.Macaddress = d.MacAddress
 	u.ID = id
 
 	return u

@@ -48,7 +48,7 @@ func (d BatchDTO) Slog() []any {
 		)}
 }
 
-func (d *BatchDTO) FromModel(m model.Batch) *BatchDTO {
+func (d *BatchDTO) FromModel(m *model.Batch) *BatchDTO {
 	d.ID = m.ID
 	d.Name = m.Name
 	d.UserID = m.UserID

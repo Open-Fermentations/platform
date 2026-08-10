@@ -2,12 +2,14 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"open-fermentations/internal/dto"
 	"open-fermentations/internal/logging"
 	"open-fermentations/internal/route"
+	"open-fermentations/internal/service"
 
 	"github.com/google/uuid"
 )
@@ -29,7 +31,7 @@ func (s *Server) postBatch(w http.ResponseWriter, r *http.Request) {
 
 	dtos := make([]dto.BatchDTO, len(ms))
 	for i, m := range ms {
-		dtos[i] = *new(dto.BatchDTO).FromModel(m)
+		dtos[i] = *new(dto.BatchDTO).FromModel(&m)
 	}
 
 	jsonResp, err := json.Marshal(dtos)
@@ -82,7 +84,7 @@ func (s *Server) searchBatches(w http.ResponseWriter, r *http.Request) {
 
 	batchDtos := make([]dto.BatchDTO, len(batches))
 	for i, b := range batches {
-		batchDtos[i] = *new(dto.BatchDTO).FromModel(b)
+		batchDtos[i] = *new(dto.BatchDTO).FromModel(&b)
 	}
 
 	page := dto.PageDTO[dto.BatchDTO]{
@@ -127,7 +129,7 @@ func (s *Server) getBatchById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	batchDto := new(dto.BatchDTO).FromModel(*batch)
+	batchDto := new(dto.BatchDTO).FromModel(batch)
 
 	batchJson, err := json.Marshal(batchDto)
 	if err != nil {
@@ -165,7 +167,7 @@ func (s *Server) putBatchById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	batchDto := new(dto.BatchDTO).FromModel(*batch)
+	batchDto := new(dto.BatchDTO).FromModel(batch)
 
 	jsonResp, err := json.Marshal(batchDto)
 	if err != nil {
@@ -174,6 +176,55 @@ func (s *Server) putBatchById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err := w.Write(jsonResp); err != nil {
+		slog.Error("writing response", logging.Err(err))
+		return
+	}
+}
+
+func (s *Server) addDeviceToBatch(w http.ResponseWriter, r *http.Request) {
+	batchIdRaw := r.PathValue(IDKey)
+	deviceIdRaw := r.PathValue(IDKey2)
+
+	batchId, err := uuid.Parse(batchIdRaw)
+	if err != nil {
+		slog.Error("add device to batch parsing batch id", slog.String("batchId", batchIdRaw), logging.Err(err))
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
+		return
+	}
+
+	deviceId, err := uuid.Parse(deviceIdRaw)
+	if err != nil {
+		slog.Error("add device to batch parsing device id", slog.String("deviceId", deviceIdRaw), logging.Err(err))
+		http.Error(w, FailedParsingPathId, http.StatusBadRequest)
+		return
+	}
+
+	batchDevice, err := s.svc.AddDeviceToBatch(r.Context(), batchId, deviceId)
+	if err != nil {
+		notFound := &service.ErrNotFound{}
+		if errors.As(err, notFound) {
+			slog.Error("could not find batch or device", logging.Err(err),
+				slog.String("batchId", batchId.String()), slog.String("deviceId", deviceId.String()))
+			http.Error(w, fmt.Sprintf("%v not found", notFound.Name), http.StatusNotFound)
+			return
+		}
+		slog.Error("adding device to batch", logging.Err(err),
+			slog.String("batchId", batchId.String()), slog.String("deviceId", deviceId.String()))
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	batchDeviceDto := new(dto.BatchDeviceDTO).FromModel(batchDevice)
+
+	jsonResp, err := json.Marshal(batchDeviceDto)
+	if err != nil {
+		slog.Error("marshalling batch device dto", logging.Err(err))
+		http.Error(w, FailedMarshalling, http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
 	if _, err := w.Write(jsonResp); err != nil {
 		slog.Error("writing response", logging.Err(err))
 		return

@@ -10,7 +10,7 @@ import (
 type Device struct {
 	ID         uuid.UUID `json:"id"`
 	Name       string    `json:"name"`
-	MacAddress []byte    `json:"macAddress"`
+	MacAddress string    `json:"macAddress"`
 	UserID     uuid.UUID `json:"userId"`
 	Created    time.Time `json:"created"`
 	Modified   time.Time `json:"modified"`

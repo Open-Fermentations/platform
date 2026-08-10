@@ -49,3 +49,15 @@ func (e ErrUserDoesNotExist) Error() string {
 
 var _ error = ErrUserDoesNotExist{}
 var _ logging.SlogErr = ErrUserDoesNotExist{}
+
+type ErrNotFound struct {
+	ID   uuid.UUID
+	Name string
+}
+
+// Error implements [error].
+func (e ErrNotFound) Error() string {
+	return fmt.Sprintf("could not find %s by id: %s", e.Name, e.ID.String())
+}
+
+var _ error = ErrNotFound{}

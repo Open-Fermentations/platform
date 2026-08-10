@@ -20,7 +20,7 @@ returning id, "name", mac_address, user_id, created, modified
 
 type CreateDeviceParams struct {
 	Name       string
-	MacAddress []byte
+	MacAddress string
 	UserID     uuid.UUID
 }
 
@@ -124,7 +124,7 @@ type SearchDevicesParams struct {
 type SearchDevicesRow struct {
 	ID         uuid.UUID
 	Name       string
-	MacAddress []byte
+	MacAddress string
 	UserID     uuid.UUID
 	Created    time.Time
 	Modified   time.Time
@@ -195,7 +195,7 @@ returning id, name, mac_address, user_id, created, modified
 
 type UpdateDeviceParams struct {
 	Name       string
-	Macaddress []byte
+	Macaddress string
 	UserID     uuid.UUID
 	ID         uuid.UUID
 }
